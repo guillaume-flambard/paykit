@@ -7,7 +7,12 @@ export class PostgresStore implements Store {
   private ready: Promise<void>
 
   constructor(connectionString: string) {
-    this.pool = new Pool({ connectionString, max: 5 })
+    const needsSsl = /sslmode=require|neon\.tech|supabase/.test(connectionString)
+    this.pool = new Pool({
+      connectionString,
+      max: 5,
+      ssl: needsSsl ? { rejectUnauthorized: false } : undefined,
+    })
     this.ready = this.init()
   }
 
