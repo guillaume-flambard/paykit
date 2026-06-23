@@ -74,4 +74,10 @@ export class PostgresStore implements Store {
     }
     return { ok: true, remaining: rows[0].credits }
   }
+
+  async list() {
+    await this.ready
+    const { rows } = await this.pool.query(`select * from paykit_accounts order by user_id limit 500`)
+    return rows.map((r) => this.map(r))
+  }
 }

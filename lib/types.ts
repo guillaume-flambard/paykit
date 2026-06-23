@@ -20,6 +20,8 @@ export interface Store {
   addCredits(userId: string, amount: number): Promise<Account>
   /** Atomically deduct credits. ok=false (no change) if insufficient. */
   deduct(userId: string, cost: number): Promise<{ ok: boolean; remaining: number }>
+  /** List all accounts (for the dashboard / admin views). */
+  list(): Promise<Account[]>
 }
 
 // Plans → entitlements. (Later: per-project, defined in a dashboard.)

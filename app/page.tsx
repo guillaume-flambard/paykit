@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { PayKitProvider, usePayKit } from "@/lib/paykit-react"
+import type { Account } from "@/lib/types"
 
 /* ------------------------------------------------------------------ *
  * PayKit showcase — faithful implementation of design/PayKit.dc.html
@@ -71,17 +73,6 @@ const HERO_CODE_HTML = `<span style="color:#c084fc">import</span> { PayKitProvid
   }
 }`
 
-const RAW_CUSTOMERS: [string, string, string, string, string, string][] = [
-  ["Maya Chen", "maya@vellum.ai", "Pro", "1,240", "active", "Apr 2"],
-  ["Devon Park", "devon@sketchpad.dev", "Free", "5", "trialing", "Apr 5"],
-  ["Priya Rao", "priya@loop.so", "Pro", "880", "active", "Mar 28"],
-  ["Theo Voss", "theo@runwise.io", "Free", "0", "canceled", "Mar 12"],
-  ["Sam Okafor", "sam@quill.app", "Pro", "3,400", "active", "Feb 19"],
-  ["Lena Hart", "lena@northsketch.com", "Free", "42", "trialing", "Apr 9"],
-  ["Omar Idris", "omar@castfm.ai", "Pro", "210", "past_due", "Mar 30"],
-  ["Yuki Tan", "yuki@frame.studio", "Free", "18", "active", "Apr 11"],
-]
-
 const STATUS: Record<string, [string, string, string]> = {
   active: ["#6ee7b7", "rgba(52,211,153,.12)", "Active"],
   trialing: ["#93c5fd", "rgba(96,165,250,.12)", "Trialing"],
@@ -106,10 +97,6 @@ export default function Home() {
   const [dashView, setDashView] = useState<DashView>("overview")
   const [revealSecret, setRevealSecret] = useState(false)
   const [copied, setCopied] = useState("")
-  const [wCredits, setWCredits] = useState(12)
-  const [wPlan, setWPlan] = useState<"free" | "pro">("free")
-  const [wShots, setWShots] = useState<number[]>([212, 158, 286])
-  const [wLog, setWLog] = useState<string[]>([])
   const [qsDone, setQsDone] = useState({ install: false, key: false, meter: false })
   const [qsRan, setQsRan] = useState(false)
 
@@ -130,27 +117,6 @@ export default function Home() {
     }
     setCopied(id)
     setTimeout(() => setCopied((c) => (c === id ? "" : c)), 1500)
-  }
-
-  function wGenerate() {
-    if (wCredits <= 0) {
-      setWLog((l) => ["Blocked — out of credits. Buy more to keep generating.", ...l].slice(0, 5))
-      return
-    }
-    const left = wCredits - 1
-    const hue = Math.floor(Math.random() * 360)
-    setWCredits(left)
-    setWShots((s) => [hue, ...s].slice(0, 8))
-    setWLog((l) => [`Generated image · −1 credit · ${left} left`, ...l].slice(0, 5))
-  }
-  function wBuy() {
-    setWCredits((c) => c + 50)
-    setWLog((l) => ["Bought 50 credits · $9.00", ...l].slice(0, 5))
-  }
-  function wUpgrade() {
-    const next = wPlan === "pro" ? "free" : "pro"
-    setWPlan(next)
-    setWLog((l) => [next === "pro" ? "Upgraded to Pro · $19/mo" : "Switched to Free plan", ...l].slice(0, 5))
   }
 
   function qsCopy(step: "install" | "key" | "meter", text: string) {
@@ -179,29 +145,6 @@ export default function Home() {
   const onNav = "display:flex;align-items:center;gap:11px;padding:8px 11px;border-radius:8px;font-size:13.5px;font-weight:550;color:#fafafa;background:#19191c;border:none;width:100%;cursor:pointer;text-align:left;font-family:inherit;letter-spacing:-0.005em;"
   const nav = (k: DashView) => css(dashView === k ? onNav : baseNav)
 
-  const proChip = "color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:550;"
-  const freeChip = "color:#a1a1aa;background:#161619;border:1px solid #26262a;padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:550;"
-
-  const customers = RAW_CUSTOMERS.map((c) => {
-    const m = STATUS[c[4]]
-    const ep = c[1].split("@")
-    return {
-      name: c[0],
-      emailA: ep[0],
-      emailB: ep[1],
-      plan: c[2],
-      credits: c[3],
-      joined: c[5],
-      statusLabel: m[2],
-      statusColor: m[0],
-      statusBg: m[1],
-      initials: (c[0][0] + c[0].split(" ")[1][0]).toUpperCase(),
-      planStyle: css(c[2] === "Pro" ? proChip : freeChip),
-    }
-  })
-
-  const wPct = Math.max(0, Math.min(100, Math.round((wCredits / 60) * 100)))
-  const wIsPro = wPlan === "pro"
   const qsProgress = (qsDone.install ? 1 : 0) + (qsDone.key ? 1 : 0) + (qsDone.meter ? 1 : 0)
   const qsComplete = qsRan || (qsDone.install && qsDone.key && qsDone.meter)
   const secretShown = revealSecret ? "sk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6Nm9Vc" : "sk_live_••••••••••••••••••••••••••"
@@ -263,7 +206,6 @@ export default function Home() {
             dashView={dashView}
             setDashView={setDashView}
             nav={nav}
-            customers={customers}
             revealSecret={revealSecret}
             setRevealSecret={setRevealSecret}
             secretShown={secretShown}
@@ -285,18 +227,7 @@ export default function Home() {
           />
         )}
 
-        {screen === "widget" && (
-          <Widget
-            wCredits={wCredits}
-            wPct={wPct}
-            wIsPro={wIsPro}
-            wShots={wShots}
-            wLog={wLog}
-            wGenerate={wGenerate}
-            wBuy={wBuy}
-            wUpgrade={wUpgrade}
-          />
-        )}
+        {screen === "widget" && <WidgetLive />}
       </main>
     </div>
   )
@@ -509,25 +440,10 @@ function Landing({
 }
 
 /* ===================== DASHBOARD ===================== */
-type Customer = {
-  name: string
-  emailA: string
-  emailB: string
-  plan: string
-  credits: string
-  joined: string
-  statusLabel: string
-  statusColor: string
-  statusBg: string
-  initials: string
-  planStyle: React.CSSProperties
-}
-
 function Dashboard({
   dashView,
   setDashView,
   nav,
-  customers,
   revealSecret,
   setRevealSecret,
   secretShown,
@@ -537,13 +453,48 @@ function Dashboard({
   dashView: DashView
   setDashView: (v: DashView) => void
   nav: (k: DashView) => React.CSSProperties
-  customers: Customer[]
   revealSecret: boolean
   setRevealSecret: (f: (b: boolean) => boolean) => void
   secretShown: string
   copied: string
   copy: (id: string, text: string) => void
 }) {
+  // Live accounts from the real API (POST /meter, /credits & the Stripe webhook all write here).
+  const [accounts, setAccounts] = useState<Account[] | null>(null)
+  const [stats, setStats] = useState<{ total: number; pro: number; creditsOutstanding: number } | null>(null)
+  useEffect(() => {
+    let alive = true
+    fetch("/api/v1/accounts")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!alive) return
+        setAccounts(d.accounts ?? [])
+        setStats(d.stats ?? null)
+      })
+      .catch(() => alive && setAccounts([]))
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const proChip = "color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:550;"
+  const freeChip = "color:#a1a1aa;background:#161619;border:1px solid #26262a;padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:550;"
+  const customers = (accounts ?? []).map((a) => {
+    const isPro = a.plan === "pro"
+    const st = STATUS[isPro ? "active" : "trialing"]
+    return {
+      key: a.userId,
+      label: a.userId,
+      sub: isPro ? `Pro · ${a.entitlements.join(", ") || "—"}` : "Free plan",
+      plan: isPro ? "Pro" : "Free",
+      planStyle: css(isPro ? proChip : freeChip),
+      credits: String(a.credits),
+      statusColor: st[0],
+      statusBg: st[1],
+      statusLabel: st[2],
+      initials: (a.userId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 2) || "··").toUpperCase(),
+    }
+  })
   const statCard = "border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:17px 18px 15px;"
   const statLabel = "font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;"
   const statNum = "font-size:26px;font-weight:600;color:#fafafa;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"
@@ -717,22 +668,26 @@ function Dashboard({
             <div>
               <div style={css("display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;")}>
                 <div style={css("display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;background:#0e0e10;border:1px solid #1f1f23;color:#76767e;font-size:13px;min-width:200px;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>Search customers…</div>
+                <span style={css("display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 28%,transparent);border-radius:999px;padding:3px 9px;letter-spacing:0.02em;")}><span style={css("width:6px;height:6px;border-radius:50%;background:var(--ac);")} />LIVE</span>
                 <div style={{ flex: 1 }} />
-                <span style={css("font-size:12.5px;color:#6b6b73;")}>8 customers · 142 total</span>
+                <span style={css("font-size:12.5px;color:#6b6b73;")}>{accounts === null ? "loading…" : `${stats?.total ?? customers.length} accounts · ${(stats?.creditsOutstanding ?? 0).toLocaleString()} credits outstanding`}</span>
               </div>
               <div style={css("border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;overflow:hidden;")}>
                 <div style={css("display:grid;grid-template-columns:2fr 0.9fr 0.9fr 1fr 0.8fr;gap:12px;padding:11px 18px;border-bottom:1px solid #18181b;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;")}>
                   <span>Customer</span><span>Plan</span><span style={css("text-align:right;")}>Credits</span><span>Status</span><span style={css("text-align:right;")}>Joined</span>
                 </div>
                 {customers.map((c) => (
-                  <div key={c.emailA + c.emailB} className="pk-row" style={css("display:grid;grid-template-columns:2fr 0.9fr 0.9fr 1fr 0.8fr;gap:12px;padding:13px 18px;border-bottom:1px solid #141417;align-items:center;")}>
-                    <div style={css("display:flex;align-items:center;gap:11px;min-width:0;")}><div style={css("width:30px;height:30px;border-radius:50%;flex:none;background:#1a1a1e;border:1px solid #2a2a2e;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#a5a5ad;")}>{c.initials}</div><div style={css("min-width:0;")}><div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{c.name}</div><div style={css("font-size:11.5px;color:#6b6b73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{c.emailA}@{c.emailB}</div></div></div>
+                  <div key={c.key} className="pk-row" style={css("display:grid;grid-template-columns:2fr 0.9fr 0.9fr 1fr 0.8fr;gap:12px;padding:13px 18px;border-bottom:1px solid #141417;align-items:center;")}>
+                    <div style={css("display:flex;align-items:center;gap:11px;min-width:0;")}><div style={css("width:30px;height:30px;border-radius:50%;flex:none;background:#1a1a1e;border:1px solid #2a2a2e;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#a5a5ad;")}>{c.initials}</div><div style={css("min-width:0;")}><div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{c.label}</div><div style={css("font-size:11.5px;color:#6b6b73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{c.sub}</div></div></div>
                     <div><span style={c.planStyle}>{c.plan}</span></div>
                     <div style={css("text-align:right;font-size:13px;color:#cfcfd6;font-variant-numeric:tabular-nums;font-family:'Geist Mono',monospace;")}>{c.credits}</div>
                     <div><span style={css(`display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:550;letter-spacing:-0.01em;color:${c.statusColor};background:${c.statusBg};`)}><span style={css(`width:5px;height:5px;border-radius:50%;flex:none;background:${c.statusColor};`)} />{c.statusLabel}</span></div>
-                    <div style={css("text-align:right;font-size:12.5px;color:#76767e;")}>{c.joined}</div>
+                    <div style={css("text-align:right;font-size:12.5px;color:#76767e;")}>—</div>
                   </div>
                 ))}
+                {accounts !== null && customers.length === 0 && (
+                  <div style={css("padding:28px 18px;text-align:center;font-size:13px;color:#6b6b73;")}>No accounts yet — meter a call or run a checkout to create the first one.</div>
+                )}
               </div>
             </div>
           )}
@@ -892,7 +847,60 @@ function Quickstart({
   )
 }
 
-/* ===================== WIDGET ===================== */
+/* ===================== WIDGET (live, wired to the real API) ===================== */
+// A per-visit demo account so each viewer gets their own real ledger in Postgres.
+function WidgetLive() {
+  const [uid] = useState(() => "widget-demo-" + Math.random().toString(36).slice(2, 10))
+  return (
+    <PayKitProvider userId={uid}>
+      <WidgetConnected />
+    </PayKitProvider>
+  )
+}
+
+function WidgetConnected() {
+  const { account, meter, buyCredits, upgrade } = usePayKit()
+  const [wShots, setWShots] = useState<number[]>([212, 158, 286])
+  const [wLog, setWLog] = useState<string[]>([])
+
+  const wCredits = account?.credits ?? 0
+  const wIsPro = account?.plan === "pro"
+  const wPct = Math.max(0, Math.min(100, Math.round((wCredits / 60) * 100)))
+
+  async function wGenerate() {
+    const r = await meter("image_gen") // real POST /api/v1/meter — deducts a credit in Neon
+    if (r.blocked) {
+      setWLog((l) => ["Blocked — out of credits. Buy more to keep generating.", ...l].slice(0, 5))
+      return
+    }
+    const hue = Math.floor(Math.random() * 360)
+    setWShots((s) => [hue, ...s].slice(0, 8))
+    setWLog((l) => [`Generated image · −1 credit · ${r.remaining} left`, ...l].slice(0, 5))
+  }
+  async function wBuy() {
+    await buyCredits(50) // real POST /api/v1/credits
+    setWLog((l) => ["Bought 50 credits · $9.00", ...l].slice(0, 5))
+  }
+  async function wUpgrade() {
+    const next = wIsPro ? "free" : "pro"
+    await upgrade(next) // real POST /api/v1/credits (plan)
+    setWLog((l) => [next === "pro" ? "Upgraded to Pro · $19/mo" : "Switched to Free plan", ...l].slice(0, 5))
+  }
+
+  return (
+    <Widget
+      wCredits={wCredits}
+      wPct={wPct}
+      wIsPro={wIsPro}
+      wShots={wShots}
+      wLog={wLog}
+      wGenerate={wGenerate}
+      wBuy={wBuy}
+      wUpgrade={wUpgrade}
+    />
+  )
+}
+
 function Widget({
   wCredits,
   wPct,

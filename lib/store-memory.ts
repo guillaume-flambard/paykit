@@ -36,4 +36,8 @@ export class MemoryStore implements Store {
     a.credits -= cost
     return { ok: true, remaining: a.credits }
   }
+
+  async list() {
+    return [...this.accounts.values()]
+  }
 }

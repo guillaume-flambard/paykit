@@ -30,6 +30,10 @@ export async function setPlan(userId: string, plan: string): Promise<Account> {
   return store.setPlan(userId, plan, PLAN_ENTITLEMENTS[plan] ?? [])
 }
 
+export async function listAccounts(): Promise<Account[]> {
+  return store.list()
+}
+
 export async function hasAccess(userId: string, plan: string): Promise<boolean> {
   if (plan === "free") return true
   const a = await store.get(userId)
