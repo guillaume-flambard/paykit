@@ -56,11 +56,16 @@ export async function listProjectsByOwner(ownerId: string): Promise<Project[]> {
   return store.listProjectsByOwner(ownerId)
 }
 
-/** Resolve a project id from an API key; falls back to the default project. */
-export async function projectFromKey(key: string | null | undefined): Promise<string> {
+/**
+ * Resolve a project id from an API key.
+ * - no key  → the public demo project (keeps the no-key embed/showcase working)
+ * - valid   → that project's id
+ * - unknown → null (caller should reject with 401 — don't silently leak into demo)
+ */
+export async function projectFromKey(key: string | null | undefined): Promise<string | null> {
   if (!key) return DEFAULT_PROJECT_ID
   const p = await store.getProjectByKey(key)
-  return p ? p.id : DEFAULT_PROJECT_ID
+  return p ? p.id : null
 }
 
 export async function hasAccess(userId: string, plan: string): Promise<boolean> {

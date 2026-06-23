@@ -10,8 +10,17 @@ export function keyFromRequest(req: Request, body?: Record<string, unknown>): st
   return new URL(req.url).searchParams.get("key")
 }
 
-/** Resolve the project from the request key and return the namespaced account id. */
+/**
+ * Resolve the project from the request key and return the namespaced account id.
+ * projectId/uid are null when a key was provided but didn't match any project
+ * (the caller should respond 401 rather than touching the demo project).
+ */
 export async function scope(req: Request, clientUserId: string, body?: Record<string, unknown>) {
   const projectId = await projectFromKey(keyFromRequest(req, body))
-  return { projectId, uid: scopedId(projectId, clientUserId) }
+  return { projectId, uid: projectId ? scopedId(projectId, clientUserId) : null }
+}
+
+/** Resolve just the project id from the ?key= query param (null = invalid key). */
+export async function resolveProject(req: Request): Promise<string | null> {
+  return projectFromKey(new URL(req.url).searchParams.get("key"))
 }

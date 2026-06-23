@@ -12,6 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "userId is required" }, { status: 400 })
     }
     const { uid } = await scope(req, userId, body)
+    if (!uid) return NextResponse.json({ error: "Invalid API key" }, { status: 401 })
     if (typeof plan === "string") await setPlan(uid, plan)
     if (typeof amount === "number") await grantCredits(uid, amount)
     const account = await getAccount(uid)

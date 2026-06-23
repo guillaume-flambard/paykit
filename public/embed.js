@@ -95,6 +95,15 @@
   function paint() {
     if (!account) return
     var el = host()
+    if (account.error || typeof account.credits !== "number") {
+      el.innerHTML =
+        '<div style="display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:#0c0c0e;' +
+        'border:1px solid #3a1d1d;color:#fca5a5;font-family:system-ui,-apple-system,sans-serif;font-size:13px">' +
+        "PayKit: " +
+        (account.error || "unavailable") +
+        " — check your data-key</div>"
+      return
+    }
     var pro = (account.entitlements || []).indexOf("pro") >= 0
     el.innerHTML =
       '<div style="display:inline-flex;align-items:center;gap:14px;padding:12px 16px;border-radius:14px;' +

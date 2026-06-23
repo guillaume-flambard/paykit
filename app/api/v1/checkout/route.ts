@@ -17,6 +17,7 @@ export async function POST(req: Request) {
     }
     // Namespace the id so the webhook credits the right project's account.
     const { uid } = await scope(req, userId, body)
+    if (!uid) return NextResponse.json({ error: "Invalid API key" }, { status: 401 })
     const stripe = new Stripe(key)
     const base = process.env.NEXT_PUBLIC_BASE_URL || new URL(req.url).origin
     const urls = { success_url: `${base}/?paid=1`, cancel_url: `${base}/?canceled=1` }

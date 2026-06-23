@@ -9,6 +9,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 })
   }
   const { uid } = await scope(req, userId)
+  if (!uid) return NextResponse.json({ error: "Invalid API key" }, { status: 401 })
   const account = await getAccount(uid)
   return NextResponse.json({ ...account, userId }) // return the caller's id, not the internal one
 }

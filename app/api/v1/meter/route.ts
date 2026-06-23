@@ -12,6 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "userId and event are required" }, { status: 400 })
     }
     const { uid } = await scope(req, userId, body)
+    if (!uid) return NextResponse.json({ error: "Invalid API key" }, { status: 401 })
     const result = await meter(uid, event, typeof cost === "number" ? cost : 1)
     if (result.blocked) {
       return NextResponse.json({ ...result, error: "Insufficient credits" }, { status: 402 })
