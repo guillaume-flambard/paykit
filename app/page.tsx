@@ -459,23 +459,49 @@ function Dashboard({
   copied: string
   copy: (id: string, text: string) => void
 }) {
-  // Live data from the real API (POST /meter, /credits & the Stripe webhook all write here).
+  // The merchant's project (persisted locally). Without one, data scopes to the demo project.
+  const [project, setProject] = useState<{ id: string; name: string; publishableKey: string; secretKey: string } | null>(() => {
+    try {
+      const s = typeof localStorage !== "undefined" ? localStorage.getItem("paykit_project") : null
+      return s ? JSON.parse(s) : null
+    } catch {
+      return null
+    }
+  })
+  const [creating, setCreating] = useState(false)
+  async function createProject() {
+    setCreating(true)
+    try {
+      const r = await fetch("/api/v1/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "My project" }) })
+      const p = await r.json()
+      localStorage.setItem("paykit_project", JSON.stringify(p))
+      setProject(p)
+    } catch {
+      /* ignore */
+    }
+    setCreating(false)
+  }
+  const pubKey = project?.publishableKey ?? "pk_live_demo"
+  const realSecret = project?.secretKey ?? "sk_live_demo"
+
+  // Live data from the real API, scoped to the active project's key.
   const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [an, setAn] = useState<(Analytics & { stats: { total: number; pro: number; mrr: number; creditsOutstanding: number } }) | null>(null)
   useEffect(() => {
     let alive = true
-    fetch("/api/v1/accounts")
+    const q = "?key=" + encodeURIComponent(pubKey)
+    fetch("/api/v1/accounts" + q)
       .then((r) => r.json())
       .then((d) => alive && setAccounts(d.accounts ?? []))
       .catch(() => alive && setAccounts([]))
-    fetch("/api/v1/analytics")
+    fetch("/api/v1/analytics" + q)
       .then((r) => r.json())
       .then((d) => alive && setAn(d))
       .catch(() => {})
     return () => {
       alive = false
     }
-  }, [])
+  }, [pubKey])
   const stats = an?.stats ?? null
 
   // Build an SVG polyline (viewBox 0 0 720 180) from a series of values.
@@ -742,24 +768,37 @@ function Dashboard({
           {/* API KEYS */}
           {dashView === "keys" && (
             <div style={css("max-width:760px;")}>
-              <p style={css("font-size:13.5px;color:#8f8f97;margin:0 0 24px;line-height:1.55;max-width:560px;")}>Use your <span style={css("color:#cfcfd6;")}>publishable</span> key in the browser SDK and your <span style={css("color:#cfcfd6;")}>secret</span> key only on your server. Rotate immediately if a key is exposed.</p>
+              {!project ? (
+                <div style={css("border:1px solid color-mix(in srgb,var(--ac) 32%,#1f1f23);border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 6%,#0c0c0e),#0c0c0e);padding:22px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;")}>
+                  <div style={css("flex:1;min-width:200px;")}>
+                    <div style={css("font-size:15px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;")}>Create your project</div>
+                    <div style={css("font-size:13px;color:#9a9aa2;margin-top:3px;line-height:1.5;")}>Get your own keys so your customers&apos; data is isolated from everyone else&apos;s. Takes one click.</div>
+                  </div>
+                  <button className="pk-primary" onClick={createProject} style={css("padding:10px 18px;border-radius:10px;background:var(--ac);color:#06120c;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}>{creating ? "Creating…" : "Create project"}</button>
+                </div>
+              ) : (
+                <div style={css("display:flex;align-items:center;gap:10px;margin-bottom:18px;")}>
+                  <span style={css("display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 28%,transparent);border-radius:999px;padding:3px 9px;")}><span style={css("width:6px;height:6px;border-radius:50%;background:var(--ac);")} />{project.name}</span>
+                  <span style={css("font-size:12.5px;color:#6b6b73;")}>your project · data is isolated to these keys</span>
+                </div>
+              )}
+              <p style={css("font-size:13.5px;color:#8f8f97;margin:0 0 24px;line-height:1.55;max-width:560px;")}>Use your <span style={css("color:#cfcfd6;")}>publishable</span> key in the embed / browser SDK and your <span style={css("color:#cfcfd6;")}>secret</span> key only on your server.</p>
               <div style={css("border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px 20px;margin-bottom:14px;")}>
                 <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;")}><span style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;")}>Publishable key</span><span style={css("font-size:11px;color:#6b6b73;")}>Safe in client code</span></div>
                 <div style={css("display:flex;align-items:center;gap:10px;")}>
-                  <code style={css("flex:1;min-width:0;font-family:'Geist Mono',monospace;font-size:13px;color:#cfcfd6;background:#0e0e10;border:1px solid #1f1f23;border-radius:8px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>pk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6</code>
-                  <button className="pk-copybtn" onClick={() => copy("pub", "pk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6")} style={css(copyBtnSm)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>{copied === "pub" ? "Copied" : "Copy"}</button>
+                  <code style={css("flex:1;min-width:0;font-family:'Geist Mono',monospace;font-size:13px;color:#cfcfd6;background:#0e0e10;border:1px solid #1f1f23;border-radius:8px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{pubKey}</code>
+                  <button className="pk-copybtn" onClick={() => copy("pub", pubKey)} style={css(copyBtnSm)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>{copied === "pub" ? "Copied" : "Copy"}</button>
                 </div>
               </div>
               <div style={css("border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px 20px;")}>
                 <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;")}><span style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;")}>Secret key</span><span style={css("font-size:11px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:5px;padding:1px 7px;")}>Server only</span></div>
                 <div style={css("display:flex;align-items:center;gap:10px;flex-wrap:wrap;")}>
-                  <code style={css("flex:1;min-width:200px;font-family:'Geist Mono',monospace;font-size:13px;color:#cfcfd6;background:#0e0e10;border:1px solid #1f1f23;border-radius:8px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{secretShown}</code>
+                  <code style={css("flex:1;min-width:200px;font-family:'Geist Mono',monospace;font-size:13px;color:#cfcfd6;background:#0e0e10;border:1px solid #1f1f23;border-radius:8px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{revealSecret ? realSecret : "sk_live_" + "•".repeat(24)}</code>
                   <div style={css("display:flex;gap:8px;")}>
                     <button className="pk-copybtn" onClick={() => setRevealSecret((b) => !b)} style={css(copyBtnSm)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>{revealSecret ? "Hide" : "Reveal"}</button>
-                    <button className="pk-copybtn" onClick={() => copy("secret", "sk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6Nm9Vc")} style={css(copyBtnSm)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>{copied === "secret" ? "Copied" : "Copy"}</button>
+                    <button className="pk-copybtn" onClick={() => copy("secret", realSecret)} style={css(copyBtnSm)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>{copied === "secret" ? "Copied" : "Copy"}</button>
                   </div>
                 </div>
-                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid #18181b;")}><span style={css("font-size:12px;color:#6b6b73;")}>Last rotated 34 days ago</span><button className="pk-danger" style={css("display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);color:#fca5a5;font-size:12.5px;font-weight:550;cursor:pointer;font-family:inherit;")}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" /><path d="M3 21v-5h5" /></svg>Rotate key</button></div>
               </div>
             </div>
           )}

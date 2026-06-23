@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
+import { scope } from "@/lib/api"
 
-// POST /api/v1/checkout  { userId, kind: "credits" | "pro" }
+// POST /api/v1/checkout  { userId, kind: "credits" | "pro", key? }
 // Creates a Stripe Checkout Session (inline prices — no dashboard setup needed).
 export async function POST(req: Request) {
   const key = process.env.STRIPE_SECRET_KEY
@@ -9,10 +10,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Stripe not configured. Set STRIPE_SECRET_KEY." }, { status: 501 })
   }
   try {
-    const { userId, kind } = await req.json()
+    const body = await req.json()
+    const { userId, kind } = body
     if (typeof userId !== "string") {
       return NextResponse.json({ error: "userId is required" }, { status: 400 })
     }
+    // Namespace the id so the webhook credits the right project's account.
+    const { uid } = await scope(req, userId, body)
     const stripe = new Stripe(key)
     const base = process.env.NEXT_PUBLIC_BASE_URL || new URL(req.url).origin
     const urls = { success_url: `${base}/?paid=1`, cancel_url: `${base}/?canceled=1` }
@@ -32,8 +36,8 @@ export async function POST(req: Request) {
                 quantity: 1,
               },
             ],
-            metadata: { userId, plan: "pro" },
-            subscription_data: { metadata: { userId, plan: "pro" } },
+            metadata: { userId: uid, plan: "pro" },
+            subscription_data: { metadata: { userId: uid, plan: "pro" } },
             ...urls,
           })
         : await stripe.checkout.sessions.create({
@@ -48,7 +52,7 @@ export async function POST(req: Request) {
                 quantity: 1,
               },
             ],
-            metadata: { userId, packCredits: "100" },
+            metadata: { userId: uid, packCredits: "100" },
             ...urls,
           })
 

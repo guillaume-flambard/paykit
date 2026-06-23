@@ -7,6 +7,14 @@ export interface Account {
   entitlements: string[]
 }
 
+/** A merchant project — the multi-tenant boundary. Each has its own keys & data. */
+export interface Project {
+  id: string
+  name: string
+  publishableKey: string // pk_live_… — safe in the browser / embed
+  secretKey: string // sk_live_… — server only
+}
+
 export interface MeterResult {
   ok: boolean
   remaining: number
@@ -37,13 +45,30 @@ export interface Store {
   addCredits(userId: string, amount: number): Promise<Account>
   /** Atomically deduct credits. ok=false (no change) if insufficient. */
   deduct(userId: string, cost: number): Promise<{ ok: boolean; remaining: number }>
-  /** List all accounts (for the dashboard / admin views). */
-  list(): Promise<Account[]>
+  /** List a project's accounts (for the dashboard / admin views). */
+  list(projectId: string): Promise<Account[]>
   /** Append a usage event (fire-and-forget analytics). */
   recordEvent(e: UsageEvent): Promise<void>
-  /** Aggregate usage analytics for the dashboard. */
-  analytics(): Promise<Analytics>
+  /** Aggregate a project's usage analytics for the dashboard. */
+  analytics(projectId: string): Promise<Analytics>
+  /** Create a new project with freshly-generated keys. */
+  createProject(name: string): Promise<Project>
+  /** Resolve a project from a publishable or secret key. */
+  getProjectByKey(key: string): Promise<Project | null>
 }
+
+// Internal account ids are namespaced "<projectId>:<userId>" so the same userId
+// can exist independently across projects. These helpers compose/split that key.
+export function scopedId(projectId: string, userId: string): string {
+  return `${projectId}:${userId}`
+}
+export function splitId(scoped: string): { projectId: string; userId: string } {
+  const i = scoped.indexOf(":")
+  if (i < 0) return { projectId: "default", userId: scoped }
+  return { projectId: scoped.slice(0, i), userId: scoped.slice(i + 1) }
+}
+
+export const DEFAULT_PROJECT_ID = "default"
 
 // Plans → entitlements. (Later: per-project, defined in a dashboard.)
 export const PLAN_ENTITLEMENTS: Record<string, string[]> = {

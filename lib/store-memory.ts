@@ -1,9 +1,20 @@
-import { type Account, type Analytics, type Store, type UsageEvent, STARTING_FREE_CREDITS } from "./types"
+import { randomBytes } from "crypto"
+import { type Account, type Analytics, type Project, type Store, type UsageEvent, DEFAULT_PROJECT_ID, STARTING_FREE_CREDITS, splitId } from "./types"
 
 // In-memory store — local dev / no DATABASE_URL. Resets on restart.
 export class MemoryStore implements Store {
   private accounts = new Map<string, Account>()
   private events: UsageEvent[] = []
+  private projects = new Map<string, Project>()
+
+  constructor() {
+    this.projects.set(DEFAULT_PROJECT_ID, {
+      id: DEFAULT_PROJECT_ID,
+      name: "Demo project",
+      publishableKey: "pk_live_demo",
+      secretKey: "sk_live_demo",
+    })
+  }
 
   private ensure(userId: string): Account {
     let account = this.accounts.get(userId)
@@ -38,20 +49,21 @@ export class MemoryStore implements Store {
     return { ok: true, remaining: a.credits }
   }
 
-  async list() {
-    return [...this.accounts.values()]
+  async list(projectId: string) {
+    return [...this.accounts.values()].filter((a) => splitId(a.userId).projectId === projectId)
   }
 
   async recordEvent(e: UsageEvent) {
     this.events.push(e)
   }
 
-  async analytics(): Promise<Analytics> {
+  async analytics(projectId: string): Promise<Analytics> {
     const now = new Date()
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime()
     const ts = (e: UsageEvent) => new Date(e.at).getTime()
-    const meter = this.events.filter((e) => e.kind === "meter")
-    const grant = this.events.filter((e) => e.kind === "grant")
+    const scoped = this.events.filter((e) => splitId(e.userId).projectId === projectId)
+    const meter = scoped.filter((e) => e.kind === "meter")
+    const grant = scoped.filter((e) => e.kind === "grant")
 
     const counts = new Map<string, number>()
     for (const e of meter) counts.set(e.name, (counts.get(e.name) ?? 0) + 1)
@@ -80,7 +92,26 @@ export class MemoryStore implements Store {
       creditsSoldThisMonth: grant.filter((e) => ts(e) >= monthStart).reduce((s, e) => s + e.amount, 0),
       topEvents,
       series,
-      recent: [...this.events].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 6),
+      recent: [...scoped].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 6),
     }
+  }
+
+  async createProject(name: string) {
+    const id = "proj_" + randomBytes(8).toString("hex")
+    const project: Project = {
+      id,
+      name: name || "Untitled project",
+      publishableKey: "pk_live_" + randomBytes(16).toString("hex"),
+      secretKey: "sk_live_" + randomBytes(24).toString("hex"),
+    }
+    this.projects.set(id, project)
+    return project
+  }
+
+  async getProjectByKey(key: string) {
+    for (const p of this.projects.values()) {
+      if (p.publishableKey === key || p.secretKey === key) return p
+    }
+    return null
   }
 }

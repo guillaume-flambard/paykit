@@ -26,6 +26,7 @@
     })()
 
   var base = script.getAttribute("data-base") || new URL(script.src).origin
+  var key = script.getAttribute("data-key") || ""
   var accent = script.getAttribute("data-accent") || "#34d399"
   var explicitUser = script.getAttribute("data-user")
 
@@ -52,7 +53,7 @@
   }
 
   function refresh() {
-    return api("/access?userId=" + encodeURIComponent(user)).then(function (a) {
+    return api("/access?userId=" + encodeURIComponent(user) + "&key=" + encodeURIComponent(key)).then(function (a) {
       account = a
       paint()
       return a
@@ -63,7 +64,7 @@
     return api("/meter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user, event: event || "usage" }),
+      body: JSON.stringify({ userId: user, event: event || "usage", key: key }),
     }).then(function (r) {
       refresh()
       return r
@@ -74,7 +75,7 @@
     return api("/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user, kind: "credits" }),
+      body: JSON.stringify({ userId: user, kind: "credits", key: key }),
     }).then(function (r) {
       if (r && r.url) window.location.href = r.url
       else alert("Buying credits isn't set up yet (no Stripe key).")

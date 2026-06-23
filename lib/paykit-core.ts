@@ -1,5 +1,5 @@
 // PayKit core — selects a store and exposes the billing engine.
-import { type Account, type Analytics, type MeterResult, type Store, PLAN_ENTITLEMENTS } from "./types"
+import { type Account, type Analytics, type MeterResult, type Project, type Store, DEFAULT_PROJECT_ID, PLAN_ENTITLEMENTS } from "./types"
 import { MemoryStore } from "./store-memory"
 import { PostgresStore } from "./store-postgres"
 
@@ -40,12 +40,23 @@ export async function setPlan(userId: string, plan: string): Promise<Account> {
   return a
 }
 
-export async function analytics(): Promise<Analytics> {
-  return store.analytics()
+export async function analytics(projectId = DEFAULT_PROJECT_ID): Promise<Analytics> {
+  return store.analytics(projectId)
 }
 
-export async function listAccounts(): Promise<Account[]> {
-  return store.list()
+export async function listAccounts(projectId = DEFAULT_PROJECT_ID): Promise<Account[]> {
+  return store.list(projectId)
+}
+
+export async function createProject(name: string): Promise<Project> {
+  return store.createProject(name)
+}
+
+/** Resolve a project id from an API key; falls back to the default project. */
+export async function projectFromKey(key: string | null | undefined): Promise<string> {
+  if (!key) return DEFAULT_PROJECT_ID
+  const p = await store.getProjectByKey(key)
+  return p ? p.id : DEFAULT_PROJECT_ID
 }
 
 export async function hasAccess(userId: string, plan: string): Promise<boolean> {

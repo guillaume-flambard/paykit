@@ -1,7 +1,10 @@
+import { randomBytes } from "crypto"
 import { Pool } from "pg"
-import { type Account, type Analytics, type Store, type UsageEvent, STARTING_FREE_CREDITS } from "./types"
+import { type Account, type Analytics, type Project, type Store, type UsageEvent, DEFAULT_PROJECT_ID, STARTING_FREE_CREDITS, splitId } from "./types"
 
 // Postgres store — used when DATABASE_URL is set. Deduct is atomic (race-safe).
+// Accounts & events are scoped per project via a project_id column; account ids
+// are namespaced "<projectId>:<userId>" so the same userId is isolated per project.
 export class PostgresStore implements Store {
   private pool: Pool
   private ready: Promise<void>
@@ -35,15 +38,41 @@ export class PostgresStore implements Store {
         created_at timestamptz not null default now()
       )
     `)
+    await this.pool.query(`
+      create table if not exists paykit_projects (
+        id text primary key,
+        name text not null,
+        publishable_key text unique not null,
+        secret_key text unique not null,
+        created_at timestamptz not null default now()
+      )
+    `)
+    // Idempotent multi-tenant migration: add project_id to the existing tables.
+    await this.pool.query(`alter table paykit_accounts add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
+    await this.pool.query(`alter table paykit_events add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
+    await this.pool.query(`create index if not exists paykit_accounts_project on paykit_accounts(project_id)`)
+    await this.pool.query(`create index if not exists paykit_events_project on paykit_events(project_id)`)
+    // Seed the fallback project so the demo key (and key-less calls) resolve.
+    await this.pool.query(
+      `insert into paykit_projects(id, name, publishable_key, secret_key)
+       values('${DEFAULT_PROJECT_ID}', 'Demo project', 'pk_live_demo', 'sk_live_demo') on conflict do nothing`,
+    )
   }
 
   private map(row: { user_id: string; plan: string; credits: number; entitlements: string[] }): Account {
     return { userId: row.user_id, plan: row.plan, credits: row.credits, entitlements: row.entitlements }
   }
 
+  private mapProject(row: { id: string; name: string; publishable_key: string; secret_key: string }): Project {
+    return { id: row.id, name: row.name, publishableKey: row.publishable_key, secretKey: row.secret_key }
+  }
+
   private async ensure(userId: string) {
     await this.ready
-    await this.pool.query(`insert into paykit_accounts(user_id) values($1) on conflict do nothing`, [userId])
+    await this.pool.query(`insert into paykit_accounts(user_id, project_id) values($1,$2) on conflict do nothing`, [
+      userId,
+      splitId(userId).projectId,
+    ])
   }
 
   async get(userId: string) {
@@ -55,10 +84,10 @@ export class PostgresStore implements Store {
   async setPlan(userId: string, plan: string, entitlements: string[]) {
     await this.ready
     const { rows } = await this.pool.query(
-      `insert into paykit_accounts(user_id, plan, entitlements) values($1,$2,$3::jsonb)
+      `insert into paykit_accounts(user_id, project_id, plan, entitlements) values($1,$2,$3,$4::jsonb)
        on conflict(user_id) do update set plan=excluded.plan, entitlements=excluded.entitlements
        returning *`,
-      [userId, plan, JSON.stringify(entitlements)],
+      [userId, splitId(userId).projectId, plan, JSON.stringify(entitlements)],
     )
     return this.map(rows[0])
   }
@@ -85,36 +114,38 @@ export class PostgresStore implements Store {
     return { ok: true, remaining: rows[0].credits }
   }
 
-  async list() {
+  async list(projectId: string) {
     await this.ready
-    const { rows } = await this.pool.query(`select * from paykit_accounts order by user_id limit 500`)
+    const { rows } = await this.pool.query(`select * from paykit_accounts where project_id=$1 order by user_id limit 500`, [projectId])
     return rows.map((r) => this.map(r))
   }
 
   async recordEvent(e: UsageEvent) {
     await this.ready
     await this.pool.query(
-      `insert into paykit_events(user_id, kind, name, amount, created_at) values($1,$2,$3,$4,$5)`,
-      [e.userId, e.kind, e.name, e.amount, e.at],
+      `insert into paykit_events(user_id, project_id, kind, name, amount, created_at) values($1,$2,$3,$4,$5,$6)`,
+      [e.userId, splitId(e.userId).projectId, e.kind, e.name, e.amount, e.at],
     )
   }
 
-  async analytics(): Promise<Analytics> {
+  async analytics(projectId: string): Promise<Analytics> {
     await this.ready
+    const p = [projectId]
     const [metered, sold, top, series, recent] = await Promise.all([
-      this.pool.query(`select count(*)::int c from paykit_events where kind='meter' and created_at >= date_trunc('month', now())`),
-      this.pool.query(`select coalesce(sum(amount),0)::int c from paykit_events where kind='grant' and created_at >= date_trunc('month', now())`),
-      this.pool.query(`select name, count(*)::int count from paykit_events where kind='meter' group by name order by count desc limit 5`),
-      this.pool.query(`
-        select to_char(current_date - gs, 'FMMM/FMDD') label,
-               coalesce(m.c, 0)::int metered,
-               coalesce(g.s, 0)::int granted
-        from generate_series(13, 0, -1) gs
-        left join (select created_at::date dt, count(*) c from paykit_events where kind='meter' group by 1) m on m.dt = current_date - gs
-        left join (select created_at::date dt, sum(amount) s from paykit_events where kind='grant' group by 1) g on g.dt = current_date - gs
-        order by gs desc
-      `),
-      this.pool.query(`select user_id, kind, name, amount, created_at from paykit_events order by created_at desc limit 6`),
+      this.pool.query(`select count(*)::int c from paykit_events where project_id=$1 and kind='meter' and created_at >= date_trunc('month', now())`, p),
+      this.pool.query(`select coalesce(sum(amount),0)::int c from paykit_events where project_id=$1 and kind='grant' and created_at >= date_trunc('month', now())`, p),
+      this.pool.query(`select name, count(*)::int count from paykit_events where project_id=$1 and kind='meter' group by name order by count desc limit 5`, p),
+      this.pool.query(
+        `select to_char(current_date - gs, 'FMMM/FMDD') label,
+                coalesce(m.c, 0)::int metered,
+                coalesce(g.s, 0)::int granted
+         from generate_series(13, 0, -1) gs
+         left join (select created_at::date dt, count(*) c from paykit_events where project_id=$1 and kind='meter' group by 1) m on m.dt = current_date - gs
+         left join (select created_at::date dt, sum(amount) s from paykit_events where project_id=$1 and kind='grant' group by 1) g on g.dt = current_date - gs
+         order by gs desc`,
+        p,
+      ),
+      this.pool.query(`select user_id, kind, name, amount, created_at from paykit_events where project_id=$1 order by created_at desc limit 6`, p),
     ])
     return {
       meteredThisMonth: metered.rows[0].c,
@@ -129,5 +160,23 @@ export class PostgresStore implements Store {
         at: new Date(r.created_at).toISOString(),
       })),
     }
+  }
+
+  async createProject(name: string) {
+    await this.ready
+    const id = "proj_" + randomBytes(8).toString("hex")
+    const publishableKey = "pk_live_" + randomBytes(16).toString("hex")
+    const secretKey = "sk_live_" + randomBytes(24).toString("hex")
+    const { rows } = await this.pool.query(
+      `insert into paykit_projects(id, name, publishable_key, secret_key) values($1,$2,$3,$4) returning *`,
+      [id, name || "Untitled project", publishableKey, secretKey],
+    )
+    return this.mapProject(rows[0])
+  }
+
+  async getProjectByKey(key: string) {
+    await this.ready
+    const { rows } = await this.pool.query(`select * from paykit_projects where publishable_key=$1 or secret_key=$1 limit 1`, [key])
+    return rows[0] ? this.mapProject(rows[0]) : null
   }
 }
