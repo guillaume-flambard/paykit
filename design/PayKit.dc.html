@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{ --ac:#34d399; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#0a0a0a; }
+  ::selection{ background:color-mix(in srgb, var(--ac) 32%, transparent); color:#fff; }
+  @keyframes pkUp{ from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:none;} }
+  @keyframes pkFade{ from{opacity:0;} to{opacity:1;} }
+  @keyframes pkPulse{ 0%,100%{opacity:1;} 50%{opacity:.4;} }
+  *::-webkit-scrollbar{ width:10px; height:10px; }
+  *::-webkit-scrollbar-thumb{ background:#262629; border-radius:6px; border:2px solid #0a0a0a; }
+  *::-webkit-scrollbar-track{ background:transparent; }
+</style>
+</helmet>
+<div data-screen-label="PayKit" style="min-height:100vh;background:#0a0a0a;color:#e4e4e7;font-family:'Geist',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;">
+
+  <!-- ===== PREVIEW CHROME ===== -->
+  <div style="position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;height:56px;padding:0 18px;background:rgba(10,10,10,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #1a1a1d;">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="7" fill="var(--ac)"/><path d="M14.6 5 L7.5 14.4 H11.9 L11 21 L18.5 11 H13.7 Z" fill="#08120c"/></svg>
+      <span style="font-weight:600;font-size:15.5px;color:#fafafa;letter-spacing:-0.025em;">PayKit</span>
+      <span style="font-size:9.5px;font-weight:600;color:#7c7c85;border:1px solid #2a2a2e;border-radius:5px;padding:1.5px 5px;letter-spacing:0.05em;">PREVIEW</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:3px;margin-left:6px;padding:3px;background:#121214;border:1px solid #1f1f22;border-radius:10px;">
+      <button onClick="{{ goLanding }}" style="{{ tabStyle.landing }}">Landing</button>
+      <button onClick="{{ goDashboard }}" style="{{ tabStyle.dashboard }}">Dashboard</button>
+      <button onClick="{{ goQuickstart }}" style="{{ tabStyle.quickstart }}">Quickstart</button>
+      <button onClick="{{ goWidget }}" style="{{ tabStyle.widget }}">Widget</button>
+    </div>
+    <div style="flex:1;"></div>
+    <div style="display:flex;align-items:center;gap:9px;">
+      <span style="font-size:11px;color:#6b6b73;font-weight:500;letter-spacing:0.01em;">Accent</span>
+      <div style="display:flex;gap:6px;">
+        <button onClick="{{ setEmerald }}" title="Emerald" style="width:23px;height:23px;border-radius:7px;background:#34d399;border:1.5px solid rgba(255,255,255,.16);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">
+          <sc-if value="{{ isEmerald }}" hint-placeholder-val="{{ true }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#08120c" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></sc-if>
+        </button>
+        <button onClick="{{ setIndigo }}" title="Indigo" style="width:23px;height:23px;border-radius:7px;background:#6366f1;border:1.5px solid rgba(255,255,255,.16);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">
+          <sc-if value="{{ isIndigo }}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></sc-if>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- ===================== LANDING ===================== -->
+    <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Landing — marketing" style="position:relative;overflow:hidden;">
+      <sc-if value="{{ showGrid }}" hint-placeholder-val="{{ true }}">
+        <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(58% 46% at 50% -8%, color-mix(in srgb, var(--ac) 15%, transparent), transparent 72%);"></div>
+        <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:58px 58px;mask-image:radial-gradient(72% 50% at 50% 0%,#000,transparent 78%);-webkit-mask-image:radial-gradient(72% 50% at 50% 0%,#000,transparent 78%);"></div>
+      </sc-if>
+
+      <!-- HERO -->
+      <section style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:clamp(54px,8vw,116px) 24px clamp(40px,5vw,68px);">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(440px,100%),1fr));gap:clamp(34px,5vw,66px);align-items:center;">
+          <div>
+            <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 13px 5px 9px;border:1px solid #232326;border-radius:999px;background:#101012;margin-bottom:26px;">
+              <span style="width:7px;height:7px;border-radius:50%;background:var(--ac);box-shadow:0 0 10px var(--ac);"></span>
+              <span style="font-size:12.5px;color:#b4b4bc;font-weight:500;letter-spacing:-0.01em;">Billing for AI apps — without the backend</span>
+            </div>
+            <h1 style="font-size:clamp(38px,5.3vw,62px);line-height:1.03;font-weight:600;letter-spacing:-0.038em;color:#fafafa;margin:0 0 22px;text-wrap:balance;">Get paid for your AI app<br>— in <span style="color:var(--ac);">10 minutes</span>.</h1>
+            <p style="font-size:clamp(16px,1.5vw,18.5px);line-height:1.62;color:#9a9aa2;max-width:520px;margin:0 0 32px;letter-spacing:-0.011em;">Add credits, usage-based billing, and subscriptions to any AI app. Drop-in React components and a metering API — charge per call and gate Pro features without building billing infrastructure.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+              <button onClick="{{ goQuickstart }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:10px;background:var(--ac);color:#06120c;font-size:15px;font-weight:600;border:none;cursor:pointer;letter-spacing:-0.01em;font-family:inherit;box-shadow:0 0 0 1px color-mix(in srgb,var(--ac) 55%,transparent),0 10px 34px color-mix(in srgb,var(--ac) 26%,transparent);transition:transform .13s ease,box-shadow .13s ease;" style-hover="transform:translateY(-1px);box-shadow:0 0 0 1px color-mix(in srgb,var(--ac) 70%,transparent),0 14px 40px color-mix(in srgb,var(--ac) 36%,transparent);">Start in 10 minutes <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+              <button onClick="{{ goDashboard }}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:10px;background:#131315;color:#e4e4e7;font-size:15px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;letter-spacing:-0.01em;font-family:inherit;transition:all .14s ease;" style-hover="background:#19191c;border-color:#39393f;">See the dashboard</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#6f6f77;letter-spacing:-0.005em;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              No credit card · Works with Next.js, Lovable, Bolt, v0 &amp; Cursor
+            </div>
+          </div>
+
+          <div style="position:relative;">
+            <div aria-hidden="true" style="position:absolute;inset:8% 10%;border-radius:24px;background:radial-gradient(60% 60% at 60% 30%, color-mix(in srgb,var(--ac) 30%,transparent), transparent 70%);filter:blur(46px);"></div>
+            <div style="position:relative;border:1px solid #232327;border-radius:14px;background:#0c0c0e;overflow:hidden;box-shadow:0 28px 64px -22px rgba(0,0,0,.85);">
+              <div style="display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid #1c1c20;background:#0e0e10;">
+                <span style="width:11px;height:11px;border-radius:50%;background:#2b2b30;"></span>
+                <span style="width:11px;height:11px;border-radius:50%;background:#2b2b30;"></span>
+                <span style="width:11px;height:11px;border-radius:50%;background:#2b2b30;"></span>
+                <span style="margin-left:7px;font-family:'Geist Mono',monospace;font-size:12px;color:#6b6b73;">app/page.tsx</span>
+                <div style="flex:1;"></div>
+                <button onClick="{{ copyHero }}" style="display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:#161619;border:1px solid #26262b;color:#9a9aa2;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .14s ease;" style-hover="border-color:#39393f;color:#cfcfd6;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ heroCopyLabel }}</button>
+              </div>
+              <pre style="margin:0;padding:18px 18px 20px;overflow-x:auto;font-family:'Geist Mono','SF Mono',monospace;font-size:12px;line-height:1.65;color:#cfcfd6;"><span style="color:#c084fc">import</span> &#123; PayKitProvider, Paywall, usePayKit &#125; <span style="color:#c084fc">from</span> <span style="color:#fbbf24">"@paykit/react"
+</span><span style="color:#c084fc">export default function</span> <span style="color:#7dd3fc">App</span>(&#123; user &#125;) &#123;
+  <span style="color:#c084fc">return</span> (
+    <span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">PayKitProvider</span> <span style="color:#cfcfd6">userId</span>=&#123;user.id&#125;<span style="color:#6b7280">&gt;</span>
+      <span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">ImageStudio</span> <span style="color:#6b7280">/&gt;</span>
+      <span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">Paywall</span> plan=<span style="color:#fbbf24">"pro"</span> fallback=&#123;<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">UpgradeCard</span> <span style="color:#6b7280">/&gt;</span>&#125;<span style="color:#6b7280">&gt;</span>
+        <span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">HDUpscale</span> <span style="color:#6b7280">/&gt;</span>   <span style="color:#565a66">// gated — Pro only</span>
+      <span style="color:#6b7280">&lt;/</span><span style="color:#7dd3fc">Paywall</span><span style="color:#6b7280">&gt;</span>
+    <span style="color:#6b7280">&lt;/</span><span style="color:#7dd3fc">PayKitProvider</span><span style="color:#6b7280">&gt;</span>
+  )
+&#125;
+<span style="color:#c084fc">function</span> <span style="color:#7dd3fc">ImageStudio</span>() &#123;
+  <span style="color:#c084fc">const</span> &#123; meter, credits &#125; = <span style="color:#7dd3fc">usePayKit</span>()
+  <span style="color:#c084fc">async function</span> <span style="color:#7dd3fc">generate</span>() &#123;
+    <span style="color:#c084fc">const</span> &#123; blocked &#125; = <span style="color:#c084fc">await</span> <span style="color:#7dd3fc">meter</span>(<span style="color:#fbbf24">"image_gen"</span>)  <span style="color:#565a66">// −1 credit</span>
+    <span style="color:#c084fc">if</span> (blocked) <span style="color:#c084fc">return</span> <span style="color:#7dd3fc">openBuyCredits</span>()
+    <span style="color:#7dd3fc">runModel</span>()
+  &#125;
+&#125;</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3-PAIN BLOCK -->
+      <section style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:clamp(28px,4vw,52px) 24px;">
+        <div style="border-top:1px solid #1a1a1d;border-bottom:1px solid #1a1a1d;padding:clamp(34px,4vw,52px) 0;">
+          <div style="font-size:12px;font-weight:600;color:var(--ac);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">The problem</div>
+          <h2 style="font-size:clamp(24px,3vw,34px);font-weight:600;letter-spacing:-0.03em;color:#ededed;margin:0 0 38px;max-width:680px;line-height:1.12;text-wrap:balance;">Billing is a tax on shipping your AI app.</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:28px;">
+            <div><div style="font-family:'Geist Mono',monospace;font-size:13px;color:#3f3f46;margin-bottom:10px;">01</div><p style="margin:0;font-size:15px;line-height:1.55;color:#a5a5ad;letter-spacing:-0.01em;">Weeks wiring Stripe, webhooks, customer portals, and a database just to take payment.</p></div>
+            <div><div style="font-family:'Geist Mono',monospace;font-size:13px;color:#3f3f46;margin-bottom:10px;">02</div><p style="margin:0;font-size:15px;line-height:1.55;color:#a5a5ad;letter-spacing:-0.01em;">Every model call costs you money — but metering usage per user is fiddly and easy to get wrong.</p></div>
+            <div><div style="font-family:'Geist Mono',monospace;font-size:13px;color:#3f3f46;margin-bottom:10px;">03</div><p style="margin:0;font-size:15px;line-height:1.55;color:#a5a5ad;letter-spacing:-0.01em;">Hard-coded paywalls leak revenue, frustrate users, and break the moment plans change.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:clamp(20px,3vw,40px) 24px clamp(36px,5vw,64px);">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:18px;">
+          <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:26px 24px;transition:all .18s ease;" style-hover="border-color:color-mix(in srgb,var(--ac) 42%,#1f1f23);transform:translateY(-3px);">
+            <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--ac) 13%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);margin-bottom:18px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 16.2 9.2"/><path d="M12 3v2"/></svg></div>
+            <h3 style="font-size:16.5px;font-weight:600;color:#fafafa;margin:0 0 9px;letter-spacing:-0.02em;">Credits &amp; usage billing</h3>
+            <p style="font-size:14px;line-height:1.55;color:#8f8f97;margin:0 0 16px;letter-spacing:-0.005em;">Meter every AI call with one function. Sell credit packs and bill for exactly what users consume.</p>
+            <code style="display:inline-block;font-family:'Geist Mono',monospace;font-size:12px;color:#cfcfd6;background:#131316;border:1px solid #232327;border-radius:7px;padding:5px 9px;"><span style="color:#7dd3fc">meter</span>(<span style="color:#fbbf24">"image_gen"</span>)</code>
+          </div>
+          <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:26px 24px;transition:all .18s ease;" style-hover="border-color:color-mix(in srgb,var(--ac) 42%,#1f1f23);transform:translateY(-3px);">
+            <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--ac) 13%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);margin-bottom:18px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+            <h3 style="font-size:16.5px;font-weight:600;color:#fafafa;margin:0 0 9px;letter-spacing:-0.02em;">Subscriptions &amp; paywall</h3>
+            <p style="font-size:14px;line-height:1.55;color:#8f8f97;margin:0 0 16px;letter-spacing:-0.005em;">Wrap any Pro feature in a component. Plans and entitlements gate access automatically.</p>
+            <code style="display:inline-block;font-family:'Geist Mono',monospace;font-size:12px;color:#cfcfd6;background:#131316;border:1px solid #232327;border-radius:7px;padding:5px 9px;"><span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">Paywall</span> plan=<span style="color:#fbbf24">"pro"</span><span style="color:#6b7280">&gt;</span></code>
+          </div>
+          <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:26px 24px;transition:all .18s ease;" style-hover="border-color:color-mix(in srgb,var(--ac) 42%,#1f1f23);transform:translateY(-3px);">
+            <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--ac) 13%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);margin-bottom:18px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.5 8-4.5"/><path d="M12 12v9"/></svg></div>
+            <h3 style="font-size:16.5px;font-weight:600;color:#fafafa;margin:0 0 9px;letter-spacing:-0.02em;">Drop-in, no backend</h3>
+            <p style="font-size:14px;line-height:1.55;color:#8f8f97;margin:0 0 16px;letter-spacing:-0.005em;">One provider on the client, our API runs the ledger. No tables, no webhooks, no infra to babysit.</p>
+            <code style="display:inline-block;font-family:'Geist Mono',monospace;font-size:12px;color:#cfcfd6;background:#131316;border:1px solid #232327;border-radius:7px;padding:5px 9px;"><span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">PayKitProvider</span> <span style="color:#6b7280">/&gt;</span></code>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRICING TEASER -->
+      <section style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:clamp(20px,3vw,40px) 24px clamp(36px,5vw,64px);">
+        <div style="text-align:center;margin-bottom:34px;">
+          <div style="font-size:12px;font-weight:600;color:var(--ac);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">Pricing</div>
+          <h2 style="font-size:clamp(24px,3vw,34px);font-weight:600;letter-spacing:-0.03em;color:#ededed;margin:0;line-height:1.12;">Free to start. One price to scale.</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:18px;max-width:720px;margin:0 auto;">
+          <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:28px 26px;">
+            <div style="font-size:14px;font-weight:600;color:#cfcfd6;letter-spacing:-0.01em;">Free</div>
+            <div style="display:flex;align-items:baseline;gap:4px;margin:14px 0 4px;"><span style="font-size:40px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;">$0</span></div>
+            <div style="font-size:13px;color:#6f6f77;margin-bottom:22px;">For prototyping &amp; your first users.</div>
+            <button onClick="{{ goQuickstart }}" style="width:100%;padding:10px;border-radius:9px;background:#131315;color:#e4e4e7;font-size:14px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;transition:all .14s ease;" style-hover="background:#19191c;border-color:#39393f;">Start free</button>
+            <div style="display:flex;flex-direction:column;gap:11px;margin-top:24px;">
+              <div style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#a5a5ad;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#52525b" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex:none;"><path d="M20 6 9 17l-5-5"/></svg>Up to 100 metered calls / mo</div>
+              <div style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#a5a5ad;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#52525b" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex:none;"><path d="M20 6 9 17l-5-5"/></svg>Credits, paywall &amp; React SDK</div>
+              <div style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#a5a5ad;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#52525b" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex:none;"><path d="M20 6 9 17l-5-5"/></svg>Test-mode keys</div>
+            </div>
+          </div>
+          <div style="position:relative;border:1px solid color-mix(in srgb,var(--ac) 40%,#1f1f23);border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 7%,#0c0c0e),#0c0c0e);padding:28px 26px;box-shadow:0 0 0 1px color-mix(in srgb,var(--ac) 18%,transparent),0 18px 50px -24px color-mix(in srgb,var(--ac) 50%,transparent);">
+            <div style="position:absolute;top:18px;right:18px;font-size:10.5px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 13%,transparent);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);border-radius:999px;padding:3px 9px;letter-spacing:0.03em;">POPULAR</div>
+            <div style="font-size:14px;font-weight:600;color:var(--ac);letter-spacing:-0.01em;">Launch</div>
+            <div style="display:flex;align-items:baseline;gap:5px;margin:14px 0 4px;"><span style="font-size:40px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;">$19</span><span style="font-size:14px;color:#8f8f97;">/mo</span></div>
+            <div style="font-size:13px;color:#6f6f77;margin-bottom:22px;">Everything you need to charge for real.</div>
+            <button onClick="{{ goQuickstart }}" style="width:100%;padding:10px;border-radius:9px;background:var(--ac);color:#06120c;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 28%,transparent);transition:transform .12s ease;" style-hover="transform:translateY(-1px);">Get started</button>
+            <div style="display:flex;flex-direction:column;gap:11px;margin-top:24px;">
+              <div style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#cfcfd6;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex:none;"><path d="M20 6 9 17l-5-5"/></svg>Unlimited metered calls</div>
+              <div style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#cfcfd6;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex:none;"><path d="M20 6 9 17l-5-5"/></svg>Credit packs &amp; subscriptions</div>
+              <div style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#cfcfd6;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex:none;"><path d="M20 6 9 17l-5-5"/></svg>Live Stripe payouts &amp; webhooks</div>
+              <div style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#cfcfd6;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;flex:none;"><path d="M20 6 9 17l-5-5"/></svg>Usage analytics &amp; cost guardrails</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WAITLIST CTA -->
+      <section style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:clamp(20px,3vw,40px) 24px clamp(48px,6vw,80px);">
+        <div style="position:relative;overflow:hidden;border:1px solid #1f1f23;border-radius:18px;background:#0b0b0d;padding:clamp(36px,5vw,56px) clamp(24px,4vw,48px);text-align:center;">
+          <div aria-hidden="true" style="position:absolute;inset:0;background:radial-gradient(50% 120% at 50% 0%,color-mix(in srgb,var(--ac) 12%,transparent),transparent 70%);"></div>
+          <div style="position:relative;">
+            <h2 style="font-size:clamp(26px,3.4vw,38px);font-weight:600;letter-spacing:-0.032em;color:#fafafa;margin:0 0 12px;line-height:1.1;text-wrap:balance;">Start charging for your AI app.</h2>
+            <p style="font-size:15.5px;color:#9a9aa2;margin:0 auto 28px;max-width:440px;line-height:1.55;">Join the waitlist — we'll email you when your workspace is ready.</p>
+            <sc-if value="{{ waitJoined }}" hint-placeholder-val="{{ false }}">
+              <div style="display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:11px;background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);color:var(--ac);font-size:15px;font-weight:550;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>You're on the list — check your inbox.</div>
+            </sc-if>
+            <sc-if value="{{ waitIdle }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:480px;margin:0 auto;">
+                <input value="{{ waitEmail }}" onInput="{{ onWaitEmail }}" placeholder="you@yourstartup.com" style="flex:1;min-width:220px;padding:12px 15px;border-radius:10px;background:#0e0e10;border:1px solid #2a2a2e;color:#fafafa;font-size:14.5px;font-family:inherit;outline:none;transition:border-color .14s ease;" style-focus="border-color:color-mix(in srgb,var(--ac) 60%,transparent);">
+                <button onClick="{{ joinWaitlist }}" style="padding:12px 22px;border-radius:10px;background:var(--ac);color:#06120c;font-size:14.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 26%,transparent);transition:transform .12s ease;" style-hover="transform:translateY(-1px);">Join the waitlist</button>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer style="position:relative;z-index:1;border-top:1px solid #1a1a1d;">
+        <div style="max-width:1200px;margin:0 auto;padding:26px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <svg width="22" height="22" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="7" fill="var(--ac)"/><path d="M14.6 5 L7.5 14.4 H11.9 L11 21 L18.5 11 H13.7 Z" fill="#08120c"/></svg>
+            <span style="font-weight:600;font-size:14px;color:#cfcfd6;letter-spacing:-0.02em;">PayKit</span>
+            <span style="font-size:12.5px;color:#5b5b63;margin-left:6px;">© 2026</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:22px;font-size:13px;color:#7c7c85;">
+            <span style="cursor:pointer;transition:color .14s;" style-hover="color:#cfcfd6;">Docs</span>
+            <span style="cursor:pointer;transition:color .14s;" style-hover="color:#cfcfd6;">Pricing</span>
+            <span style="cursor:pointer;transition:color .14s;" style-hover="color:#cfcfd6;">Changelog</span>
+            <span style="cursor:pointer;transition:color .14s;" style-hover="color:#cfcfd6;">GitHub</span>
+            <span style="cursor:pointer;transition:color .14s;" style-hover="color:#cfcfd6;">Privacy</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    </sc-if>
+    <!-- ===================== DASHBOARD ===================== -->
+    <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Dashboard" style="display:flex;min-height:calc(100vh - 56px);background:#0a0a0a;">
+      <!-- SIDEBAR -->
+      <aside style="width:236px;flex:none;border-right:1px solid #18181b;background:#0b0b0d;display:flex;flex-direction:column;padding:14px 12px;">
+        <button style="display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;background:#111114;border:1px solid #1f1f23;cursor:pointer;width:100%;text-align:left;margin-bottom:14px;font-family:inherit;" style-hover="background:#161619;">
+          <div style="width:27px;height:27px;border-radius:7px;flex:none;background:color-mix(in srgb,var(--ac) 16%,transparent);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);display:flex;align-items:center;justify-content:center;color:var(--ac);font-weight:700;font-size:13px;font-family:'Geist Mono',monospace;">V</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;">Vellum AI</div><div style="font-size:11px;color:#6b6b73;">Pro workspace</div></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <button onClick="{{ navOverview }}" style="{{ navStyle.overview }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</button>
+          <button onClick="{{ navPlans }}" style="{{ navStyle.plans }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>Plans</button>
+          <button onClick="{{ navUsage }}" style="{{ navStyle.usage }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-4 4 3 5-7"/></svg>Usage</button>
+          <button onClick="{{ navCustomers }}" style="{{ navStyle.customers }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.5"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13A4 4 0 0 1 16 11"/></svg>Customers</button>
+          <button onClick="{{ navKeys }}" style="{{ navStyle.keys }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8-8"/><path d="m16.5 6.5 2 2"/><path d="m19.5 3.5 2 2"/></svg>API keys</button>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <button onClick="{{ navSettings }}" style="{{ navStyle.settings }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="20" cy="14" r="2"/></svg>Settings</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;padding:10px 8px 2px;border-top:1px solid #18181b;margin-top:8px;">
+          <div style="width:28px;height:28px;border-radius:50%;flex:none;background:#1c1c20;border:1px solid #2a2a2e;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#cfcfd6;">MC</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:550;color:#e4e4e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">maya<span>@</span>vellum.ai</div><div style="font-size:11px;color:#6b6b73;">Owner</div></div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+        <header style="display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid #18181b;background:rgba(10,10,10,.6);">
+          <h1 style="font-size:18px;font-weight:600;color:#fafafa;letter-spacing:-0.02em;margin:0;">{{ dashTitle }}</h1>
+          <span style="font-size:11px;font-weight:600;color:#fcd34d;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.22);border-radius:999px;padding:3px 9px;letter-spacing:0.02em;">Test mode</span>
+          <div style="flex:1;"></div>
+          <div style="display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;background:#0e0e10;border:1px solid #1f1f23;color:#76767e;font-size:13px;min-width:180px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search…</div>
+          <button style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:transform .12s ease;" style-hover="transform:translateY(-1px);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Create</button>
+        </header>
+
+        <div style="flex:1;padding:24px 28px 40px;">
+
+          <!-- OVERVIEW -->
+          <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:14px;margin-bottom:18px;">
+            <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:17px 18px 15px;">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5"/></svg><span style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;">MRR</span></div>
+              <div style="font-size:26px;font-weight:600;color:#fafafa;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;">$4,820</div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:7px;font-size:12.5px;color:#6ee7b7;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>12.4%<span style="color:#5b5b63;font-weight:450;">vs last mo</span></div>
+            </div>
+            <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:17px 18px 15px;">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.5"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg><span style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;">Active subs</span></div>
+              <div style="font-size:26px;font-weight:600;color:#fafafa;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;">142</div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:7px;font-size:12.5px;color:#6ee7b7;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>+8<span style="color:#5b5b63;font-weight:450;">this mo</span></div>
+            </div>
+            <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:17px 18px 15px;">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg><span style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;">Credits sold</span></div>
+              <div style="font-size:26px;font-weight:600;color:#fafafa;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;">38,400</div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:7px;font-size:12.5px;color:#6ee7b7;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>+5.2k<span style="color:#5b5b63;font-weight:450;">this mo</span></div>
+            </div>
+            <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:17px 18px 15px;">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 5 19"/><circle cx="7.5" cy="7.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg><span style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;">AI cost</span></div>
+              <div style="font-size:26px;font-weight:600;color:#fafafa;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;">$1,120</div>
+              <div style="display:flex;align-items:center;gap:5px;margin-top:7px;font-size:12.5px;color:#fcd34d;">23%<span style="color:#5b5b63;font-weight:450;">of revenue</span></div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:14px;align-items:stretch;">
+            <div style="grid-column:span 2;min-width:0;border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+                <div><div style="font-size:14.5px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;">Revenue &amp; AI cost</div><div style="font-size:12px;color:#6b6b73;margin-top:2px;">Last 12 months</div></div>
+                <div style="display:flex;gap:16px;">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#a5a5ad;"><span style="width:9px;height:9px;border-radius:2px;background:var(--ac);"></span>Revenue</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#a5a5ad;"><span style="width:9px;height:9px;border-radius:2px;background:#3f3f46;"></span>AI cost</div>
+                </div>
+              </div>
+              <svg viewBox="0 0 720 200" preserveAspectRatio="none" style="width:100%;height:190px;display:block;overflow:visible;">
+                <defs><linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--ac)" stop-opacity="0.28"/><stop offset="100%" stop-color="var(--ac)" stop-opacity="0"/></linearGradient></defs>
+                <line x1="0" y1="37.5" x2="720" y2="37.5" stroke="#ffffff0a" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <line x1="0" y1="75" x2="720" y2="75" stroke="#ffffff0a" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <line x1="0" y1="112.5" x2="720" y2="112.5" stroke="#ffffff0a" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <line x1="0" y1="150" x2="720" y2="150" stroke="#ffffff0a" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <path d="M10 135 L74 129 L137 120 L201 123 L264 108 L328 97 L391 90 L455 81 L518 72 L582 63 L645 48 L709 37 L709 180 L10 180 Z" fill="url(#revFill)"/>
+                <polyline points="10,135 74,129 137,120 201,123 264,108 328,97 391,90 455,81 518,72 582,63 645,48 709,37" fill="none" stroke="var(--ac)" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+                <polyline points="10,162 74,160 137,157 201,159 264,153 328,150 391,148 455,145 518,144 582,142 645,139 709,136" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+              </svg>
+              <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:10.5px;color:#5b5b63;font-variant-numeric:tabular-nums;"><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span></div>
+            </div>
+
+            <div style="min-width:0;border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;">
+              <div style="font-size:14.5px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;margin-bottom:16px;">Recent activity</div>
+              <div style="display:flex;flex-direction:column;gap:14px;">
+                <div style="display:flex;gap:11px;align-items:flex-start;"><span style="width:7px;height:7px;border-radius:50%;background:var(--ac);margin-top:6px;flex:none;"></span><div style="min-width:0;"><div style="font-size:13px;color:#e4e4e7;line-height:1.4;">Maya Chen upgraded to <span style="color:var(--ac);font-weight:550;">Pro</span></div><div style="font-size:11.5px;color:#6b6b73;margin-top:2px;">+$19/mo · 2h ago</div></div></div>
+                <div style="display:flex;gap:11px;align-items:flex-start;"><span style="width:7px;height:7px;border-radius:50%;background:#6ee7b7;margin-top:6px;flex:none;"></span><div style="min-width:0;"><div style="font-size:13px;color:#e4e4e7;line-height:1.4;">devon<span>@</span>sketchpad.dev bought 500 credits</div><div style="font-size:11.5px;color:#6b6b73;margin-top:2px;">+$39.00 · 5h ago</div></div></div>
+                <div style="display:flex;gap:11px;align-items:flex-start;"><span style="width:7px;height:7px;border-radius:50%;background:#93c5fd;margin-top:6px;flex:none;"></span><div style="min-width:0;"><div style="font-size:13px;color:#e4e4e7;line-height:1.4;">New signup · lena<span>@</span>northsketch.com</div><div style="font-size:11.5px;color:#6b6b73;margin-top:2px;">Free plan · 8h ago</div></div></div>
+                <div style="display:flex;gap:11px;align-items:flex-start;"><span style="width:7px;height:7px;border-radius:50%;background:#fcd34d;margin-top:6px;flex:none;"></span><div style="min-width:0;"><div style="font-size:13px;color:#e4e4e7;line-height:1.4;">omar<span>@</span>castfm.ai payment failed</div><div style="font-size:11.5px;color:#6b6b73;margin-top:2px;">Past due · 1d ago</div></div></div>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- PLANS -->
+          <sc-if value="{{ isPlans }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:880px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:13px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;">Plans</div></div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:34px;">
+              <div style="display:flex;align-items:center;gap:16px;border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:16px 20px;">
+                <div style="flex:1;"><div style="font-size:15px;font-weight:600;color:#fafafa;">Free</div><div style="font-size:12.5px;color:#6b6b73;margin-top:2px;">5 credits included · no entitlements</div></div>
+                <div style="font-size:15px;font-weight:600;color:#cfcfd6;font-variant-numeric:tabular-nums;">$0<span style="font-size:12px;color:#6b6b73;font-weight:400;">/mo</span></div>
+                <button style="padding:6px 12px;border-radius:8px;background:#131316;border:1px solid #2a2a2e;color:#a5a5ad;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;" style-hover="border-color:#39393f;color:#e4e4e7;">Edit</button>
+              </div>
+              <div style="border:1px solid color-mix(in srgb,var(--ac) 35%,#1f1f23);border-radius:12px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 5%,#0c0c0e),#0c0c0e);padding:20px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;"><div style="font-size:15px;font-weight:600;color:var(--ac);">Pro</div><span style="font-size:10.5px;font-weight:600;color:#76767e;border:1px solid #2a2a2e;border-radius:5px;padding:1px 6px;">EDITING</span></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:14px;">
+                  <label style="display:block;"><span style="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;">Plan name</span><input defaultValue="Pro" style="width:100%;padding:8px 11px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:#fafafa;font-size:13.5px;font-family:inherit;outline:none;" style-focus="border-color:color-mix(in srgb,var(--ac) 60%,transparent);"></label>
+                  <label style="display:block;"><span style="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;">Price / mo (USD)</span><input defaultValue="19" style="width:100%;padding:8px 11px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:#fafafa;font-size:13.5px;font-family:'Geist Mono',monospace;outline:none;" style-focus="border-color:color-mix(in srgb,var(--ac) 60%,transparent);"></label>
+                  <label style="display:block;"><span style="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;">Included credits / mo</span><input defaultValue="500" style="width:100%;padding:8px 11px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:#fafafa;font-size:13.5px;font-family:'Geist Mono',monospace;outline:none;" style-focus="border-color:color-mix(in srgb,var(--ac) 60%,transparent);"></label>
+                </div>
+                <div style="margin-top:16px;"><span style="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:9px;">Entitlements</span><div style="display:flex;flex-wrap:wrap;gap:8px;"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);border-radius:7px;padding:4px 10px;">pro</span><span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);border-radius:7px;padding:4px 10px;">hd_upscale</span><span style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:#76767e;background:#131316;border:1px dashed #2a2a2e;border-radius:7px;padding:4px 10px;cursor:pointer;">+ Add</span></div></div>
+                <div style="display:flex;gap:10px;margin-top:20px;"><button style="padding:8px 16px;border-radius:8px;background:var(--ac);color:#06120c;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit;">Save plan</button><button style="padding:8px 16px;border-radius:8px;background:transparent;color:#a5a5ad;font-size:13px;font-weight:500;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;">Cancel</button></div>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:13px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;">Credit packs</div><button style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ac);background:transparent;border:none;cursor:pointer;font-family:inherit;font-weight:550;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New pack</button></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:12px;">
+              <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px;"><div style="font-size:22px;font-weight:600;color:#fafafa;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">100</div><div style="font-size:12px;color:#6b6b73;margin:2px 0 12px;">credits</div><div style="font-size:15px;font-weight:600;color:var(--ac);font-variant-numeric:tabular-nums;">$9</div></div>
+              <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px;"><div style="font-size:22px;font-weight:600;color:#fafafa;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">500</div><div style="font-size:12px;color:#6b6b73;margin:2px 0 12px;">credits</div><div style="font-size:15px;font-weight:600;color:var(--ac);font-variant-numeric:tabular-nums;">$39</div></div>
+              <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px;"><div style="font-size:22px;font-weight:600;color:#fafafa;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">2,000</div><div style="font-size:12px;color:#6b6b73;margin:2px 0 12px;">credits</div><div style="font-size:15px;font-weight:600;color:var(--ac);font-variant-numeric:tabular-nums;">$129</div></div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- API KEYS -->
+          <sc-if value="{{ isKeys }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:760px;">
+            <p style="font-size:13.5px;color:#8f8f97;margin:0 0 24px;line-height:1.55;max-width:560px;">Use your <span style="color:#cfcfd6;">publishable</span> key in the browser SDK and your <span style="color:#cfcfd6;">secret</span> key only on your server. Rotate immediately if a key is exposed.</p>
+            <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px 20px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><span style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;">Publishable key</span><span style="font-size:11px;color:#6b6b73;">Safe in client code</span></div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <code style="flex:1;min-width:0;font-family:'Geist Mono',monospace;font-size:13px;color:#cfcfd6;background:#0e0e10;border:1px solid #1f1f23;border-radius:8px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">pk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6</code>
+                <button onClick="{{ copyPub }}" style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:8px;background:#131316;border:1px solid #2a2a2e;color:#a5a5ad;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .14s;" style-hover="border-color:#39393f;color:#e4e4e7;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ pubCopyLabel }}</button>
+              </div>
+            </div>
+            <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px 20px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><span style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;">Secret key</span><span style="font-size:11px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:5px;padding:1px 7px;">Server only</span></div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <code style="flex:1;min-width:200px;font-family:'Geist Mono',monospace;font-size:13px;color:#cfcfd6;background:#0e0e10;border:1px solid #1f1f23;border-radius:8px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ secretShown }}</code>
+                <div style="display:flex;gap:8px;">
+                  <button onClick="{{ toggleSecret }}" style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:8px;background:#131316;border:1px solid #2a2a2e;color:#a5a5ad;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .14s;" style-hover="border-color:#39393f;color:#e4e4e7;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>{{ secretLabel }}</button>
+                  <button onClick="{{ copySecret }}" style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:8px;background:#131316;border:1px solid #2a2a2e;color:#a5a5ad;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .14s;" style-hover="border-color:#39393f;color:#e4e4e7;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ secretCopyLabel }}</button>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid #18181b;"><span style="font-size:12px;color:#6b6b73;">Last rotated 34 days ago</span><button style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);color:#fca5a5;font-size:12.5px;font-weight:550;cursor:pointer;font-family:inherit;transition:all .14s;" style-hover="background:rgba(239,68,68,.14);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>Rotate key</button></div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- CUSTOMERS -->
+          <sc-if value="{{ isCustomers }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;background:#0e0e10;border:1px solid #1f1f23;color:#76767e;font-size:13px;min-width:200px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Search customers…</div>
+              <div style="flex:1;"></div>
+              <span style="font-size:12.5px;color:#6b6b73;">8 customers · 142 total</span>
+            </div>
+            <div style="border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;overflow:hidden;">
+              <div style="display:grid;grid-template-columns:2fr 0.9fr 0.9fr 1fr 0.8fr;gap:12px;padding:11px 18px;border-bottom:1px solid #18181b;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;">
+                <span>Customer</span><span>Plan</span><span style="text-align:right;">Credits</span><span>Status</span><span style="text-align:right;">Joined</span>
+              </div>
+              <sc-for list="{{ customers }}" as="c" hint-placeholder-count="8">
+                <div style="display:grid;grid-template-columns:2fr 0.9fr 0.9fr 1fr 0.8fr;gap:12px;padding:13px 18px;border-bottom:1px solid #141417;align-items:center;transition:background .12s;" style-hover="background:#101013;">
+                  <div style="display:flex;align-items:center;gap:11px;min-width:0;"><div style="width:30px;height:30px;border-radius:50%;flex:none;background:#1a1a1e;border:1px solid #2a2a2e;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#a5a5ad;">{{ c.initials }}</div><div style="min-width:0;"><div style="font-size:13.5px;font-weight:550;color:#e4e4e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.name }}</div><div style="font-size:11.5px;color:#6b6b73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.emailA }}<span>@</span>{{ c.emailB }}</div></div></div>
+                  <div><span style="{{ c.planStyle }}">{{ c.plan }}</span></div>
+                  <div style="text-align:right;font-size:13px;color:#cfcfd6;font-variant-numeric:tabular-nums;font-family:'Geist Mono',monospace;">{{ c.credits }}</div>
+                  <div><span style="{{ c.statusStyle }}"><span style="{{ c.dotStyle }}"></span>{{ c.statusLabel }}</span></div>
+                  <div style="text-align:right;font-size:12.5px;color:#76767e;">{{ c.joined }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- USAGE -->
+          <sc-if value="{{ isUsage }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:880px;">
+            <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;"><div style="font-size:14.5px;font-weight:600;color:#fafafa;">Metered calls</div><div style="font-size:13px;color:#6b6b73;">38,400 this month</div></div>
+              <svg viewBox="0 0 720 200" preserveAspectRatio="none" style="width:100%;height:170px;display:block;">
+                <defs><linearGradient id="useFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--ac)" stop-opacity="0.28"/><stop offset="100%" stop-color="var(--ac)" stop-opacity="0"/></linearGradient></defs>
+                <line x1="0" y1="50" x2="720" y2="50" stroke="#ffffff0a" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <line x1="0" y1="100" x2="720" y2="100" stroke="#ffffff0a" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <line x1="0" y1="150" x2="720" y2="150" stroke="#ffffff0a" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <path d="M10 150 L70 140 L130 145 L190 120 L250 128 L310 100 L370 108 L430 78 L490 86 L550 60 L610 52 L670 40 L709 30 L709 180 L10 180 Z" fill="url(#useFill)"/>
+                <polyline points="10,150 70,140 130,145 190,120 250,128 310,100 370,108 430,78 490,86 550,60 610,52 670,40 709,30" fill="none" stroke="var(--ac)" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+              </svg>
+            </div>
+            <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;">
+              <div style="font-size:14.5px;font-weight:600;color:#fafafa;margin-bottom:18px;">Top events</div>
+              <div style="display:flex;flex-direction:column;gap:16px;">
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;"><span style="color:#e4e4e7;font-family:'Geist Mono',monospace;">image_gen</span><span style="color:#76767e;font-variant-numeric:tabular-nums;">24,100</span></div><div style="height:7px;border-radius:4px;background:#16161a;overflow:hidden;"><div style="height:100%;width:63%;background:var(--ac);border-radius:4px;"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;"><span style="color:#e4e4e7;font-family:'Geist Mono',monospace;">chat_completion</span><span style="color:#76767e;font-variant-numeric:tabular-nums;">9,820</span></div><div style="height:7px;border-radius:4px;background:#16161a;overflow:hidden;"><div style="height:100%;width:26%;background:var(--ac);border-radius:4px;opacity:.75;"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;"><span style="color:#e4e4e7;font-family:'Geist Mono',monospace;">hd_upscale</span><span style="color:#76767e;font-variant-numeric:tabular-nums;">4,480</span></div><div style="height:7px;border-radius:4px;background:#16161a;overflow:hidden;"><div style="height:100%;width:12%;background:var(--ac);border-radius:4px;opacity:.55;"></div></div></div>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- SETTINGS -->
+          <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:600px;display:flex;flex-direction:column;gap:18px;">
+            <label style="display:block;"><span style="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:7px;">Workspace name</span><input defaultValue="Vellum AI" style="width:100%;padding:9px 12px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:#fafafa;font-size:14px;font-family:inherit;outline:none;" style-focus="border-color:color-mix(in srgb,var(--ac) 60%,transparent);"></label>
+            <label style="display:block;"><span style="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:7px;">Billing email</span><input defaultValue="billing@vellum.ai" style="width:100%;padding:9px 12px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:#fafafa;font-size:14px;font-family:inherit;outline:none;" style-focus="border-color:color-mix(in srgb,var(--ac) 60%,transparent);"></label>
+            <label style="display:block;"><span style="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:7px;">Webhook URL</span><input defaultValue="https://api.vellum.ai/paykit/webhook" style="width:100%;padding:9px 12px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:#cfcfd6;font-size:13.5px;font-family:'Geist Mono',monospace;outline:none;" style-focus="border-color:color-mix(in srgb,var(--ac) 60%,transparent);"></label>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid #1f1f23;border-radius:10px;background:#0c0c0e;"><div><div style="font-size:13.5px;font-weight:550;color:#e4e4e7;">Block calls when out of credits</div><div style="font-size:12px;color:#6b6b73;margin-top:2px;">Return <span style="font-family:'Geist Mono',monospace;">blocked: true</span> instead of charging overage</div></div><div style="width:38px;height:22px;border-radius:999px;background:var(--ac);position:relative;flex:none;cursor:pointer;"><div style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#06120c;"></div></div></div>
+            <div><button style="padding:9px 18px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;">Save changes</button></div>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+    </sc-if>
+    <!-- ===================== QUICKSTART ===================== -->
+    <sc-if value="{{ isQuickstart }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Quickstart" style="position:relative;min-height:calc(100vh - 56px);overflow:hidden;">
+      <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(50% 36% at 50% -4%, color-mix(in srgb, var(--ac) 12%, transparent), transparent 72%);"></div>
+      <div style="position:relative;z-index:1;max-width:680px;margin:0 auto;padding:clamp(40px,5vw,72px) 24px 64px;">
+        <div style="text-align:center;margin-bottom:38px;">
+          <div style="font-size:12px;font-weight:600;color:var(--ac);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:13px;">Quickstart</div>
+          <h1 style="font-size:clamp(28px,4vw,40px);font-weight:600;letter-spacing:-0.034em;color:#fafafa;margin:0 0 12px;line-height:1.08;">Add billing in 10 minutes</h1>
+          <p style="font-size:15.5px;color:#9a9aa2;margin:0 auto 20px;max-width:420px;line-height:1.55;">Three steps. Copy each block into your app — we'll check them off as you go.</p>
+          <div style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#76767e;font-variant-numeric:tabular-nums;"><span style="font-weight:600;color:var(--ac);">{{ qsProgress }}</span> / 3 steps done</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <!-- Step 1 -->
+          <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;">
+            <div style="display:flex;align-items:center;gap:13px;margin-bottom:6px;">
+              <sc-if value="{{ qsInstallDone }}" hint-placeholder-val="{{ false }}"><div style="width:30px;height:30px;border-radius:50%;flex:none;background:var(--ac);display:flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06120c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div></sc-if>
+              <sc-if value="{{ qsInstallIdle }}" hint-placeholder-val="{{ true }}"><div style="width:30px;height:30px;border-radius:50%;flex:none;border:1px solid #2a2a2e;background:#131316;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#a5a5ad;font-family:'Geist Mono',monospace;">1</div></sc-if>
+              <h3 style="font-size:16px;font-weight:600;color:#fafafa;margin:0;letter-spacing:-0.015em;">Install the SDK</h3>
+            </div>
+            <p style="font-size:13.5px;color:#8f8f97;margin:0 0 14px;line-height:1.5;">Add the React client and the Node helper to your project.</p>
+            <div style="position:relative;border:1px solid #1f1f23;border-radius:10px;background:#0e0e10;padding:12px 14px;">
+              <button onClick="{{ qsCopyInstall }}" style="position:absolute;top:9px;right:9px;display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:#161619;border:1px solid #26262b;color:#9a9aa2;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .14s;" style-hover="border-color:#39393f;color:#cfcfd6;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ qsInstallLabel }}</button>
+              <code style="display:block;font-family:'Geist Mono',monospace;font-size:13px;line-height:1.5;color:#cfcfd6;overflow-x:auto;white-space:pre;padding-right:64px;"><span style="color:#565a66">$</span> npm install <span style="color:#fbbf24">@paykit/react @paykit/node</span></code>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;">
+            <div style="display:flex;align-items:center;gap:13px;margin-bottom:6px;">
+              <sc-if value="{{ qsKeyDone }}" hint-placeholder-val="{{ false }}"><div style="width:30px;height:30px;border-radius:50%;flex:none;background:var(--ac);display:flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06120c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div></sc-if>
+              <sc-if value="{{ qsKeyIdle }}" hint-placeholder-val="{{ true }}"><div style="width:30px;height:30px;border-radius:50%;flex:none;border:1px solid #2a2a2e;background:#131316;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#a5a5ad;font-family:'Geist Mono',monospace;">2</div></sc-if>
+              <h3 style="font-size:16px;font-weight:600;color:#fafafa;margin:0;letter-spacing:-0.015em;">Add your secret key</h3>
+            </div>
+            <p style="font-size:13.5px;color:#8f8f97;margin:0 0 14px;line-height:1.5;">Drop your key into <span style="font-family:'Geist Mono',monospace;color:#cfcfd6;">.env.local</span> — server-side only, never in the browser.</p>
+            <div style="position:relative;border:1px solid #1f1f23;border-radius:10px;background:#0e0e10;padding:12px 14px;">
+              <button onClick="{{ qsCopyKey }}" style="position:absolute;top:9px;right:9px;display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:#161619;border:1px solid #26262b;color:#9a9aa2;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .14s;" style-hover="border-color:#39393f;color:#cfcfd6;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ qsKeyLabel }}</button>
+              <code style="display:block;font-family:'Geist Mono',monospace;font-size:13px;line-height:1.5;color:#cfcfd6;overflow-x:auto;white-space:pre;padding-right:64px;"><span style="color:#7dd3fc">PAYKIT_SECRET_KEY</span>=<span style="color:#fbbf24">sk_live_a3f9C2k8Lp0Qe7Rt5</span></code>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;">
+            <div style="display:flex;align-items:center;gap:13px;margin-bottom:6px;">
+              <sc-if value="{{ qsMeterDone }}" hint-placeholder-val="{{ false }}"><div style="width:30px;height:30px;border-radius:50%;flex:none;background:var(--ac);display:flex;align-items:center;justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06120c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div></sc-if>
+              <sc-if value="{{ qsMeterIdle }}" hint-placeholder-val="{{ true }}"><div style="width:30px;height:30px;border-radius:50%;flex:none;border:1px solid #2a2a2e;background:#131316;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#a5a5ad;font-family:'Geist Mono',monospace;">3</div></sc-if>
+              <h3 style="font-size:16px;font-weight:600;color:#fafafa;margin:0;letter-spacing:-0.015em;">Meter your first call</h3>
+            </div>
+            <p style="font-size:13.5px;color:#8f8f97;margin:0 0 14px;line-height:1.5;">Wrap any AI call. If <span style="font-family:'Geist Mono',monospace;color:#cfcfd6;">blocked</span> comes back true, the user is out of credits.</p>
+            <div style="position:relative;border:1px solid #1f1f23;border-radius:10px;background:#0e0e10;padding:12px 14px;">
+              <button onClick="{{ qsCopyMeter }}" style="position:absolute;top:9px;right:9px;display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:#161619;border:1px solid #26262b;color:#9a9aa2;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .14s;" style-hover="border-color:#39393f;color:#cfcfd6;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ qsMeterLabel }}</button>
+              <code style="display:block;font-family:'Geist Mono',monospace;font-size:13px;line-height:1.5;color:#cfcfd6;overflow-x:auto;white-space:pre;padding-right:64px;"><span style="color:#c084fc">const</span> &#123; blocked &#125; = <span style="color:#c084fc">await</span> <span style="color:#7dd3fc">meter</span>(<span style="color:#fbbf24">"image_gen"</span>)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success / Run -->
+        <sc-if value="{{ qsComplete }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:22px;border:1px solid color-mix(in srgb,var(--ac) 36%,transparent);border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 9%,#0c0c0e),#0c0c0e);padding:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div style="width:42px;height:42px;border-radius:50%;flex:none;background:var(--ac);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px color-mix(in srgb,var(--ac) 45%,transparent);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06120c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <div style="flex:1;min-width:180px;"><div style="font-size:16px;font-weight:600;color:#fafafa;letter-spacing:-0.015em;">You're live — first call metered.</div><div style="font-size:13px;color:#9a9aa2;margin-top:3px;">Credits are deducting. Open the dashboard to watch usage roll in.</div></div>
+          <div style="display:flex;gap:10px;"><button onClick="{{ goDashboard }}" style="padding:9px 16px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;">Go to dashboard</button><button onClick="{{ qsReset }}" style="padding:9px 14px;border-radius:9px;background:transparent;color:#a5a5ad;font-size:13.5px;font-weight:500;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;">Reset</button></div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ qsIncomplete }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top:22px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-size:13.5px;color:#76767e;">Done copying? Fire a test event to confirm wiring.</span>
+          <button onClick="{{ qsRun }}" style="display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;background:#131316;color:#e4e4e7;font-size:13.5px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;transition:all .14s;" style-hover="border-color:#39393f;background:#19191c;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 3 14 9-14 9V3Z"/></svg>Run a test call</button>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+    </sc-if>
+    <!-- ===================== WIDGET ===================== -->
+    <sc-if value="{{ isWidget }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Embeddable widget" style="position:relative;min-height:calc(100vh - 56px);padding:clamp(32px,4vw,56px) 24px;">
+      <div style="max-width:920px;margin:0 auto;">
+        <div style="text-align:center;margin-bottom:30px;">
+          <div style="font-size:12px;font-weight:600;color:var(--ac);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;">Drop-in widget</div>
+          <h1 style="font-size:clamp(26px,3.4vw,36px);font-weight:600;letter-spacing:-0.032em;color:#fafafa;margin:0 0 10px;line-height:1.1;">How it looks inside your app</h1>
+          <p style="font-size:15px;color:#9a9aa2;margin:0 auto;max-width:440px;line-height:1.55;">The credits meter and <span style="font-family:'Geist Mono',monospace;color:#cfcfd6;">&lt;Paywall&gt;</span> live next to your UI. Try it — every generation spends a credit.</p>
+        </div>
+
+        <!-- customer app window -->
+        <div style="border:1px solid #232327;border-radius:14px;background:#0c0c0e;overflow:hidden;box-shadow:0 30px 70px -28px rgba(0,0,0,.85);">
+          <div style="display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #1c1c20;background:#0e0e10;">
+            <span style="width:11px;height:11px;border-radius:50%;background:#2b2b30;"></span><span style="width:11px;height:11px;border-radius:50%;background:#2b2b30;"></span><span style="width:11px;height:11px;border-radius:50%;background:#2b2b30;"></span>
+            <div style="flex:1;display:flex;justify-content:center;"><div style="font-family:'Geist Mono',monospace;font-size:11.5px;color:#6b6b73;background:#131316;border:1px solid #1f1f23;border-radius:6px;padding:3px 14px;">imagestudio.app</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));gap:0;">
+            <!-- left: the customer's app UI -->
+            <div style="padding:24px;border-right:1px solid #18181b;min-width:0;">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:20px;"><div style="width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#a78bfa,#7dd3fc);"></div><span style="font-size:15px;font-weight:650;color:#fafafa;letter-spacing:-0.02em;">ImageStudio</span></div>
+              <div style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px;">Prompt</div>
+              <div style="border:1px solid #1f1f23;border-radius:10px;background:#0e0e10;padding:12px 13px;font-size:13.5px;color:#cfcfd6;line-height:1.5;margin-bottom:14px;">A neon koi swimming through clouds, cinematic, 35mm</div>
+              <button onClick="{{ wGenerate }}" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;background:var(--ac);color:#06120c;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 24%,transparent);transition:transform .12s ease;" style-hover="transform:translateY(-1px);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l2.5 6.5L22 12l-6.5 2.5L13 21l-2.5-6.5L4 12l6.5-2.5L13 3Z"/></svg>Generate image</button>
+              <div style="font-size:11.5px;color:#6b6b73;text-align:center;margin-top:9px;">Each generation calls <span style="font-family:'Geist Mono',monospace;color:#8f8f97;">meter("image_gen")</span></div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px;">
+                <sc-for list="{{ wShots }}" as="h" hint-placeholder-count="4">
+                  <div style="aspect-ratio:1;border-radius:8px;border:1px solid #ffffff10;background:linear-gradient(135deg, hsl({{ h }} 68% 56%), hsl({{ h }} 70% 38%));"></div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- right: the PayKit widget -->
+            <div style="padding:24px;background:#0a0a0c;min-width:0;display:flex;flex-direction:column;gap:14px;">
+              <div style="border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:18px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                  <span style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;">Credits</span>
+                  <sc-if value="{{ wIsPro }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 13%,transparent);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);border-radius:999px;padding:2px 10px;">Pro</span></sc-if>
+                  <sc-if value="{{ wLocked }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px;font-weight:600;color:#a1a1aa;background:#161619;border:1px solid #26262a;border-radius:999px;padding:2px 10px;">Free</span></sc-if>
+                </div>
+                <div style="display:flex;align-items:baseline;gap:7px;"><span style="font-size:38px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;font-variant-numeric:tabular-nums;line-height:1;">{{ wCredits }}</span><span style="font-size:13px;color:#76767e;">credits left</span></div>
+                <div style="height:7px;border-radius:4px;background:#16161a;overflow:hidden;margin:14px 0 16px;"><div style="height:100%;width:{{ wPct }}%;background:var(--ac);border-radius:4px;transition:width .35s ease;"></div></div>
+                <button onClick="{{ wBuy }}" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:#131316;color:#e4e4e7;font-size:13.5px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;transition:all .14s;" style-hover="border-color:#39393f;background:#19191c;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Buy 50 credits · $9</button>
+              </div>
+
+              <!-- Paywalled feature -->
+              <sc-if value="{{ wIsPro }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px solid color-mix(in srgb,var(--ac) 34%,transparent);border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 8%,#0c0c0e),#0c0c0e);padding:16px 18px;">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M19 17v4M17 19h4M13 4l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z"/></svg><span style="font-size:14px;font-weight:600;color:#fafafa;">HD upscale unlocked</span></div>
+                <p style="font-size:12.5px;color:#9a9aa2;margin:0 0 12px;line-height:1.5;">Pro is active — 4× upscaling is available on every render.</p>
+                <button onClick="{{ wUpgrade }}" style="width:100%;padding:9px;border-radius:9px;background:transparent;color:#76767e;font-size:12.5px;font-weight:500;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;">Switch back to Free</button>
+              </div>
+              </sc-if>
+              <sc-if value="{{ wLocked }}" hint-placeholder-val="{{ true }}">
+              <div style="border:1px dashed #2a2a2e;border-radius:14px;background:#0c0c0e;padding:16px 18px;">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#76767e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span style="font-size:14px;font-weight:600;color:#cfcfd6;">HD upscale</span></div>
+                <p style="font-size:12.5px;color:#76767e;margin:0 0 12px;line-height:1.5;">4× upscaling is a Pro feature. Upgrade to unlock it for every render.</p>
+                <button onClick="{{ wUpgrade }}" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:transform .12s ease;" style-hover="transform:translateY(-1px);">Upgrade to Pro · $19/mo</button>
+              </div>
+              </sc-if>
+
+              <div style="display:flex;align-items:center;justify-content:center;gap:6px;opacity:.6;"><svg width="13" height="13" viewBox="0 0 26 26" fill="none"><rect width="26" height="26" rx="7" fill="var(--ac)"/><path d="M14.6 5 L7.5 14.4 H11.9 L11 21 L18.5 11 H13.7 Z" fill="#08120c"/></svg><span style="font-size:11px;color:#6b6b73;font-weight:500;">Powered by PayKit</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- live activity log -->
+        <sc-if value="{{ wHasLog }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:16px;border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:14px 18px;">
+          <div style="font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;">Live events</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-family:'Geist Mono',monospace;font-size:12px;">
+            <sc-for list="{{ wLog }}" as="line" hint-placeholder-count="2">
+              <div style="color:#9a9aa2;display:flex;align-items:center;gap:8px;"><span style="color:var(--ac);">→</span>{{ line }}</div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+    </sc-if>
+    <!-- screens-anchor -->
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;emerald&quot;,&quot;indigo&quot;],&quot;default&quot;:&quot;emerald&quot;,&quot;tsType&quot;:&quot;'emerald' | 'indigo'&quot;},&quot;defaultScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;landing&quot;,&quot;dashboard&quot;,&quot;quickstart&quot;,&quot;widget&quot;],&quot;default&quot;:&quot;landing&quot;,&quot;tsType&quot;:&quot;'landing' | 'dashboard' | 'quickstart' | 'widget'&quot;},&quot;showGrid&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'landing',
+    accent: 'emerald',
+    waitEmail: '',
+    waitJoined: false,
+    dashView: 'overview',
+    env: 'test',
+    revealSecret: false,
+    copied: '',
+    wCredits: 12,
+    wPlan: 'free',
+    wShots: [212, 158, 286],
+    wLog: [],
+    qsDone: { install: false, key: false, meter: false },
+    qsRan: false,
+  };
+
+  componentDidMount(){
+    const a = this.props.accent || 'emerald';
+    this.applyAccent(a);
+    const patch = {};
+    if (a !== this.state.accent) patch.accent = a;
+    if (this.props.defaultScreen) patch.screen = this.props.defaultScreen;
+    if (Object.keys(patch).length) this.setState(patch);
+  }
+
+  applyAccent(a){
+    const hex = a === 'indigo' ? '#6366f1' : '#34d399';
+    if (typeof document !== 'undefined') document.documentElement.style.setProperty('--ac', hex);
+  }
+  setAccent(a){ this.applyAccent(a); this.setState({ accent: a }); }
+
+  go(screen){ this.setState({ screen }); if (typeof window !== 'undefined' && window.scrollTo) window.scrollTo(0, 0); }
+  setDash(v){ this.setState({ dashView: v }); }
+
+  copy(id, text){
+    try { if (navigator.clipboard) navigator.clipboard.writeText(text); } catch(e){}
+    this.setState({ copied: id });
+    setTimeout(() => this.setState(s => s.copied === id ? { copied: '' } : null), 1500);
+  }
+
+  wGenerate(){
+    this.setState(s => {
+      if (s.wCredits <= 0) return { wLog: ['Blocked — out of credits. Buy more to keep generating.', ...s.wLog].slice(0,5) };
+      const left = s.wCredits - 1;
+      const hue = Math.floor(Math.random()*360);
+      return { wCredits: left, wShots: [hue, ...s.wShots].slice(0,8), wLog: ['Generated image · −1 credit · ' + left + ' left', ...s.wLog].slice(0,5) };
+    });
+  }
+  wBuy(){ this.setState(s => ({ wCredits: s.wCredits + 50, wLog: ['Bought 50 credits · $9.00', ...s.wLog].slice(0,5) })); }
+  wUpgrade(){ this.setState(s => ({ wPlan: s.wPlan === 'pro' ? 'free' : 'pro', wLog: [(s.wPlan === 'pro' ? 'Switched to Free plan' : 'Upgraded to Pro · $19/mo'), ...s.wLog].slice(0,5) })); }
+
+  qsCopy(step, text){ this.copy('qs_' + step, text); this.setState(s => ({ qsDone: { ...s.qsDone, [step]: true } })); }
+  qsRun(){ this.setState({ qsRan: true, qsDone: { install: true, key: true, meter: true } }); }
+  qsReset(){ this.setState({ qsRan: false, qsDone: { install: false, key: false, meter: false } }); }
+
+  joinWaitlist(){ if (this.state.waitEmail.trim()) this.setState({ waitJoined: true }); }
+
+  renderVals(){
+    const s = this.state;
+    const baseTab = "padding:6px 13px;border-radius:7px;font-size:13px;font-weight:500;color:#8b8b94;background:transparent;border:1px solid transparent;cursor:pointer;transition:all .15s ease;letter-spacing:-0.01em;font-family:inherit;";
+    const onTab = "padding:6px 13px;border-radius:7px;font-size:13px;font-weight:600;color:#fafafa;background:#1c1c1f;border:1px solid #2a2a2e;cursor:pointer;transition:all .15s ease;letter-spacing:-0.01em;font-family:inherit;";
+    const tab = (k) => s.screen === k ? onTab : baseTab;
+    const baseNav = "display:flex;align-items:center;gap:11px;padding:8px 11px;border-radius:8px;font-size:13.5px;font-weight:450;color:#9a9aa2;background:transparent;border:none;width:100%;cursor:pointer;text-align:left;transition:all .14s ease;font-family:inherit;letter-spacing:-0.005em;";
+    const onNav = "display:flex;align-items:center;gap:11px;padding:8px 11px;border-radius:8px;font-size:13.5px;font-weight:550;color:#fafafa;background:#19191c;border:none;width:100%;cursor:pointer;text-align:left;transition:all .14s ease;font-family:inherit;letter-spacing:-0.005em;";
+    const nav = (k) => s.dashView === k ? onNav : baseNav;
+
+    const stBadge = (st) => {
+      const m = { active:['#6ee7b7','rgba(52,211,153,.12)','Active'], trialing:['#93c5fd','rgba(96,165,250,.12)','Trialing'], past_due:['#fcd34d','rgba(251,191,36,.13)','Past due'], canceled:['#a1a1aa','rgba(161,161,170,.12)','Canceled'] }[st];
+      return { label:m[2], style:"display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:550;letter-spacing:-0.01em;color:"+m[0]+";background:"+m[1]+";", dot:"width:5px;height:5px;border-radius:50%;flex:none;background:"+m[0]+";" };
+    };
+    const proChip = "color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:550;";
+    const freeChip = "color:#a1a1aa;background:#161619;border:1px solid #26262a;padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:550;";
+    const rawC = [
+      ['Maya Chen','maya@vellum.ai','Pro','1,240','active','Apr 2'],
+      ['Devon Park','devon@sketchpad.dev','Free','5','trialing','Apr 5'],
+      ['Priya Rao','priya@loop.so','Pro','880','active','Mar 28'],
+      ['Theo Voss','theo@runwise.io','Free','0','canceled','Mar 12'],
+      ['Sam Okafor','sam@quill.app','Pro','3,400','active','Feb 19'],
+      ['Lena Hart','lena@northsketch.com','Free','42','trialing','Apr 9'],
+      ['Omar Idris','omar@castfm.ai','Pro','210','past_due','Mar 30'],
+      ['Yuki Tan','yuki@frame.studio','Free','18','active','Apr 11'],
+    ];
+    const customers = rawC.map(c => { const b = stBadge(c[4]); const ep = c[1].split('@'); return { name:c[0], email:c[1], emailA:ep[0], emailB:ep[1], plan:c[2], credits:c[3], joined:c[5], statusLabel:b.label, statusStyle:b.style, dotStyle:b.dot, initials:(c[0][0]+c[0].split(' ')[1][0]).toUpperCase(), planStyle:(c[2]==='Pro'?proChip:freeChip) }; });
+
+    const wPct = Math.max(0, Math.min(100, Math.round((s.wCredits / 60) * 100)));
+
+    return {
+      isLanding: s.screen==='landing', isDashboard: s.screen==='dashboard', isQuickstart: s.screen==='quickstart', isWidget: s.screen==='widget',
+      tabStyle: { landing:tab('landing'), dashboard:tab('dashboard'), quickstart:tab('quickstart'), widget:tab('widget') },
+      navStyle: { overview:nav('overview'), plans:nav('plans'), usage:nav('usage'), customers:nav('customers'), keys:nav('keys'), settings:nav('settings') },
+      goLanding:()=>this.go('landing'), goDashboard:()=>this.go('dashboard'), goQuickstart:()=>this.go('quickstart'), goWidget:()=>this.go('widget'),
+      isEmerald: s.accent==='emerald', isIndigo: s.accent==='indigo',
+      setEmerald:()=>this.setAccent('emerald'), setIndigo:()=>this.setAccent('indigo'),
+      showGrid: this.props.showGrid !== false,
+
+      navOverview:()=>this.setDash('overview'), navPlans:()=>this.setDash('plans'), navUsage:()=>this.setDash('usage'), navCustomers:()=>this.setDash('customers'), navKeys:()=>this.setDash('keys'), navSettings:()=>this.setDash('settings'),
+      isOverview:s.dashView==='overview', isPlans:s.dashView==='plans', isUsage:s.dashView==='usage', isCustomers:s.dashView==='customers', isKeys:s.dashView==='keys', isSettings:s.dashView==='settings',
+      dashTitle: ({overview:'Overview',plans:'Plans & credit packs',usage:'Usage',customers:'Customers',keys:'API keys',settings:'Settings'})[s.dashView],
+
+      revealSecret:s.revealSecret,
+      toggleSecret:()=>this.setState(st=>({revealSecret:!st.revealSecret})),
+      secretLabel: s.revealSecret ? 'Hide' : 'Reveal',
+      secretShown: s.revealSecret ? 'sk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6Nm9Vc' : 'sk_live_••••••••••••••••••••••••••',
+      copyPub:()=>this.copy('pub','pk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6'),
+      copySecret:()=>this.copy('secret','sk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6Nm9Vc'),
+      pubCopyLabel: s.copied==='pub' ? 'Copied' : 'Copy',
+      secretCopyLabel: s.copied==='secret' ? 'Copied' : 'Copy',
+
+      heroCopyLabel: s.copied==='hero' ? 'Copied' : 'Copy',
+      copyHero:()=>this.copy('hero','import { PayKitProvider, Paywall, usePayKit } from "@paykit/react"\n\nexport default function App({ user }) {\n  return (\n    <PayKitProvider userId={user.id}>\n      <ImageStudio />\n      <Paywall plan="pro" fallback={<UpgradeCard />}>\n        <HDUpscale />\n      </Paywall>\n    </PayKitProvider>\n  )\n}'),
+
+      customers,
+
+      wCredits:s.wCredits, wPct, wIsPro:s.wPlan==='pro', wPlanLabel:s.wPlan==='pro'?'Pro':'Free', wOut:s.wCredits<=0,
+      wGenerate:()=>this.wGenerate(), wBuy:()=>this.wBuy(), wUpgrade:()=>this.wUpgrade(),
+      wUpgradeLabel: s.wPlan==='pro' ? 'Switch to Free' : 'Upgrade to Pro',
+      wLog:s.wLog, wHasLog:s.wLog.length>0, wShots:s.wShots, wLocked:s.wPlan!=='pro',
+
+      qsInstallDone:s.qsDone.install, qsKeyDone:s.qsDone.key, qsMeterDone:s.qsDone.meter,
+      qsInstallIdle:!s.qsDone.install, qsKeyIdle:!s.qsDone.key, qsMeterIdle:!s.qsDone.meter,
+      qsComplete: s.qsRan || (s.qsDone.install && s.qsDone.key && s.qsDone.meter),
+      qsIncomplete: !(s.qsRan || (s.qsDone.install && s.qsDone.key && s.qsDone.meter)),
+      qsCopyInstall:()=>this.qsCopy('install','npm install @paykit/react @paykit/node'),
+      qsCopyKey:()=>this.qsCopy('key','PAYKIT_SECRET_KEY=sk_live_a3f9C2k8Lp0Qe7Rt5'),
+      qsCopyMeter:()=>this.qsCopy('meter','const { blocked } = await meter("image_gen")'),
+      qsInstallLabel:s.copied==='qs_install'?'Copied':'Copy', qsKeyLabel:s.copied==='qs_key'?'Copied':'Copy', qsMeterLabel:s.copied==='qs_meter'?'Copied':'Copy',
+      qsRan:s.qsRan, qsRun:()=>this.qsRun(), qsReset:()=>this.qsReset(),
+      qsProgress: (s.qsDone.install?1:0)+(s.qsDone.key?1:0)+(s.qsDone.meter?1:0),
+
+      waitEmail:s.waitEmail, onWaitEmail:(e)=>this.setState({waitEmail:e.target.value}),
+      joinWaitlist:()=>this.joinWaitlist(), waitJoined:s.waitJoined, waitIdle:!s.waitJoined,
+    };
+  }
+}
+</script>
+</body>
+</html>

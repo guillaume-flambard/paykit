@@ -2,4 +2,63 @@
 
 :root {
   color-scheme: dark;
+  /* PayKit accent — toggled to #6366f1 (indigo) at runtime by the showcase */
+  --ac: #34d399;
 }
+
+/* ===== PayKit UI primitives (translated from PayKit.dc.html) ===== */
+html, body { margin: 0; background: #0a0a0a; }
+
+::selection { background: color-mix(in srgb, var(--ac) 32%, transparent); color: #fff; }
+
+@keyframes pkUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes pkFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pkPulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: #262629; border-radius: 6px; border: 2px solid #0a0a0a; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* Hover / focus behaviours (the .dc `style-hover` / `style-focus` attributes) */
+.pk-tab { transition: all .15s ease; }
+.pk-tab:hover { color: #cfcfd6; }
+
+.pk-primary { transition: transform .13s ease, box-shadow .13s ease; }
+.pk-primary:hover { transform: translateY(-1px); }
+
+.pk-hero-cta:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ac) 70%, transparent),
+    0 14px 40px color-mix(in srgb, var(--ac) 36%, transparent);
+}
+
+.pk-ghost { transition: all .14s ease; }
+.pk-ghost:hover { background: #19191c; border-color: #39393f; }
+
+.pk-feature { transition: all .18s ease; }
+.pk-feature:hover {
+  border-color: color-mix(in srgb, var(--ac) 42%, #1f1f23);
+  transform: translateY(-3px);
+}
+
+.pk-copybtn { transition: all .14s ease; }
+.pk-copybtn:hover { border-color: #39393f; color: #cfcfd6; }
+
+.pk-ws { transition: background .14s ease; }
+.pk-ws:hover { background: #161619; }
+
+.pk-nav { transition: all .14s ease; }
+.pk-nav:hover { background: #161619; }
+
+.pk-row { transition: background .12s ease; }
+.pk-row:hover { background: #101013; }
+
+.pk-link { transition: color .14s ease; cursor: pointer; }
+.pk-link:hover { color: #cfcfd6; }
+
+.pk-danger { transition: all .14s ease; }
+.pk-danger:hover { background: rgba(239, 68, 68, .14); }
+
+.pk-input { transition: border-color .14s ease; }
+.pk-input:focus { border-color: color-mix(in srgb, var(--ac) 60%, transparent); }
