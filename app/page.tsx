@@ -5,12 +5,22 @@ import { PayKitProvider, usePayKit, Paywall } from "@/lib/paykit-react"
 
 // A mock "AI app" that uses PayKit for credits + paywall — the live demo of the value prop.
 function Demo() {
-  const { account, loading, meter, buyCredits, upgrade } = usePayKit()
+  const { account, loading, meter, buyCredits, upgrade, checkout } = usePayKit()
   const [log, setLog] = useState<string[]>([])
+  const [note, setNote] = useState("")
 
   async function generate() {
     const r = await meter("image_gen")
     setLog((l) => [r.blocked ? "❌ Blocked — out of credits" : `🖼️ Generated (–1 credit, ${r.remaining} left)`, ...l])
+  }
+
+  async function stripe(kind: "credits" | "pro") {
+    setNote("")
+    try {
+      await checkout(kind)
+    } catch (e) {
+      setNote(e instanceof Error ? e.message : "Checkout unavailable") // e.g. Stripe not configured
+    }
   }
 
   if (loading) return <p className="text-neutral-500">Loading…</p>
@@ -30,27 +40,34 @@ function Demo() {
       </div>
 
       {/* The metered action */}
-      <div className="flex flex-col gap-3">
-        <button
-          onClick={generate}
-          className="rounded-xl bg-emerald-400 px-5 py-3 font-semibold text-neutral-950 transition hover:bg-emerald-300"
-        >
-          Generate image (1 credit)
-        </button>
+      <button
+        onClick={generate}
+        className="rounded-xl bg-emerald-400 px-5 py-3 font-semibold text-neutral-950 transition hover:bg-emerald-300"
+      >
+        Generate image (1 credit)
+      </button>
+
+      {/* Purchases */}
+      <div className="flex flex-col gap-2">
+        <div className="text-xs uppercase tracking-widest text-neutral-600">Simulate (no Stripe)</div>
         <div className="flex gap-3">
-          <button
-            onClick={() => buyCredits(10)}
-            className="flex-1 rounded-xl border border-neutral-700 px-4 py-2.5 text-sm hover:border-neutral-500"
-          >
-            Buy 10 credits
+          <button onClick={() => buyCredits(10)} className="flex-1 rounded-xl border border-neutral-700 px-4 py-2.5 text-sm hover:border-neutral-500">
+            +10 credits
           </button>
-          <button
-            onClick={() => upgrade(account?.plan === "pro" ? "free" : "pro")}
-            className="flex-1 rounded-xl border border-neutral-700 px-4 py-2.5 text-sm hover:border-neutral-500"
-          >
-            {account?.plan === "pro" ? "Downgrade to Free" : "Upgrade to Pro"}
+          <button onClick={() => upgrade(account?.plan === "pro" ? "free" : "pro")} className="flex-1 rounded-xl border border-neutral-700 px-4 py-2.5 text-sm hover:border-neutral-500">
+            {account?.plan === "pro" ? "Downgrade" : "Upgrade to Pro"}
           </button>
         </div>
+        <div className="mt-2 text-xs uppercase tracking-widest text-neutral-600">Real Stripe checkout</div>
+        <div className="flex gap-3">
+          <button onClick={() => stripe("credits")} className="flex-1 rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-4 py-2.5 text-sm text-indigo-300 hover:bg-indigo-500/20">
+            Buy 100 credits — $9
+          </button>
+          <button onClick={() => stripe("pro")} className="flex-1 rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-4 py-2.5 text-sm text-indigo-300 hover:bg-indigo-500/20">
+            Subscribe Pro — $19/mo
+          </button>
+        </div>
+        {note && <p className="text-sm text-amber-400">⚠ {note}</p>}
       </div>
 
       {/* Paywalled feature */}
@@ -86,14 +103,15 @@ export default function Home() {
         <h1 className="text-3xl font-bold tracking-tight">PayKit — live demo</h1>
         <p className="text-neutral-400">
           A mock AI app wired to PayKit. <code className="text-emerald-400">meter()</code> deducts credits per
-          generation; <code className="text-emerald-400">&lt;Paywall&gt;</code> gates the Pro feature. All real, in-memory.
+          generation; <code className="text-emerald-400">&lt;Paywall&gt;</code> gates the Pro feature. Stripe checkout
+          is real when configured; otherwise use the simulate buttons.
         </p>
       </header>
       <PayKitProvider userId="demo-user">
         <Demo />
       </PayKitProvider>
       <footer className="text-sm text-neutral-600">
-        Next: swap the in-memory store for Postgres and wire Stripe Checkout → webhook → grantCredits.
+        Persistence: Postgres when DATABASE_URL is set, else in-memory. Billing: Stripe Checkout + webhook.
       </footer>
     </main>
   )

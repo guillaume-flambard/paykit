@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     if (typeof userId !== "string" || typeof event !== "string") {
       return NextResponse.json({ error: "userId and event are required" }, { status: 400 })
     }
-    const result = meter(userId, event, typeof cost === "number" ? cost : 1)
+    const result = await meter(userId, event, typeof cost === "number" ? cost : 1)
     if (result.blocked) {
       return NextResponse.json({ ...result, error: "Insufficient credits" }, { status: 402 })
     }

@@ -2,15 +2,18 @@
 
 // PayKit React SDK — the thin client. Reads access, triggers metering & purchases.
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react"
-import type { Account, MeterResult } from "./paykit-core"
+import type { Account, MeterResult } from "./types"
 
 interface PayKitContextValue {
   account: Account | null
   loading: boolean
   refresh: () => Promise<void>
   meter: (event: string, cost?: number) => Promise<MeterResult>
+  /** Local stand-in purchase (no Stripe). */
   buyCredits: (amount: number) => Promise<void>
   upgrade: (plan: string) => Promise<void>
+  /** Real Stripe Checkout — redirects. Throws if Stripe isn't configured. */
+  checkout: (kind: "credits" | "pro") => Promise<void>
   hasAccess: (plan: string) => boolean
 }
 
@@ -46,7 +49,6 @@ export function PayKitProvider({ userId, children }: { userId: string; children:
 
   const buyCredits = useCallback(
     async (amount: number) => {
-      // MVP: hits the credits stand-in. Real flow → Stripe Checkout → webhook → grantCredits.
       await fetch(`/api/v1/credits`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,13 +71,32 @@ export function PayKitProvider({ userId, children }: { userId: string; children:
     [userId, refresh],
   )
 
+  const checkout = useCallback(
+    async (kind: "credits" | "pro") => {
+      const res = await fetch(`/api/v1/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, kind }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || "Checkout unavailable")
+      }
+      const { url } = await res.json()
+      if (url) window.location.href = url
+    },
+    [userId],
+  )
+
   const hasAccess = useCallback(
     (plan: string) => plan === "free" || Boolean(account?.entitlements.includes(plan)),
     [account],
   )
 
   return (
-    <PayKitContext.Provider value={{ account, loading, refresh, meter, buyCredits, upgrade, hasAccess }}>
+    <PayKitContext.Provider
+      value={{ account, loading, refresh, meter, buyCredits, upgrade, checkout, hasAccess }}
+    >
       {children}
     </PayKitContext.Provider>
   )

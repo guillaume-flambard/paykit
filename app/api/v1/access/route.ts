@@ -7,5 +7,5 @@ export async function GET(req: Request) {
   if (!userId) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 })
   }
-  return NextResponse.json(getAccount(userId))
+  return NextResponse.json(await getAccount(userId))
 }
