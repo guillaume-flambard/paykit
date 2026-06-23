@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { PayKitProvider, usePayKit } from "@/lib/paykit-react"
-import type { Account } from "@/lib/types"
+import type { Account, Analytics } from "@/lib/types"
 
 /* ------------------------------------------------------------------ *
  * PayKit showcase — faithful implementation of design/PayKit.dc.html
@@ -459,23 +459,43 @@ function Dashboard({
   copied: string
   copy: (id: string, text: string) => void
 }) {
-  // Live accounts from the real API (POST /meter, /credits & the Stripe webhook all write here).
+  // Live data from the real API (POST /meter, /credits & the Stripe webhook all write here).
   const [accounts, setAccounts] = useState<Account[] | null>(null)
-  const [stats, setStats] = useState<{ total: number; pro: number; creditsOutstanding: number } | null>(null)
+  const [an, setAn] = useState<(Analytics & { stats: { total: number; pro: number; mrr: number; creditsOutstanding: number } }) | null>(null)
   useEffect(() => {
     let alive = true
     fetch("/api/v1/accounts")
       .then((r) => r.json())
-      .then((d) => {
-        if (!alive) return
-        setAccounts(d.accounts ?? [])
-        setStats(d.stats ?? null)
-      })
+      .then((d) => alive && setAccounts(d.accounts ?? []))
       .catch(() => alive && setAccounts([]))
+    fetch("/api/v1/analytics")
+      .then((r) => r.json())
+      .then((d) => alive && setAn(d))
+      .catch(() => {})
     return () => {
       alive = false
     }
   }, [])
+  const stats = an?.stats ?? null
+
+  // Build an SVG polyline (viewBox 0 0 720 180) from a series of values.
+  const pts = (vals: number[], max: number) =>
+    vals
+      .map((v, i) => {
+        const x = vals.length <= 1 ? 360 : 10 + (i * 700) / (vals.length - 1)
+        const y = 170 - (max > 0 ? (v / max) * 150 : 0)
+        return `${x.toFixed(0)},${y.toFixed(0)}`
+      })
+      .join(" ")
+  const fmtAgo = (iso: string) => {
+    const diff = Date.now() - new Date(iso).getTime()
+    const m = Math.floor(diff / 60000)
+    if (m < 1) return "just now"
+    if (m < 60) return `${m}m ago`
+    const h = Math.floor(m / 60)
+    if (h < 24) return `${h}h ago`
+    return `${Math.floor(h / 24)}d ago`
+  }
 
   const proChip = "color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:550;"
   const freeChip = "color:#a1a1aa;background:#161619;border:1px solid #26262a;padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:550;"
@@ -498,8 +518,7 @@ function Dashboard({
   const statCard = "border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:17px 18px 15px;"
   const statLabel = "font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;"
   const statNum = "font-size:26px;font-weight:600;color:#fafafa;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"
-  const trendUp = <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7M9 7h8v8" /></svg>
-  const labelInput = "display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;"
+  const labelInput ="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;"
   const fieldInput = "width:100%;padding:8px 11px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:#fafafa;font-size:13.5px;font-family:inherit;outline:none;"
   const fieldMono = fieldInput.replace("font-family:inherit", "font-family:'Geist Mono',monospace")
   const copyBtnSm = "display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:8px;background:#131316;border:1px solid #2a2a2e;color:#a5a5ad;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;"
@@ -552,55 +571,71 @@ function Dashboard({
             <>
               <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:14px;margin-bottom:18px;")}>
                 {[
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5" /></svg>, label: "MRR", num: "$4,820", delta: <>{trendUp}12.4%<span style={css("color:#5b5b63;font-weight:450;")}>vs last mo</span></>, deltaColor: "#6ee7b7" },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3.5" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /></svg>, label: "Active subs", num: "142", delta: <>{trendUp}+8<span style={css("color:#5b5b63;font-weight:450;")}>this mo</span></>, deltaColor: "#6ee7b7" },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" /></svg>, label: "Credits sold", num: "38,400", delta: <>{trendUp}+5.2k<span style={css("color:#5b5b63;font-weight:450;")}>this mo</span></>, deltaColor: "#6ee7b7" },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 5 5 19" /><circle cx="7.5" cy="7.5" r="2.5" /><circle cx="16.5" cy="16.5" r="2.5" /></svg>, label: "AI cost", num: "$1,120", delta: <>23%<span style={css("color:#5b5b63;font-weight:450;")}>of revenue</span></>, deltaColor: "#fcd34d" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5" /></svg>, label: "MRR", num: `$${(an?.stats.mrr ?? 0).toLocaleString()}`, sub: `${an?.stats.pro ?? 0} Pro × $19/mo` },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3.5" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /></svg>, label: "Active subs", num: `${an?.stats.pro ?? 0}`, sub: `of ${an?.stats.total ?? 0} accounts` },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" /></svg>, label: "Credits sold", num: (an?.creditsSoldThisMonth ?? 0).toLocaleString(), sub: "this month" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>, label: "Metered calls", num: (an?.meteredThisMonth ?? 0).toLocaleString(), sub: "this month" },
                 ].map((s) => (
                   <div key={s.label} style={css(statCard)}>
                     <div style={css("display:flex;align-items:center;gap:7px;margin-bottom:13px;")}>{s.icon}<span style={css(statLabel)}>{s.label}</span></div>
                     <div style={css(statNum)}>{s.num}</div>
-                    <div style={css(`display:flex;align-items:center;gap:5px;margin-top:7px;font-size:12.5px;color:${s.deltaColor};`)}>{s.delta}</div>
+                    <div style={css("margin-top:7px;font-size:12.5px;color:#5b5b63;font-weight:450;")}>{s.sub}</div>
                   </div>
                 ))}
               </div>
 
               <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:14px;align-items:stretch;")}>
-                <div style={css("grid-column:span 2;min-width:0;border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;")}>
-                  <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;")}>
-                    <div><div style={css("font-size:14.5px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;")}>Revenue &amp; AI cost</div><div style={css("font-size:12px;color:#6b6b73;margin-top:2px;")}>Last 12 months</div></div>
-                    <div style={css("display:flex;gap:16px;")}>
-                      <div style={css("display:flex;align-items:center;gap:6px;font-size:12px;color:#a5a5ad;")}><span style={css("width:9px;height:9px;border-radius:2px;background:var(--ac);")} />Revenue</div>
-                      <div style={css("display:flex;align-items:center;gap:6px;font-size:12px;color:#a5a5ad;")}><span style={css("width:9px;height:9px;border-radius:2px;background:#3f3f46;")} />AI cost</div>
+                {(() => {
+                  const series = an?.series ?? []
+                  const gVals = series.map((s) => s.granted)
+                  const mVals = series.map((s) => s.metered)
+                  const max = Math.max(1, ...gVals, ...mVals)
+                  return (
+                    <div style={css("grid-column:span 2;min-width:0;border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;")}>
+                      <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;")}>
+                        <div><div style={css("font-size:14.5px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;")}>Credits — sold vs consumed</div><div style={css("font-size:12px;color:#6b6b73;margin-top:2px;")}>Last 14 days · live</div></div>
+                        <div style={css("display:flex;gap:16px;")}>
+                          <div style={css("display:flex;align-items:center;gap:6px;font-size:12px;color:#a5a5ad;")}><span style={css("width:9px;height:9px;border-radius:2px;background:var(--ac);")} />Sold</div>
+                          <div style={css("display:flex;align-items:center;gap:6px;font-size:12px;color:#a5a5ad;")}><span style={css("width:9px;height:9px;border-radius:2px;background:#3f3f46;")} />Consumed</div>
+                        </div>
+                      </div>
+                      <svg viewBox="0 0 720 200" preserveAspectRatio="none" style={css("width:100%;height:190px;display:block;overflow:visible;")}>
+                        {[37.5, 75, 112.5, 150].map((y) => <line key={y} x1="0" y1={y} x2="720" y2={y} stroke="#ffffff0a" strokeWidth="1" vectorEffect="non-scaling-stroke" />)}
+                        <polyline points={pts(gVals, max)} fill="none" stroke="var(--ac)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+                        <polyline points={pts(mVals, max)} fill="none" stroke="#3f3f46" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+                      </svg>
+                      <div style={css("display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#5b5b63;font-variant-numeric:tabular-nums;")}>{series.filter((_, i) => i % 2 === 0).map((s, i) => <span key={i}>{s.label}</span>)}</div>
                     </div>
-                  </div>
-                  <svg viewBox="0 0 720 200" preserveAspectRatio="none" style={css("width:100%;height:190px;display:block;overflow:visible;")}>
-                    <defs><linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--ac)" stopOpacity="0.28" /><stop offset="100%" stopColor="var(--ac)" stopOpacity="0" /></linearGradient></defs>
-                    {[37.5, 75, 112.5, 150].map((y) => <line key={y} x1="0" y1={y} x2="720" y2={y} stroke="#ffffff0a" strokeWidth="1" vectorEffect="non-scaling-stroke" />)}
-                    <path d="M10 135 L74 129 L137 120 L201 123 L264 108 L328 97 L391 90 L455 81 L518 72 L582 63 L645 48 L709 37 L709 180 L10 180 Z" fill="url(#revFill)" />
-                    <polyline points="10,135 74,129 137,120 201,123 264,108 328,97 391,90 455,81 518,72 582,63 645,48 709,37" fill="none" stroke="var(--ac)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-                    <polyline points="10,162 74,160 137,157 201,159 264,153 328,150 391,148 455,145 518,144 582,142 645,139 709,136" fill="none" stroke="#3f3f46" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-                  </svg>
-                  <div style={css("display:flex;justify-content:space-between;margin-top:10px;font-size:10.5px;color:#5b5b63;font-variant-numeric:tabular-nums;")}>{["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr"].map((m) => <span key={m}>{m}</span>)}</div>
-                </div>
+                  )
+                })()}
 
                 <div style={css("min-width:0;border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;")}>
                   <div style={css("font-size:14.5px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;margin-bottom:16px;")}>Recent activity</div>
                   <div style={css("display:flex;flex-direction:column;gap:14px;")}>
-                    {[
-                      { dot: "var(--ac)", main: <>Maya Chen upgraded to <span style={css("color:var(--ac);font-weight:550;")}>Pro</span></>, sub: "+$19/mo · 2h ago" },
-                      { dot: "#6ee7b7", main: <>devon@sketchpad.dev bought 500 credits</>, sub: "+$39.00 · 5h ago" },
-                      { dot: "#93c5fd", main: <>New signup · lena@northsketch.com</>, sub: "Free plan · 8h ago" },
-                      { dot: "#fcd34d", main: <>omar@castfm.ai payment failed</>, sub: "Past due · 1d ago" },
-                    ].map((a, i) => (
-                      <div key={i} style={css("display:flex;gap:11px;align-items:flex-start;")}>
-                        <span style={css(`width:7px;height:7px;border-radius:50%;background:${a.dot};margin-top:6px;flex:none;`)} />
-                        <div style={css("min-width:0;")}>
-                          <div style={css("font-size:13px;color:#e4e4e7;line-height:1.4;")}>{a.main}</div>
-                          <div style={css("font-size:11.5px;color:#6b6b73;margin-top:2px;")}>{a.sub}</div>
+                    {an && an.recent.length === 0 && (
+                      <div style={css("font-size:12.5px;color:#6b6b73;")}>No activity yet — meter a call or buy credits in the Widget.</div>
+                    )}
+                    {(an?.recent ?? []).map((e, i) => {
+                      const dot = e.kind === "grant" ? "#6ee7b7" : e.kind === "plan" ? "var(--ac)" : "#93c5fd"
+                      const main =
+                        e.kind === "grant" ? (
+                          <>{e.userId} bought {e.amount} credits</>
+                        ) : e.kind === "plan" ? (
+                          <>{e.userId} → <span style={css("color:var(--ac);font-weight:550;")}>{e.name}</span></>
+                        ) : (
+                          <>{e.userId} · <span style={css("font-family:'Geist Mono',monospace;")}>{e.name}</span></>
+                        )
+                      const kindLabel = e.kind === "meter" ? "metered call" : e.kind === "grant" ? "purchase" : "plan change"
+                      return (
+                        <div key={i} style={css("display:flex;gap:11px;align-items:flex-start;")}>
+                          <span style={css(`width:7px;height:7px;border-radius:50%;background:${dot};margin-top:6px;flex:none;`)} />
+                          <div style={css("min-width:0;")}>
+                            <div style={css("font-size:13px;color:#e4e4e7;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{main}</div>
+                            <div style={css("font-size:11.5px;color:#6b6b73;margin-top:2px;")}>{kindLabel} · {fmtAgo(e.at)}</div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -641,23 +676,35 @@ function Dashboard({
           {dashView === "usage" && (
             <div style={css("max-width:880px;")}>
               <div style={css("border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;margin-bottom:14px;")}>
-                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;")}><div style={css("font-size:14.5px;font-weight:600;color:#fafafa;")}>Metered calls</div><div style={css("font-size:13px;color:#6b6b73;")}>38,400 this month</div></div>
-                <svg viewBox="0 0 720 200" preserveAspectRatio="none" style={css("width:100%;height:170px;display:block;")}>
-                  <defs><linearGradient id="useFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--ac)" stopOpacity="0.28" /><stop offset="100%" stopColor="var(--ac)" stopOpacity="0" /></linearGradient></defs>
-                  {[50, 100, 150].map((y) => <line key={y} x1="0" y1={y} x2="720" y2={y} stroke="#ffffff0a" strokeWidth="1" vectorEffect="non-scaling-stroke" />)}
-                  <path d="M10 150 L70 140 L130 145 L190 120 L250 128 L310 100 L370 108 L430 78 L490 86 L550 60 L610 52 L670 40 L709 30 L709 180 L10 180 Z" fill="url(#useFill)" />
-                  <polyline points="10,150 70,140 130,145 190,120 250,128 310,100 370,108 430,78 490,86 550,60 610,52 670,40 709,30" fill="none" stroke="var(--ac)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-                </svg>
+                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;")}><div style={css("font-size:14.5px;font-weight:600;color:#fafafa;")}>Metered calls</div><div style={css("font-size:13px;color:#6b6b73;")}>{(an?.meteredThisMonth ?? 0).toLocaleString()} this month</div></div>
+                {(() => {
+                  const m = (an?.series ?? []).map((s) => s.metered)
+                  const max = Math.max(1, ...m)
+                  return (
+                    <svg viewBox="0 0 720 200" preserveAspectRatio="none" style={css("width:100%;height:170px;display:block;")}>
+                      {[50, 100, 150].map((y) => <line key={y} x1="0" y1={y} x2="720" y2={y} stroke="#ffffff0a" strokeWidth="1" vectorEffect="non-scaling-stroke" />)}
+                      <polyline points={pts(m, max)} fill="none" stroke="var(--ac)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+                    </svg>
+                  )
+                })()}
+                <div style={css("display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:#5b5b63;font-variant-numeric:tabular-nums;")}>{(an?.series ?? []).filter((_, i) => i % 2 === 0).map((s, i) => <span key={i}>{s.label}</span>)}</div>
               </div>
               <div style={css("border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;")}>
                 <div style={css("font-size:14.5px;font-weight:600;color:#fafafa;margin-bottom:18px;")}>Top events</div>
                 <div style={css("display:flex;flex-direction:column;gap:16px;")}>
-                  {[["image_gen", "24,100", "63%", "1"], ["chat_completion", "9,820", "26%", ".75"], ["hd_upscale", "4,480", "12%", ".55"]].map(([ev, n, w, op]) => (
-                    <div key={ev}>
-                      <div style={css("display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;")}><span style={css("color:#e4e4e7;font-family:'Geist Mono',monospace;")}>{ev}</span><span style={css("color:#76767e;font-variant-numeric:tabular-nums;")}>{n}</span></div>
-                      <div style={css("height:7px;border-radius:4px;background:#16161a;overflow:hidden;")}><div style={css(`height:100%;width:${w};background:var(--ac);border-radius:4px;opacity:${op};`)} /></div>
-                    </div>
-                  ))}
+                  {an && an.topEvents.length === 0 && (
+                    <div style={css("font-size:12.5px;color:#6b6b73;")}>No metered events yet.</div>
+                  )}
+                  {(() => {
+                    const top = an?.topEvents ?? []
+                    const max = Math.max(1, ...top.map((t) => t.count))
+                    return top.map((t, i) => (
+                      <div key={t.name}>
+                        <div style={css("display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;")}><span style={css("color:#e4e4e7;font-family:'Geist Mono',monospace;")}>{t.name}</span><span style={css("color:#76767e;font-variant-numeric:tabular-nums;")}>{t.count.toLocaleString()}</span></div>
+                        <div style={css("height:7px;border-radius:4px;background:#16161a;overflow:hidden;")}><div style={css(`height:100%;width:${Math.round((t.count / max) * 100)}%;background:var(--ac);border-radius:4px;opacity:${Math.max(0.4, 1 - i * 0.15)};`)} /></div>
+                      </div>
+                    ))
+                  })()}
                 </div>
               </div>
             </div>

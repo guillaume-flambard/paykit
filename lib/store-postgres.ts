@@ -1,5 +1,5 @@
 import { Pool } from "pg"
-import { type Account, type Store, STARTING_FREE_CREDITS } from "./types"
+import { type Account, type Analytics, type Store, type UsageEvent, STARTING_FREE_CREDITS } from "./types"
 
 // Postgres store — used when DATABASE_URL is set. Deduct is atomic (race-safe).
 export class PostgresStore implements Store {
@@ -23,6 +23,16 @@ export class PostgresStore implements Store {
         plan text not null default 'free',
         credits integer not null default ${STARTING_FREE_CREDITS},
         entitlements jsonb not null default '[]'::jsonb
+      )
+    `)
+    await this.pool.query(`
+      create table if not exists paykit_events (
+        id bigserial primary key,
+        user_id text not null,
+        kind text not null,
+        name text not null default '',
+        amount integer not null default 0,
+        created_at timestamptz not null default now()
       )
     `)
   }
@@ -79,5 +89,45 @@ export class PostgresStore implements Store {
     await this.ready
     const { rows } = await this.pool.query(`select * from paykit_accounts order by user_id limit 500`)
     return rows.map((r) => this.map(r))
+  }
+
+  async recordEvent(e: UsageEvent) {
+    await this.ready
+    await this.pool.query(
+      `insert into paykit_events(user_id, kind, name, amount, created_at) values($1,$2,$3,$4,$5)`,
+      [e.userId, e.kind, e.name, e.amount, e.at],
+    )
+  }
+
+  async analytics(): Promise<Analytics> {
+    await this.ready
+    const [metered, sold, top, series, recent] = await Promise.all([
+      this.pool.query(`select count(*)::int c from paykit_events where kind='meter' and created_at >= date_trunc('month', now())`),
+      this.pool.query(`select coalesce(sum(amount),0)::int c from paykit_events where kind='grant' and created_at >= date_trunc('month', now())`),
+      this.pool.query(`select name, count(*)::int count from paykit_events where kind='meter' group by name order by count desc limit 5`),
+      this.pool.query(`
+        select to_char(current_date - gs, 'FMMM/FMDD') label,
+               coalesce(m.c, 0)::int metered,
+               coalesce(g.s, 0)::int granted
+        from generate_series(13, 0, -1) gs
+        left join (select created_at::date dt, count(*) c from paykit_events where kind='meter' group by 1) m on m.dt = current_date - gs
+        left join (select created_at::date dt, sum(amount) s from paykit_events where kind='grant' group by 1) g on g.dt = current_date - gs
+        order by gs desc
+      `),
+      this.pool.query(`select user_id, kind, name, amount, created_at from paykit_events order by created_at desc limit 6`),
+    ])
+    return {
+      meteredThisMonth: metered.rows[0].c,
+      creditsSoldThisMonth: sold.rows[0].c,
+      topEvents: top.rows,
+      series: series.rows,
+      recent: recent.rows.map((r) => ({
+        userId: r.user_id,
+        kind: r.kind,
+        name: r.name,
+        amount: r.amount,
+        at: new Date(r.created_at).toISOString(),
+      })),
+    }
   }
 }
