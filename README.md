@@ -23,7 +23,20 @@ cp .env.example .env.local
 # STRIPE_WEBHOOK_SECRET=whsec_...        # `stripe listen --forward-to localhost:3000/api/v1/webhook`
 ```
 
-## Integration (how a customer uses it)
+## Integration — two ways
+
+**No code (any website).** Paste one line — works on Webflow, Wix, WordPress, plain HTML. Renders the credits meter + "Buy credits" button. See `public/embed.js` / live example at `/embed-demo.html`.
+```html
+<div id="paykit"></div>
+<script src="https://<your-paykit>/embed.js" data-key="pk_live_..."></script>
+
+<!-- charge a credit on click -->
+<button data-paykit-meter="image_gen">Generate</button>
+<!-- hide until the user is Pro -->
+<div data-paykit-plan="pro">Pro-only content</div>
+```
+
+**Developers (React).**
 ```tsx
 <PayKitProvider userId={user.id}>
   <Paywall plan="pro"><HdUpscale /></Paywall>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PayKit embed — live example</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0a0a0a;
+        color: #e4e4e7;
+        font-family: system-ui, -apple-system, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .wrap { max-width: 520px; width: 100%; }
+      h1 { font-size: 22px; font-weight: 700; color: #fafafa; margin: 0 0 6px; letter-spacing: -0.02em; }
+      p { color: #9a9aa2; line-height: 1.55; margin: 0 0 20px; font-size: 14.5px; }
+      .panel { border: 1px solid #1f1f23; border-radius: 16px; background: #0c0c0e; padding: 22px; }
+      .gen {
+        margin-top: 18px;
+        padding: 11px 16px;
+        border-radius: 10px;
+        background: #131315;
+        color: #e4e4e7;
+        font-size: 14px;
+        font-weight: 600;
+        border: 1px solid #2a2a2e;
+        cursor: pointer;
+      }
+      .pro {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        background: rgba(52, 211, 153, 0.08);
+        color: #6ee7b7;
+        font-size: 13.5px;
+      }
+      code { font-family: ui-monospace, Menlo, monospace; color: #cfcfd6; font-size: 12.5px; }
+      .src { margin-top: 22px; border-top: 1px solid #1a1a1d; padding-top: 16px; }
+      .src pre {
+        background: #0e0e10;
+        border: 1px solid #1f1f23;
+        border-radius: 10px;
+        padding: 14px;
+        overflow-x: auto;
+        font-size: 12.5px;
+        color: #cfcfd6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>This whole thing is one &lt;script&gt; tag.</h1>
+      <p>
+        The credits meter below is live. Click <strong>Generate</strong> to spend a credit, or
+        <strong>Buy credits</strong> to top up. No account, no setup — it just works.
+      </p>
+
+      <div class="panel">
+        <!-- 1) Where the credits widget appears -->
+        <div id="paykit"></div>
+
+        <!-- 2) Any button can spend a credit — just add data-paykit-meter -->
+        <button class="gen" data-paykit-meter="image_gen">⚡ Generate image (1 credit)</button>
+
+        <!-- 3) Pro-only content is hidden automatically until the user upgrades -->
+        <div class="pro" data-paykit-plan="pro">✨ HD upscale unlocked — Pro members only.</div>
+      </div>
+
+      <div class="src">
+        <p style="margin-bottom: 10px">That's all the code on this page:</p>
+        <pre>&lt;div id="paykit"&gt;&lt;/div&gt;
+
+&lt;button data-paykit-meter="image_gen"&gt;Generate&lt;/button&gt;
+
+&lt;div data-paykit-plan="pro"&gt;Pro-only content&lt;/div&gt;
+
+&lt;script src="/embed.js" data-key="pk_live_demo"&gt;&lt;/script&gt;</pre>
+      </div>
+    </div>
+
+    <!-- The one line that powers it all -->
+    <script src="/embed.js" data-key="pk_live_demo"></script>
+  </body>
+</html>

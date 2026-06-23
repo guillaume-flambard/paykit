@@ -804,6 +804,19 @@ function Quickstart({
   qsReset: () => void
   copied: string
 }) {
+  const EMBED = '<div id="paykit"></div>\n<script src="https://paykit-zoanlogias-projects.vercel.app/embed.js" data-key="pk_live_..."></script>'
+  const EMBED_HTML =
+    '<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">div</span> <span style="color:#cfcfd6">id</span>=<span style="color:#fbbf24">"paykit"</span><span style="color:#6b7280">&gt;&lt;/</span><span style="color:#7dd3fc">div</span><span style="color:#6b7280">&gt;</span>\n<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">script</span> <span style="color:#cfcfd6">src</span>=<span style="color:#fbbf24">"https://paykit-zoanlogias-projects.vercel.app/embed.js"</span> <span style="color:#cfcfd6">data-key</span>=<span style="color:#fbbf24">"pk_live_..."</span><span style="color:#6b7280">&gt;&lt;/</span><span style="color:#7dd3fc">script</span><span style="color:#6b7280">&gt;</span>'
+  const [embedCopied, setEmbedCopied] = useState(false)
+  function copyEmbed() {
+    try {
+      navigator.clipboard?.writeText(EMBED)
+    } catch {
+      /* clipboard unavailable */
+    }
+    setEmbedCopied(true)
+    setTimeout(() => setEmbedCopied(false), 1500)
+  }
   const steps: {
     key: "install" | "key" | "meter"
     n: string
@@ -852,9 +865,32 @@ function Quickstart({
       <div style={css("position:relative;z-index:1;max-width:680px;margin:0 auto;padding:clamp(40px,5vw,72px) 24px 64px;")}>
         <div style={css("text-align:center;margin-bottom:38px;")}>
           <div style={css("font-size:12px;font-weight:600;color:var(--ac);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:13px;")}>Quickstart</div>
-          <h1 style={css("font-size:clamp(28px,4vw,40px);font-weight:600;letter-spacing:-0.034em;color:#fafafa;margin:0 0 12px;line-height:1.08;")}>Add billing in 10 minutes</h1>
-          <p style={css("font-size:15.5px;color:#9a9aa2;margin:0 auto 20px;max-width:420px;line-height:1.55;")}>Three steps. Copy each block into your app — we&apos;ll check them off as you go.</p>
-          <div style={css("display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#76767e;font-variant-numeric:tabular-nums;")}><span style={css("font-weight:600;color:var(--ac);")}>{qsProgress}</span> / 3 steps done</div>
+          <h1 style={css("font-size:clamp(28px,4vw,40px);font-weight:600;letter-spacing:-0.034em;color:#fafafa;margin:0 0 12px;line-height:1.08;")}>Connect PayKit in minutes</h1>
+          <p style={css("font-size:15.5px;color:#9a9aa2;margin:0 auto;max-width:460px;line-height:1.55;")}>Two ways to add credits &amp; a paywall — pick the one that fits. No code for any website, or React for developers.</p>
+        </div>
+
+        {/* ===== NO CODE ===== */}
+        <div style={css("border:1px solid color-mix(in srgb,var(--ac) 32%,#1f1f23);border-radius:16px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 6%,#0c0c0e),#0c0c0e);padding:24px;margin-bottom:18px;")}>
+          <div style={css("display:flex;align-items:center;gap:10px;margin-bottom:6px;")}>
+            <span style={css("font-size:11px;font-weight:700;color:#06120c;background:var(--ac);border-radius:6px;padding:2px 8px;letter-spacing:0.02em;")}>NO CODE</span>
+            <h3 style={css("font-size:17px;font-weight:600;color:#fafafa;margin:0;letter-spacing:-0.015em;")}>Paste one line. Done.</h3>
+          </div>
+          <p style={css("font-size:13.5px;color:#9a9aa2;margin:0 0 16px;line-height:1.55;")}>Works on any website — Webflow, Wix, WordPress, or plain HTML. Drop in the credits meter, a “Buy credits” button, and a Pro paywall. No install, no account to wire up.</p>
+          <div style={css("position:relative;border:1px solid #1f1f23;border-radius:10px;background:#0e0e10;padding:14px;")}>
+            <button className="pk-copybtn" onClick={copyEmbed} style={css("position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:#161619;border:1px solid #26262b;color:#9a9aa2;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;")}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>{embedCopied ? "Copied" : "Copy"}</button>
+            <pre style={css("margin:0;font-family:'Geist Mono',monospace;font-size:12.5px;line-height:1.6;color:#cfcfd6;overflow-x:auto;white-space:pre;padding-right:64px;")} dangerouslySetInnerHTML={{ __html: EMBED_HTML }} />
+          </div>
+          <div style={css("display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:16px;")}>
+            <a href="/embed-demo.html" target="_blank" rel="noopener" className="pk-primary" style={css("display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;text-decoration:none;font-family:inherit;")}>See it live <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg></a>
+            <span style={css("font-size:12.5px;color:#76767e;line-height:1.5;")}>Add <code style={css("font-family:'Geist Mono',monospace;color:#cfcfd6;")}>data-paykit-meter=&quot;...&quot;</code> to any button to charge a credit on click.</span>
+          </div>
+        </div>
+
+        {/* ===== DEVELOPERS ===== */}
+        <div style={css("display:flex;align-items:center;gap:12px;margin:6px 0 16px;")}>
+          <span style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;")}>For developers · React</span>
+          <div style={{ flex: 1, height: 1, background: "#1a1a1d" }} />
+          <span style={css("font-size:12px;color:#76767e;font-variant-numeric:tabular-nums;white-space:nowrap;")}><span style={css("font-weight:600;color:var(--ac);")}>{qsProgress}</span> / 3</span>
         </div>
 
         <div style={css("display:flex;flex-direction:column;gap:14px;")}>
