@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { ClerkProvider } from "@clerk/nextjs"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -6,8 +7,11 @@ export const metadata: Metadata = {
   description: "Add credits, usage-based billing, and subscriptions to any AI app. Drop-in React components and a metering API — without building billing infrastructure.",
 }
 
+// Only mount Clerk once its publishable key is set, so the app renders fine without it.
+const clerkConfigured = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
+  const tree = (
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -30,4 +34,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </body>
     </html>
   )
+  return clerkConfigured ? <ClerkProvider>{tree}</ClerkProvider> : tree
 }

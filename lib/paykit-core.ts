@@ -48,8 +48,12 @@ export async function listAccounts(projectId = DEFAULT_PROJECT_ID): Promise<Acco
   return store.list(projectId)
 }
 
-export async function createProject(name: string): Promise<Project> {
-  return store.createProject(name)
+export async function createProject(name: string, ownerId: string): Promise<Project> {
+  return store.createProject(name, ownerId)
+}
+
+export async function listProjectsByOwner(ownerId: string): Promise<Project[]> {
+  return store.listProjectsByOwner(ownerId)
 }
 
 /** Resolve a project id from an API key; falls back to the default project. */

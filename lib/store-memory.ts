@@ -6,6 +6,7 @@ export class MemoryStore implements Store {
   private accounts = new Map<string, Account>()
   private events: UsageEvent[] = []
   private projects = new Map<string, Project>()
+  private projectOwner = new Map<string, string>()
 
   constructor() {
     this.projects.set(DEFAULT_PROJECT_ID, {
@@ -96,7 +97,7 @@ export class MemoryStore implements Store {
     }
   }
 
-  async createProject(name: string) {
+  async createProject(name: string, ownerId: string) {
     const id = "proj_" + randomBytes(8).toString("hex")
     const project: Project = {
       id,
@@ -105,6 +106,7 @@ export class MemoryStore implements Store {
       secretKey: "sk_live_" + randomBytes(24).toString("hex"),
     }
     this.projects.set(id, project)
+    this.projectOwner.set(id, ownerId)
     return project
   }
 
@@ -113,5 +115,9 @@ export class MemoryStore implements Store {
       if (p.publishableKey === key || p.secretKey === key) return p
     }
     return null
+  }
+
+  async listProjectsByOwner(ownerId: string) {
+    return [...this.projects.values()].filter((p) => this.projectOwner.get(p.id) === ownerId)
   }
 }

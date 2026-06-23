@@ -51,10 +51,12 @@ export interface Store {
   recordEvent(e: UsageEvent): Promise<void>
   /** Aggregate a project's usage analytics for the dashboard. */
   analytics(projectId: string): Promise<Analytics>
-  /** Create a new project with freshly-generated keys. */
-  createProject(name: string): Promise<Project>
+  /** Create a new project (owned by ownerId) with freshly-generated keys. */
+  createProject(name: string, ownerId: string): Promise<Project>
   /** Resolve a project from a publishable or secret key. */
   getProjectByKey(key: string): Promise<Project | null>
+  /** List the projects owned by a given account. */
+  listProjectsByOwner(ownerId: string): Promise<Project[]>
 }
 
 // Internal account ids are namespaced "<projectId>:<userId>" so the same userId

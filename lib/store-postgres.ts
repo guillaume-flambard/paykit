@@ -47,6 +47,8 @@ export class PostgresStore implements Store {
         created_at timestamptz not null default now()
       )
     `)
+    await this.pool.query(`alter table paykit_projects add column if not exists owner_id text not null default 'demo'`)
+    await this.pool.query(`create index if not exists paykit_projects_owner on paykit_projects(owner_id)`)
     // Idempotent multi-tenant migration: add project_id to the existing tables.
     await this.pool.query(`alter table paykit_accounts add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
     await this.pool.query(`alter table paykit_events add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
@@ -162,14 +164,14 @@ export class PostgresStore implements Store {
     }
   }
 
-  async createProject(name: string) {
+  async createProject(name: string, ownerId: string) {
     await this.ready
     const id = "proj_" + randomBytes(8).toString("hex")
     const publishableKey = "pk_live_" + randomBytes(16).toString("hex")
     const secretKey = "sk_live_" + randomBytes(24).toString("hex")
     const { rows } = await this.pool.query(
-      `insert into paykit_projects(id, name, publishable_key, secret_key) values($1,$2,$3,$4) returning *`,
-      [id, name || "Untitled project", publishableKey, secretKey],
+      `insert into paykit_projects(id, name, publishable_key, secret_key, owner_id) values($1,$2,$3,$4,$5) returning *`,
+      [id, name || "Untitled project", publishableKey, secretKey, ownerId],
     )
     return this.mapProject(rows[0])
   }
@@ -178,5 +180,11 @@ export class PostgresStore implements Store {
     await this.ready
     const { rows } = await this.pool.query(`select * from paykit_projects where publishable_key=$1 or secret_key=$1 limit 1`, [key])
     return rows[0] ? this.mapProject(rows[0]) : null
+  }
+
+  async listProjectsByOwner(ownerId: string) {
+    await this.ready
+    const { rows } = await this.pool.query(`select * from paykit_projects where owner_id=$1 order by created_at desc limit 100`, [ownerId])
+    return rows.map((r) => this.mapProject(r))
   }
 }
