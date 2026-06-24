@@ -460,7 +460,8 @@ function Dashboard({
   copy: (id: string, text: string) => void
 }) {
   // The merchant's project (persisted locally). Without one, data scopes to the demo project.
-  const [project, setProject] = useState<{ id: string; name: string; publishableKey: string; secretKey: string } | null>(() => {
+  type Proj = { id: string; name: string; publishableKey: string; secretKey: string; secureMetering?: boolean }
+  const [project, setProject] = useState<Proj | null>(() => {
     try {
       const s = typeof localStorage !== "undefined" ? localStorage.getItem("paykit_project") : null
       return s ? JSON.parse(s) : null
@@ -469,17 +470,29 @@ function Dashboard({
     }
   })
   const [creating, setCreating] = useState(false)
+  function saveProject(p: Proj | null) {
+    if (p) localStorage.setItem("paykit_project", JSON.stringify(p))
+    setProject(p)
+  }
   async function createProject() {
     setCreating(true)
     try {
       const r = await fetch("/api/v1/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "My project" }) })
-      const p = await r.json()
-      localStorage.setItem("paykit_project", JSON.stringify(p))
-      setProject(p)
+      saveProject(await r.json())
     } catch {
       /* ignore */
     }
     setCreating(false)
+  }
+  async function toggleSecureMetering() {
+    if (!project) return
+    const next = !project.secureMetering
+    saveProject({ ...project, secureMetering: next }) // optimistic
+    try {
+      await fetch("/api/v1/projects", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ secureMetering: next, key: project.secretKey }) })
+    } catch {
+      saveProject({ ...project, secureMetering: !next }) // revert on failure
+    }
   }
   const pubKey = project?.publishableKey ?? "pk_live_demo"
   const realSecret = project?.secretKey ?? "sk_live_demo"
@@ -800,6 +813,20 @@ function Dashboard({
                   </div>
                 </div>
               </div>
+              {project && (
+                <div style={css("display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:16px 20px;border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;")}>
+                  <div style={css("flex:1;min-width:0;")}>
+                    <div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;")}>Secure metering</div>
+                    <div style={css("font-size:12px;color:#6b6b73;margin-top:2px;line-height:1.5;")}>Require your <span style={css("color:#cfcfd6;")}>secret</span> key to deduct credits (server-side, authoritative). Off = the no-code embed can meter from the browser.</div>
+                  </div>
+                  <div
+                    onClick={toggleSecureMetering}
+                    style={css(`width:38px;height:22px;border-radius:999px;position:relative;flex:none;cursor:pointer;transition:background .15s;background:${project.secureMetering ? "var(--ac)" : "#2a2a2e"};`)}
+                  >
+                    <div style={css(`position:absolute;top:2px;${project.secureMetering ? "right:2px" : "left:2px"};width:18px;height:18px;border-radius:50%;transition:all .15s;background:${project.secureMetering ? "#06120c" : "#76767e"};`)} />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
