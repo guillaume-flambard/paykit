@@ -16,8 +16,13 @@ export function keyFromRequest(req: Request, body?: Record<string, unknown>): st
  * (the caller should respond 401 rather than touching the demo project).
  */
 export async function scope(req: Request, clientUserId: string, body?: Record<string, unknown>) {
-  const projectId = await projectFromKey(keyFromRequest(req, body))
-  return { projectId, uid: projectId ? scopedId(projectId, clientUserId) : null }
+  const rawKey = keyFromRequest(req, body)
+  const projectId = await projectFromKey(rawKey)
+  return {
+    projectId,
+    uid: projectId ? scopedId(projectId, clientUserId) : null,
+    secret: !!rawKey && rawKey.startsWith("sk_"), // was a secret key presented?
+  }
 }
 
 /** Resolve just the project id from the ?key= query param (null = invalid key). */
