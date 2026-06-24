@@ -178,21 +178,11 @@ export default function Home() {
         <div style={{ flex: 1 }} />
         <div style={css("display:flex;align-items:center;gap:14px;")}>
           <Link href="/demo" className="pk-link" style={css("font-size:12px;color:#7c7c85;font-weight:500;text-decoration:none;")}>Live demo →</Link>
-          <div style={css("display:flex;align-items:center;gap:9px;")}>
-            <span style={css("font-size:11px;color:#6b6b73;font-weight:500;letter-spacing:0.01em;")}>Accent</span>
-            <div style={css("display:flex;gap:6px;")}>
-              <button onClick={() => setAccent("emerald")} title="Emerald" style={css("width:23px;height:23px;border-radius:7px;background:#34d399;border:1.5px solid rgba(255,255,255,.16);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;")}>
-                {accent === "emerald" && (
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#08120c" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
-                )}
-              </button>
-              <button onClick={() => setAccent("indigo")} title="Indigo" style={css("width:23px;height:23px;border-radius:7px;background:#6366f1;border:1.5px solid rgba(255,255,255,.16);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;")}>
-                {accent === "indigo" && (
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
-                )}
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={() => setAccent(accent === "emerald" ? "indigo" : "emerald")}
+            title={`Switch theme (${accent === "emerald" ? "indigo" : "emerald"})`}
+            style={css("width:20px;height:20px;border-radius:50%;background:var(--ac);border:2px solid rgba(255,255,255,.18);cursor:pointer;padding:0;display:block;flex-shrink:0;")}
+          />
         </div>
       </div>
 
