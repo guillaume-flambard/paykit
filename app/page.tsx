@@ -142,7 +142,7 @@ export default function Home() {
   }
 
   function joinWaitlist() {
-    if (waitEmail.trim()) setWaitJoined(true)
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(waitEmail.trim())) setWaitJoined(true)
   }
 
   // ---- derived ----
@@ -496,6 +496,37 @@ function Dashboard({
   const pubKey = project?.publishableKey ?? "pk_live_demo"
   const realSecret = project?.secretKey ?? "sk_live_demo"
 
+  // Settings form — interactive and persisted locally per active project, the
+  // same way the showcase keeps the rest of merchant state client-side (see
+  // paykit_project). Seeded from saved values, falling back to demo defaults.
+  type Settings = { workspaceName: string; billingEmail: string; webhookUrl: string; blockWhenEmpty: boolean }
+  const settingsKey = "paykit_settings_" + (project?.id ?? "demo")
+  const settingsDefaults: Settings = { workspaceName: "Vellum AI", billingEmail: "billing@vellum.ai", webhookUrl: "https://api.vellum.ai/paykit/webhook", blockWhenEmpty: true }
+  const [settings, setSettings] = useState<Settings>(settingsDefaults)
+  const [settingsSaved, setSettingsSaved] = useState(false)
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem(settingsKey)
+      setSettings(s ? { ...settingsDefaults, ...JSON.parse(s) } : settingsDefaults)
+    } catch {
+      setSettings(settingsDefaults)
+    }
+    setSettingsSaved(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingsKey])
+  function updateSetting<K extends keyof Settings>(k: K, v: Settings[K]) {
+    setSettings((s) => ({ ...s, [k]: v }))
+    setSettingsSaved(false)
+  }
+  function saveSettings() {
+    try {
+      localStorage.setItem(settingsKey, JSON.stringify(settings))
+    } catch {
+      /* ignore */
+    }
+    setSettingsSaved(true)
+  }
+
   // Live data from the real API, scoped to the active project's key.
   const [accounts, setAccounts] = useState<Account[] | null>(null)
   const [an, setAn] = useState<(Analytics & { stats: { total: number; pro: number; mrr: number; creditsOutstanding: number } }) | null>(null)
@@ -609,10 +640,10 @@ function Dashboard({
             <>
               <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:14px;margin-bottom:18px;")}>
                 {[
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5" /></svg>, label: "MRR", num: `$${(an?.stats.mrr ?? 0).toLocaleString()}`, sub: `${an?.stats.pro ?? 0} Pro × $19/mo` },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3.5" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /></svg>, label: "Active subs", num: `${an?.stats.pro ?? 0}`, sub: `of ${an?.stats.total ?? 0} accounts` },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" /></svg>, label: "Credits sold", num: (an?.creditsSoldThisMonth ?? 0).toLocaleString(), sub: "this month" },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>, label: "Metered calls", num: (an?.meteredThisMonth ?? 0).toLocaleString(), sub: "this month" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5" /></svg>, label: "MRR", num: an ? `$${(an.stats?.mrr ?? 0).toLocaleString()}` : "—", sub: an ? `${an.stats?.pro ?? 0} Pro × $19/mo` : "" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3.5" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /></svg>, label: "Active subs", num: an ? `${an.stats?.pro ?? 0}` : "—", sub: an ? `of ${an.stats?.total ?? 0} accounts` : "" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" /></svg>, label: "Credits sold", num: an ? (an.creditsSoldThisMonth ?? 0).toLocaleString() : "—", sub: "this month" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>, label: "Metered calls", num: an ? (an.meteredThisMonth ?? 0).toLocaleString() : "—", sub: "this month" },
                 ].map((s) => (
                   <div key={s.label} style={css(statCard)}>
                     <div style={css("display:flex;align-items:center;gap:7px;margin-bottom:13px;")}>{s.icon}<span style={css(statLabel)}>{s.label}</span></div>
@@ -832,15 +863,15 @@ function Dashboard({
           {/* SETTINGS */}
           {dashView === "settings" && (
             <div style={css("max-width:600px;display:flex;flex-direction:column;gap:18px;")}>
-              {[
-                ["Workspace name", "Vellum AI", false],
-                ["Billing email", "billing@vellum.ai", false],
-                ["Webhook URL", "https://api.vellum.ai/paykit/webhook", true],
-              ].map(([label, val, mono]) => (
-                <label key={label as string} style={css("display:block;")}><span style={css("display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:7px;")}>{label}</span><input className="pk-input" defaultValue={val as string} style={css(`width:100%;padding:9px 12px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:${mono ? "#cfcfd6" : "#fafafa"};font-size:${mono ? "13.5px" : "14px"};font-family:${mono ? "'Geist Mono',monospace" : "inherit"};outline:none;`)} /></label>
+              {([
+                ["Workspace name", "workspaceName", false],
+                ["Billing email", "billingEmail", false],
+                ["Webhook URL", "webhookUrl", true],
+              ] as const).map(([label, field, mono]) => (
+                <label key={label} style={css("display:block;")}><span style={css("display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:7px;")}>{label}</span><input className="pk-input" value={settings[field]} onChange={(e) => updateSetting(field, e.target.value)} style={css(`width:100%;padding:9px 12px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:${mono ? "#cfcfd6" : "#fafafa"};font-size:${mono ? "13.5px" : "14px"};font-family:${mono ? "'Geist Mono',monospace" : "inherit"};outline:none;`)} /></label>
               ))}
-              <div style={css("display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid #1f1f23;border-radius:10px;background:#0c0c0e;")}><div><div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;")}>Block calls when out of credits</div><div style={css("font-size:12px;color:#6b6b73;margin-top:2px;")}>Return <span style={css("font-family:'Geist Mono',monospace;")}>blocked: true</span> instead of charging overage</div></div><div style={css("width:38px;height:22px;border-radius:999px;background:var(--ac);position:relative;flex:none;cursor:pointer;")}><div style={css("position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#06120c;")} /></div></div>
-              <div><button className="pk-primary" style={css("padding:9px 18px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}>Save changes</button></div>
+              <div style={css("display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid #1f1f23;border-radius:10px;background:#0c0c0e;")}><div><div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;")}>Block calls when out of credits</div><div style={css("font-size:12px;color:#6b6b73;margin-top:2px;")}>Return <span style={css("font-family:'Geist Mono',monospace;")}>blocked: true</span> instead of charging overage</div></div><button onClick={() => updateSetting("blockWhenEmpty", !settings.blockWhenEmpty)} aria-pressed={settings.blockWhenEmpty} style={css(`width:38px;height:22px;border-radius:999px;background:${settings.blockWhenEmpty ? "var(--ac)" : "#33333a"};position:relative;flex:none;cursor:pointer;border:none;padding:0;transition:background .2s;`)}><div style={css(`position:absolute;top:2px;${settings.blockWhenEmpty ? "right:2px" : "left:2px"};width:18px;height:18px;border-radius:50%;background:${settings.blockWhenEmpty ? "#06120c" : "#9a9aa2"};transition:all .2s;`)} /></button></div>
+              <div style={css("display:flex;align-items:center;gap:14px;")}><button className="pk-primary" onClick={saveSettings} style={css("padding:9px 18px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}>Save changes</button>{settingsSaved && <span style={css("display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:550;color:var(--ac);")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>Saved</span>}</div>
             </div>
           )}
         </div>
@@ -869,9 +900,10 @@ function Quickstart({
   qsReset: () => void
   copied: string
 }) {
-  const EMBED = '<div id="paykit"></div>\n<script src="https://paykit-zoanlogias-projects.vercel.app/embed.js" data-key="pk_live_..."></script>'
+  const embedOrigin = typeof window !== "undefined" ? window.location.origin : "https://paykit-two.vercel.app"
+  const EMBED = `<div id="paykit"></div>\n<script src="${embedOrigin}/embed.js" data-key="pk_live_..."></script>`
   const EMBED_HTML =
-    '<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">div</span> <span style="color:#cfcfd6">id</span>=<span style="color:#fbbf24">"paykit"</span><span style="color:#6b7280">&gt;&lt;/</span><span style="color:#7dd3fc">div</span><span style="color:#6b7280">&gt;</span>\n<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">script</span> <span style="color:#cfcfd6">src</span>=<span style="color:#fbbf24">"https://paykit-zoanlogias-projects.vercel.app/embed.js"</span> <span style="color:#cfcfd6">data-key</span>=<span style="color:#fbbf24">"pk_live_..."</span><span style="color:#6b7280">&gt;&lt;/</span><span style="color:#7dd3fc">script</span><span style="color:#6b7280">&gt;</span>'
+    `<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">div</span> <span style="color:#cfcfd6">id</span>=<span style="color:#fbbf24">"paykit"</span><span style="color:#6b7280">&gt;&lt;/</span><span style="color:#7dd3fc">div</span><span style="color:#6b7280">&gt;</span>\n<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">script</span> <span style="color:#cfcfd6">src</span>=<span style="color:#fbbf24">"${embedOrigin}/embed.js"</span> <span style="color:#cfcfd6">data-key</span>=<span style="color:#fbbf24">"pk_live_..."</span><span style="color:#6b7280">&gt;&lt;/</span><span style="color:#7dd3fc">script</span><span style="color:#6b7280">&gt;</span>`
   const [embedCopied, setEmbedCopied] = useState(false)
   function copyEmbed() {
     try {
@@ -1109,7 +1141,7 @@ function Widget({
                     <span style={css("font-size:11px;font-weight:600;color:#a1a1aa;background:#161619;border:1px solid #26262a;border-radius:999px;padding:2px 10px;")}>Free</span>
                   )}
                 </div>
-                <div style={css("display:flex;align-items:baseline;gap:7px;")}><span style={css("font-size:38px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;font-variant-numeric:tabular-nums;line-height:1;")}>{wCredits}</span><span style={css("font-size:13px;color:#76767e;")}>credits left</span></div>
+                <div style={css("display:flex;align-items:baseline;gap:7px;")}><span style={css("font-size:38px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;font-variant-numeric:tabular-nums;line-height:1;")}>{wCredits}</span><span style={css("font-size:13px;color:#76767e;")}>{wCredits === 1 ? "credit" : "credits"} left</span></div>
                 <div style={css("height:7px;border-radius:4px;background:#16161a;overflow:hidden;margin:14px 0 16px;")}><div style={{ height: "100%", width: `${wPct}%`, background: "var(--ac)", borderRadius: "4px", transition: "width .35s ease" }} /></div>
                 <button className="pk-ghost" onClick={wBuy} style={css("width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:#131316;color:#e4e4e7;font-size:13.5px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>Buy 50 credits · $9</button>
               </div>
