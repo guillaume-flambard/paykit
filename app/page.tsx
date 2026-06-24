@@ -156,7 +156,7 @@ export default function Home() {
 
   const qsProgress = (qsDone.install ? 1 : 0) + (qsDone.key ? 1 : 0) + (qsDone.meter ? 1 : 0)
   const qsComplete = qsRan || (qsDone.install && qsDone.key && qsDone.meter)
-  const secretShown = revealSecret ? "sk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6Nm9Vc" : "sk_live_••••••••••••••••••••••••••"
+  const secretShown = revealSecret ? "sk_live_demo" : "sk_live_••••••••••••••••••••••••••"
 
   const featureCardCode ="display:inline-block;font-family:'Geist Mono',monospace;font-size:12px;color:#cfcfd6;background:#131316;border:1px solid #232327;border-radius:7px;padding:5px 9px;"
 
@@ -939,8 +939,8 @@ function Quickstart({
       n: "2",
       title: "Add your secret key",
       desc: <>Drop your key into <span style={css("font-family:'Geist Mono',monospace;color:#cfcfd6;")}>.env.local</span> — server-side only, never in the browser.</>,
-      codeHtml: `<span style="color:#7dd3fc">PAYKIT_SECRET_KEY</span>=<span style="color:#fbbf24">sk_live_a3f9C2k8Lp0Qe7Rt5</span>`,
-      copyText: "PAYKIT_SECRET_KEY=sk_live_a3f9C2k8Lp0Qe7Rt5",
+      codeHtml: `<span style="color:#7dd3fc">PAYKIT_SECRET_KEY</span>=<span style="color:#fbbf24">sk_live_demo</span>`,
+      copyText: "PAYKIT_SECRET_KEY=sk_live_demo",
       done: qsDone.key,
       copiedId: "qs_key",
     },

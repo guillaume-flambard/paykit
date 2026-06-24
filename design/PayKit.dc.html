@@ -483,7 +483,7 @@
             <p style="font-size:13.5px;color:#8f8f97;margin:0 0 14px;line-height:1.5;">Drop your key into <span style="font-family:'Geist Mono',monospace;color:#cfcfd6;">.env.local</span> — server-side only, never in the browser.</p>
             <div style="position:relative;border:1px solid #1f1f23;border-radius:10px;background:#0e0e10;padding:12px 14px;">
               <button onClick="{{ qsCopyKey }}" style="position:absolute;top:9px;right:9px;display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:#161619;border:1px solid #26262b;color:#9a9aa2;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .14s;" style-hover="border-color:#39393f;color:#cfcfd6;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ qsKeyLabel }}</button>
-              <code style="display:block;font-family:'Geist Mono',monospace;font-size:13px;line-height:1.5;color:#cfcfd6;overflow-x:auto;white-space:pre;padding-right:64px;"><span style="color:#7dd3fc">PAYKIT_SECRET_KEY</span>=<span style="color:#fbbf24">sk_live_a3f9C2k8Lp0Qe7Rt5</span></code>
+              <code style="display:block;font-family:'Geist Mono',monospace;font-size:13px;line-height:1.5;color:#cfcfd6;overflow-x:auto;white-space:pre;padding-right:64px;"><span style="color:#7dd3fc">PAYKIT_SECRET_KEY</span>=<span style="color:#fbbf24">sk_live_demo</span></code>
             </div>
           </div>
 
@@ -707,9 +707,9 @@ class Component extends DCLogic {
       revealSecret:s.revealSecret,
       toggleSecret:()=>this.setState(st=>({revealSecret:!st.revealSecret})),
       secretLabel: s.revealSecret ? 'Hide' : 'Reveal',
-      secretShown: s.revealSecret ? 'sk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6Nm9Vc' : 'sk_live_••••••••••••••••••••••••••',
+      secretShown: s.revealSecret ? 'sk_live_demo' : 'sk_live_••••••••••••••••••••••••••',
       copyPub:()=>this.copy('pub','pk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6'),
-      copySecret:()=>this.copy('secret','sk_live_a3f9C2k8Lp0Qe7Rt5Yu1Wx4Zb6Nm9Vc'),
+      copySecret:()=>this.copy('secret','sk_live_demo'),
       pubCopyLabel: s.copied==='pub' ? 'Copied' : 'Copy',
       secretCopyLabel: s.copied==='secret' ? 'Copied' : 'Copy',
 
@@ -728,7 +728,7 @@ class Component extends DCLogic {
       qsComplete: s.qsRan || (s.qsDone.install && s.qsDone.key && s.qsDone.meter),
       qsIncomplete: !(s.qsRan || (s.qsDone.install && s.qsDone.key && s.qsDone.meter)),
       qsCopyInstall:()=>this.qsCopy('install','npm install @paykit/react @paykit/node'),
-      qsCopyKey:()=>this.qsCopy('key','PAYKIT_SECRET_KEY=sk_live_a3f9C2k8Lp0Qe7Rt5'),
+      qsCopyKey:()=>this.qsCopy('key','PAYKIT_SECRET_KEY=sk_live_demo'),
       qsCopyMeter:()=>this.qsCopy('meter','const { blocked } = await meter("image_gen")'),
       qsInstallLabel:s.copied==='qs_install'?'Copied':'Copy', qsKeyLabel:s.copied==='qs_key'?'Copied':'Copy', qsMeterLabel:s.copied==='qs_meter'?'Copied':'Copy',
       qsRan:s.qsRan, qsRun:()=>this.qsRun(), qsReset:()=>this.qsReset(),
