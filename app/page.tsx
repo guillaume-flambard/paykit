@@ -165,8 +165,8 @@ export default function Home() {
       {/* ===== PREVIEW CHROME ===== */}
       <div style={css("position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;height:56px;padding:0 18px;background:rgba(10,10,10,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #1a1a1d;")}>
         <div style={css("display:flex;align-items:center;gap:9px;")}>
-          <Logo />
-          <span style={css("font-weight:600;font-size:15.5px;color:#fafafa;letter-spacing:-0.025em;")}>PayKit</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="PayKit" style={{height:30,width:"auto",display:"block",mixBlendMode:"screen"} as React.CSSProperties} />
           <span style={css("font-size:9.5px;font-weight:600;color:#7c7c85;border:1px solid #2a2a2e;border-radius:5px;padding:1.5px 5px;letter-spacing:0.05em;")}>PREVIEW</span>
         </div>
         <div style={css("display:flex;align-items:center;gap:3px;margin-left:6px;padding:3px;background:#121214;border:1px solid #1f1f22;border-radius:10px;")}>
@@ -433,9 +433,9 @@ function Landing({
       <footer style={css("position:relative;z-index:1;border-top:1px solid #1a1a1d;")}>
         <div style={css("max-width:1200px;margin:0 auto;padding:26px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between;")}>
           <div style={css("display:flex;align-items:center;gap:9px;")}>
-            <Logo size={22} />
-            <span style={css("font-weight:600;font-size:14px;color:#cfcfd6;letter-spacing:-0.02em;")}>PayKit</span>
-            <span style={css("font-size:12.5px;color:#5b5b63;margin-left:6px;")}>© 2026</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="PayKit" style={{height:26,width:"auto",display:"block",mixBlendMode:"screen"} as React.CSSProperties} />
+            <span style={css("font-size:12.5px;color:#5b5b63;")}>© 2026</span>
           </div>
           <div style={css("display:flex;flex-wrap:wrap;gap:22px;font-size:13px;color:#7c7c85;")}>
             {["Docs", "Pricing", "Changelog", "GitHub", "Privacy"].map((l) => (
