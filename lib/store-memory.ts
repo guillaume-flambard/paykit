@@ -14,6 +14,7 @@ export class MemoryStore implements Store {
       name: "Demo project",
       publishableKey: "pk_live_demo",
       secretKey: "sk_live_demo",
+      secureMetering: false,
     })
   }
 
@@ -104,6 +105,7 @@ export class MemoryStore implements Store {
       name: name || "Untitled project",
       publishableKey: "pk_live_" + randomBytes(16).toString("hex"),
       secretKey: "sk_live_" + randomBytes(24).toString("hex"),
+      secureMetering: false,
     }
     this.projects.set(id, project)
     this.projectOwner.set(id, ownerId)
@@ -119,5 +121,14 @@ export class MemoryStore implements Store {
 
   async listProjectsByOwner(ownerId: string) {
     return [...this.projects.values()].filter((p) => this.projectOwner.get(p.id) === ownerId)
+  }
+
+  async getProject(id: string) {
+    return this.projects.get(id) ?? null
+  }
+
+  async setSecureMetering(projectId: string, value: boolean) {
+    const p = this.projects.get(projectId)
+    if (p) p.secureMetering = value
   }
 }

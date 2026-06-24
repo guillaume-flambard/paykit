@@ -48,6 +48,7 @@ export class PostgresStore implements Store {
       )
     `)
     await this.pool.query(`alter table paykit_projects add column if not exists owner_id text not null default 'demo'`)
+    await this.pool.query(`alter table paykit_projects add column if not exists secure_metering boolean not null default false`)
     await this.pool.query(`create index if not exists paykit_projects_owner on paykit_projects(owner_id)`)
     // Idempotent multi-tenant migration: add project_id to the existing tables.
     await this.pool.query(`alter table paykit_accounts add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
@@ -65,8 +66,8 @@ export class PostgresStore implements Store {
     return { userId: row.user_id, plan: row.plan, credits: row.credits, entitlements: row.entitlements }
   }
 
-  private mapProject(row: { id: string; name: string; publishable_key: string; secret_key: string }): Project {
-    return { id: row.id, name: row.name, publishableKey: row.publishable_key, secretKey: row.secret_key }
+  private mapProject(row: { id: string; name: string; publishable_key: string; secret_key: string; secure_metering?: boolean }): Project {
+    return { id: row.id, name: row.name, publishableKey: row.publishable_key, secretKey: row.secret_key, secureMetering: !!row.secure_metering }
   }
 
   private async ensure(userId: string) {
@@ -186,5 +187,16 @@ export class PostgresStore implements Store {
     await this.ready
     const { rows } = await this.pool.query(`select * from paykit_projects where owner_id=$1 order by created_at desc limit 100`, [ownerId])
     return rows.map((r) => this.mapProject(r))
+  }
+
+  async getProject(id: string) {
+    await this.ready
+    const { rows } = await this.pool.query(`select * from paykit_projects where id=$1 limit 1`, [id])
+    return rows[0] ? this.mapProject(rows[0]) : null
+  }
+
+  async setSecureMetering(projectId: string, value: boolean) {
+    await this.ready
+    await this.pool.query(`update paykit_projects set secure_metering=$2 where id=$1`, [projectId, value])
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@clerk/nextjs/server"
-import { createProject, listProjectsByOwner } from "@/lib/paykit-core"
+import { createProject, listProjectsByOwner, setProjectSecureMetering } from "@/lib/paykit-core"
+import { keyFromRequest } from "@/lib/api"
 
 const clerkConfigured = !!process.env.CLERK_SECRET_KEY
 
@@ -32,4 +33,20 @@ export async function POST(req: Request) {
   }
   const project = await createProject(name, ownerId)
   return NextResponse.json(project)
+}
+
+// PATCH /api/v1/projects { secureMetering, key: sk_... } → toggle a project setting.
+// Authorized by the project's own secret key (no Clerk needed for server-side admin).
+export async function PATCH(req: Request) {
+  const body = await req.json().catch(() => ({}))
+  const key = keyFromRequest(req, body)
+  if (!key || !key.startsWith("sk_")) {
+    return NextResponse.json({ error: "Secret key required" }, { status: 401 })
+  }
+  if (typeof body.secureMetering !== "boolean") {
+    return NextResponse.json({ error: "secureMetering (boolean) is required" }, { status: 400 })
+  }
+  const project = await setProjectSecureMetering(key, body.secureMetering)
+  if (!project) return NextResponse.json({ error: "Invalid secret key" }, { status: 401 })
+  return NextResponse.json({ id: project.id, secureMetering: project.secureMetering })
 }

@@ -13,6 +13,7 @@ export interface Project {
   name: string
   publishableKey: string // pk_live_… — safe in the browser / embed
   secretKey: string // sk_live_… — server only
+  secureMetering: boolean // when true, /meter requires the secret key (server-side only)
 }
 
 export interface MeterResult {
@@ -57,6 +58,10 @@ export interface Store {
   getProjectByKey(key: string): Promise<Project | null>
   /** List the projects owned by a given account. */
   listProjectsByOwner(ownerId: string): Promise<Project[]>
+  /** Fetch a single project by id. */
+  getProject(id: string): Promise<Project | null>
+  /** Toggle whether /meter requires the secret key for this project. */
+  setSecureMetering(projectId: string, value: boolean): Promise<void>
 }
 
 // Internal account ids are namespaced "<projectId>:<userId>" so the same userId

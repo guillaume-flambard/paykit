@@ -56,6 +56,18 @@ export async function listProjectsByOwner(ownerId: string): Promise<Project[]> {
   return store.listProjectsByOwner(ownerId)
 }
 
+export async function getProject(id: string): Promise<Project | null> {
+  return store.getProject(id)
+}
+
+/** Toggle secure metering for the project owning `secretKey`. Returns it, or null if the key is invalid. */
+export async function setProjectSecureMetering(secretKey: string, value: boolean): Promise<Project | null> {
+  const p = await store.getProjectByKey(secretKey)
+  if (!p) return null
+  await store.setSecureMetering(p.id, value)
+  return { ...p, secureMetering: value }
+}
+
 /**
  * Resolve a project id from an API key.
  * - no key  → the public demo project (keeps the no-key embed/showcase working)
