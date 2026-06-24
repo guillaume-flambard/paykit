@@ -428,7 +428,8 @@ function Landing({
             <span style={css("font-size:12.5px;color:#5b5b63;")}>© 2026</span>
           </div>
           <div style={css("display:flex;flex-wrap:wrap;gap:22px;font-size:13px;color:#7c7c85;")}>
-            {["Docs", "Pricing", "Changelog", "GitHub", "Privacy"].map((l) => (
+            <Link href="/docs" className="pk-link" style={css("color:#7c7c85;text-decoration:none;")}>Docs</Link>
+            {["Pricing", "Changelog", "GitHub", "Privacy"].map((l) => (
               <span key={l} className="pk-link">{l}</span>
             ))}
           </div>

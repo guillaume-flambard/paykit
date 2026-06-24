@@ -2,6 +2,8 @@
 
 Drop-in **credits, usage metering & subscriptions for AI apps**. See `~/Vault/01-Projects/PayKit.md`.
 
+> 📖 **[Full documentation → `docs/README.md`](docs/README.md)** — concepts, React SDK, embed, REST API, billing & self-hosting.
+
 ## What's here (MVP v0.1 — runnable)
 - **Core engine** (`lib/paykit-core.ts` + `lib/types.ts`): credits, `meter()`, plans/entitlements, `hasAccess()`.
 - **Pluggable store:** in-memory (`store-memory.ts`) by default; **Postgres** (`store-postgres.ts`, atomic deduct) when `DATABASE_URL` is set.
