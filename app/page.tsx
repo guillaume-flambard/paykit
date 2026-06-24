@@ -31,7 +31,16 @@ function Logo({ size = 26 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 26 26" fill="none">
       <rect width="26" height="26" rx="7" fill="var(--ac)" />
-      <path d="M14.6 5 L7.5 14.4 H11.9 L11 21 L18.5 11 H13.7 Z" fill="#08120c" />
+      {/* P — filled with evenodd counter */}
+      <path
+        fillRule="evenodd"
+        fill="rgba(255,255,255,0.93)"
+        d="M4.5 5H7.5C13.5 5 13.5 12.5 7.5 12.5V21H4.5ZM7.5 8C11 8 11 11 7.5 11Z"
+      />
+      {/* K — stem + two diagonal arms */}
+      <line x1="14.5" y1="5" x2="14.5" y2="21" stroke="rgba(255,255,255,0.93)" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="15.5" y1="12.5" x2="21.5" y2="5" stroke="rgba(255,255,255,0.93)" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="15.5" y1="12.5" x2="21.5" y2="21" stroke="rgba(255,255,255,0.93)" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   )
 }
