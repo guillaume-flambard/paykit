@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 import { scope } from "@/lib/api"
-import { PRO_PRICE_USD } from "@/lib/types"
+import { CREDIT_PACK_SIZE, CREDIT_PACK_USD, PRO_PRICE_USD } from "@/lib/types"
 
 // POST /api/v1/checkout  { userId, kind: "credits" | "pro", key? }
 // Creates a Stripe Checkout Session (inline prices — no dashboard setup needed).
@@ -48,13 +48,13 @@ export async function POST(req: Request) {
               {
                 price_data: {
                   currency: "usd",
-                  product_data: { name: "100 credits" },
-                  unit_amount: 900,
+                  product_data: { name: `${CREDIT_PACK_SIZE} credits` },
+                  unit_amount: CREDIT_PACK_USD * 100,
                 },
                 quantity: 1,
               },
             ],
-            metadata: { userId: uid, packCredits: "100" },
+            metadata: { userId: uid, packCredits: String(CREDIT_PACK_SIZE) },
             ...urls,
           })
 

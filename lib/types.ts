@@ -91,6 +91,10 @@ export const STARTING_FREE_CREDITS = 5
 /** Monthly price of the pro plan, in USD. Stripe charges it in cents (× 100). */
 export const PRO_PRICE_USD = 19
 
+/** The one-time credit pack: how many credits it grants, and its price in USD. */
+export const CREDIT_PACK_SIZE = 100
+export const CREDIT_PACK_USD = 9
+
 /** Stats derived from a project's accounts, shared by the /accounts and /analytics endpoints. */
 export function accountStats(accounts: Account[]) {
   const pro = accounts.filter((a) => a.plan === "pro").length

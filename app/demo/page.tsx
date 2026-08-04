@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { PayKitProvider, usePayKit, Paywall } from "@/lib/paykit-react"
-import { PRO_PRICE_USD } from "@/lib/types"
+import { CREDIT_PACK_SIZE, CREDIT_PACK_USD, PRO_PRICE_USD } from "@/lib/types"
 
 // A mock "AI app" that uses PayKit for credits + paywall — the live demo of the value prop.
 function Demo() {
@@ -72,7 +72,7 @@ function Demo() {
         <div className="mt-2 text-xs uppercase tracking-widest text-neutral-600">Real Stripe checkout</div>
         <div className="flex gap-3">
           <button onClick={() => stripe("credits")} className="flex-1 rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-4 py-2.5 text-sm text-indigo-300 hover:bg-indigo-500/20">
-            Buy 100 credits — $9
+            {`Buy ${CREDIT_PACK_SIZE} credits — $${CREDIT_PACK_USD}`}
           </button>
           <button onClick={() => stripe("pro")} className="flex-1 rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-4 py-2.5 text-sm text-indigo-300 hover:bg-indigo-500/20">
             {`Subscribe Pro — $${PRO_PRICE_USD}/mo`}

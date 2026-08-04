@@ -51,6 +51,8 @@ describe("POST /api/v1/checkout", () => {
     expect(await res.json()).toEqual({ url: "https://checkout.stripe.com/credits" })
     const [opts] = stripe.sessionsCreate.mock.calls[0]
     expect(opts.mode).toBe("payment")
+    expect(opts.line_items[0].price_data.unit_amount).toBe(900)
+    expect(opts.line_items[0].price_data.product_data.name).toBe("100 credits")
     expect(opts.metadata).toMatchObject({ userId: "proj_x:u", packCredits: "100" })
   })
 

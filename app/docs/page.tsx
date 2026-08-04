@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
-import { PRO_PRICE_USD } from "@/lib/types"
+import { CREDIT_PACK_SIZE, CREDIT_PACK_USD, PRO_PRICE_USD } from "@/lib/types"
 
 /* Parse a CSS string into a React style object (same helper as the showcase). */
 function css(s: string): React.CSSProperties {
@@ -411,7 +411,7 @@ runYourModel()`} />
             <Table
               head={["Product", "Detail"]}
               rows={[
-                [<Mono key="a">credits</Mono>, "One-time $9 for a 100-credit pack."],
+                [<Mono key="a">credits</Mono>, `One-time $${CREDIT_PACK_USD} for a ${CREDIT_PACK_SIZE}-credit pack.`],
                 [<Mono key="b">pro</Mono>, `$${PRO_PRICE_USD}/mo subscription. Cancelling reverts the user to free.`],
               ]}
             />
