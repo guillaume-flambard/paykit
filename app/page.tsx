@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { PayKitProvider, usePayKit } from "@/lib/paykit-react"
-import { PRO_PRICE_USD, type Account, type Analytics } from "@/lib/types"
+import { CREDIT_PACK_SIZE, CREDIT_PACK_USD, PRO_PRICE_USD, type Account, type Analytics } from "@/lib/types"
 
 /* ------------------------------------------------------------------ *
  * PayKit showcase — faithful implementation of design/PayKit.dc.html
@@ -1059,8 +1059,8 @@ function WidgetConnected() {
     setWLog((l) => [`Generated image · −1 credit · ${r.remaining} left`, ...l].slice(0, 5))
   }
   async function wBuy() {
-    await buyCredits(50) // real POST /api/v1/credits
-    setWLog((l) => ["Bought 50 credits · $9.00", ...l].slice(0, 5))
+    await buyCredits(CREDIT_PACK_SIZE) // real POST /api/v1/credits
+    setWLog((l) => [`Bought ${CREDIT_PACK_SIZE} credits · $${CREDIT_PACK_USD}.00`, ...l].slice(0, 5))
   }
   async function wUpgrade() {
     const next = wIsPro ? "free" : "pro"
@@ -1144,7 +1144,7 @@ function Widget({
                 </div>
                 <div style={css("display:flex;align-items:baseline;gap:7px;")}><span style={css("font-size:38px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;font-variant-numeric:tabular-nums;line-height:1;")}>{wCredits}</span><span style={css("font-size:13px;color:#76767e;")}>{wCredits === 1 ? "credit" : "credits"} left</span></div>
                 <div style={css("height:7px;border-radius:4px;background:#16161a;overflow:hidden;margin:14px 0 16px;")}><div style={{ height: "100%", width: `${wPct}%`, background: "var(--ac)", borderRadius: "4px", transition: "width .35s ease" }} /></div>
-                <button className="pk-ghost" onClick={wBuy} style={css("width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:#131316;color:#e4e4e7;font-size:13.5px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>Buy 50 credits · $9</button>
+                <button className="pk-ghost" onClick={wBuy} style={css("width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:#131316;color:#e4e4e7;font-size:13.5px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>{`Buy ${CREDIT_PACK_SIZE} credits · $${CREDIT_PACK_USD}`}</button>
               </div>
 
               {/* Paywalled feature */}
