@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
+import { PRO_PRICE_USD } from "@/lib/types"
 
 /* Parse a CSS string into a React style object (same helper as the showcase). */
 function css(s: string): React.CSSProperties {
@@ -411,7 +412,7 @@ runYourModel()`} />
               head={["Product", "Detail"]}
               rows={[
                 [<Mono key="a">credits</Mono>, "One-time $9 for a 100-credit pack."],
-                [<Mono key="b">pro</Mono>, "$19/mo subscription. Cancelling reverts the user to free."],
+                [<Mono key="b">pro</Mono>, `$${PRO_PRICE_USD}/mo subscription. Cancelling reverts the user to free.`],
               ]}
             />
             <P>
@@ -518,7 +519,7 @@ PayKit.user                 // the resolved user id`} />
             </Endpoint>
 
             <Endpoint method="GET" path="/analytics  ·  /accounts">
-              <P>Dashboard data, scoped by key. <Mono>/analytics</Mono> returns usage series + top events + <Mono>stats {`{ total, pro, mrr, creditsOutstanding }`}</Mono> (MRR = pro × $19). <Mono>/accounts</Mono> returns the account list + stats.</P>
+              <P>Dashboard data, scoped by key. <Mono>/analytics</Mono> returns usage series + top events + <Mono>stats {`{ total, pro, mrr, creditsOutstanding }`}</Mono> (MRR = pro × {`$${PRO_PRICE_USD}`}). <Mono>/accounts</Mono> returns the account list + stats.</P>
             </Endpoint>
 
             <Endpoint method="GET · POST · PATCH" path="/projects">

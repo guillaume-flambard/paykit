@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { PayKitProvider, usePayKit, Paywall } from "@/lib/paykit-react"
+import { PRO_PRICE_USD } from "@/lib/types"
 
 // A mock "AI app" that uses PayKit for credits + paywall — the live demo of the value prop.
 function Demo() {
@@ -74,7 +75,7 @@ function Demo() {
             Buy 100 credits — $9
           </button>
           <button onClick={() => stripe("pro")} className="flex-1 rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-4 py-2.5 text-sm text-indigo-300 hover:bg-indigo-500/20">
-            Subscribe Pro — $19/mo
+            {`Subscribe Pro — $${PRO_PRICE_USD}/mo`}
           </button>
           <button onClick={openPortal} className="flex-1 rounded-xl border border-neutral-700 px-4 py-2.5 text-sm hover:border-neutral-500">
             Manage billing

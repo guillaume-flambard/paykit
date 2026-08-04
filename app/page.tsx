@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { PayKitProvider, usePayKit } from "@/lib/paykit-react"
-import type { Account, Analytics } from "@/lib/types"
+import { PRO_PRICE_USD, type Account, type Analytics } from "@/lib/types"
 
 /* ------------------------------------------------------------------ *
  * PayKit showcase — faithful implementation of design/PayKit.dc.html
@@ -385,7 +385,7 @@ function Landing({
           <div style={css("position:relative;border:1px solid color-mix(in srgb,var(--ac) 40%,#1f1f23);border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 7%,#0c0c0e),#0c0c0e);padding:28px 26px;box-shadow:0 0 0 1px color-mix(in srgb,var(--ac) 18%,transparent),0 18px 50px -24px color-mix(in srgb,var(--ac) 50%,transparent);")}>
             <div style={css("position:absolute;top:18px;right:18px;font-size:10.5px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 13%,transparent);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);border-radius:999px;padding:3px 9px;letter-spacing:0.03em;")}>POPULAR</div>
             <div style={css("font-size:14px;font-weight:600;color:var(--ac);letter-spacing:-0.01em;")}>Launch</div>
-            <div style={css("display:flex;align-items:baseline;gap:5px;margin:14px 0 4px;")}><span style={css("font-size:40px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;")}>$19</span><span style={css("font-size:14px;color:#8f8f97;")}>/mo</span></div>
+            <div style={css("display:flex;align-items:baseline;gap:5px;margin:14px 0 4px;")}><span style={css("font-size:40px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;")}>{`$${PRO_PRICE_USD}`}</span><span style={css("font-size:14px;color:#8f8f97;")}>/mo</span></div>
             <div style={css("font-size:13px;color:#6f6f77;margin-bottom:22px;")}>Everything you need to charge for real.</div>
             <button className="pk-primary" onClick={() => go("quickstart")} style={css("width:100%;padding:10px;border-radius:9px;background:var(--ac);color:#06120c;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 28%,transparent);")}>Get started</button>
             <div style={css("display:flex;flex-direction:column;gap:11px;margin-top:24px;")}>
@@ -641,7 +641,7 @@ function Dashboard({
             <>
               <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:14px;margin-bottom:18px;")}>
                 {[
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5" /></svg>, label: "MRR", num: an ? `$${(an.stats?.mrr ?? 0).toLocaleString()}` : "—", sub: an ? `${an.stats?.pro ?? 0} Pro × $19/mo` : "" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5" /></svg>, label: "MRR", num: an ? `$${(an.stats?.mrr ?? 0).toLocaleString()}` : "—", sub: an ? `${an.stats?.pro ?? 0} Pro × $${PRO_PRICE_USD}/mo` : "" },
                   { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3.5" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /></svg>, label: "Active subs", num: an ? `${an.stats?.pro ?? 0}` : "—", sub: an ? `of ${an.stats?.total ?? 0} accounts` : "" },
                   { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" /></svg>, label: "Credits sold", num: an ? (an.creditsSoldThisMonth ?? 0).toLocaleString() : "—", sub: "this month" },
                   { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>, label: "Metered calls", num: an ? (an.meteredThisMonth ?? 0).toLocaleString() : "—", sub: "this month" },
@@ -726,7 +726,7 @@ function Dashboard({
                   <div style={css("display:flex;align-items:center;gap:10px;margin-bottom:18px;")}><div style={css("font-size:15px;font-weight:600;color:var(--ac);")}>Pro</div><span style={css("font-size:10.5px;font-weight:600;color:#76767e;border:1px solid #2a2a2e;border-radius:5px;padding:1px 6px;")}>EDITING</span></div>
                   <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:14px;")}>
                     <label style={css("display:block;")}><span style={css(labelInput)}>Plan name</span><input className="pk-input" defaultValue="Pro" style={css(fieldInput)} /></label>
-                    <label style={css("display:block;")}><span style={css(labelInput)}>Price / mo (USD)</span><input className="pk-input" defaultValue="19" style={css(fieldMono)} /></label>
+                    <label style={css("display:block;")}><span style={css(labelInput)}>Price / mo (USD)</span><input className="pk-input" defaultValue={PRO_PRICE_USD} style={css(fieldMono)} /></label>
                     <label style={css("display:block;")}><span style={css(labelInput)}>Included credits / mo</span><input className="pk-input" defaultValue="500" style={css(fieldMono)} /></label>
                   </div>
                   <div style={css("margin-top:16px;")}><span style={css("display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:9px;")}>Entitlements</span><div style={css("display:flex;flex-wrap:wrap;gap:8px;")}>{["pro", "hd_upscale"].map((e) => <span key={e} style={css("display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);border-radius:7px;padding:4px 10px;")}>{e}</span>)}<span style={css("display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:#76767e;background:#131316;border:1px dashed #2a2a2e;border-radius:7px;padding:4px 10px;cursor:pointer;")}>+ Add</span></div></div>
@@ -1065,7 +1065,7 @@ function WidgetConnected() {
   async function wUpgrade() {
     const next = wIsPro ? "free" : "pro"
     await upgrade(next) // real POST /api/v1/credits (plan)
-    setWLog((l) => [next === "pro" ? "Upgraded to Pro · $19/mo" : "Switched to Free plan", ...l].slice(0, 5))
+    setWLog((l) => [next === "pro" ? `Upgraded to Pro · $${PRO_PRICE_USD}/mo` : "Switched to Free plan", ...l].slice(0, 5))
   }
 
   return (
@@ -1158,7 +1158,7 @@ function Widget({
                 <div style={css("border:1px dashed #2a2a2e;border-radius:14px;background:#0c0c0e;padding:16px 18px;")}>
                   <div style={css("display:flex;align-items:center;gap:9px;margin-bottom:6px;")}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#76767e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg><span style={css("font-size:14px;font-weight:600;color:#cfcfd6;")}>HD upscale</span></div>
                   <p style={css("font-size:12.5px;color:#76767e;margin:0 0 12px;line-height:1.5;")}>4× upscaling is a Pro feature. Upgrade to unlock it for every render.</p>
-                  <button className="pk-primary" onClick={wUpgrade} style={css("width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}>Upgrade to Pro · $19/mo</button>
+                  <button className="pk-primary" onClick={wUpgrade} style={css("width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}>{`Upgrade to Pro · $${PRO_PRICE_USD}/mo`}</button>
                 </div>
               )}
 
