@@ -13,7 +13,7 @@
  *   <button data-paykit-meter="image_gen">Generate</button>   → spends 1 credit on click
  *   <div data-paykit-plan="pro"> Pro-only content </div>       → hidden unless the user is Pro
  *
- * And in your own code: PayKit.meter('image_gen'), PayKit.buy(), PayKit.refresh().
+ * And in your own code: PayKit.meter('image_gen'), PayKit.buy(), PayKit.portal(), PayKit.refresh().
  */
 (function () {
   "use strict"
@@ -82,6 +82,17 @@
     })
   }
 
+  function portal() {
+    return api("/portal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user, key: key }),
+    }).then(function (r) {
+      if (r && r.url) window.location.href = r.url
+      else alert("Billing portal isn't set up yet (no Stripe key).")
+    })
+  }
+
   function host() {
     var el = document.getElementById("paykit")
     if (!el) {
@@ -124,11 +135,16 @@
       '<button data-pk-buy style="padding:9px 14px;border-radius:10px;background:' +
       accent +
       ';color:#06120c;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">Buy credits</button>' +
+      (pro
+        ? '<button data-pk-portal style="padding:9px 14px;border-radius:10px;background:#131316;border:1px solid #2a2a2e;color:#a5a5ad;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Manage billing</button>'
+        : "") +
       '<a href="https://github.com/guillaume-flambard/paykit" target="_blank" rel="noopener" style="font-size:10px;color:#5b5b63;text-decoration:none">Powered by PayKit</a>' +
       "</div>"
 
     var b = el.querySelector("[data-pk-buy]")
     if (b) b.onclick = buy
+    var p = el.querySelector("[data-pk-portal]")
+    if (p) p.onclick = portal
 
     // Paywall: hide elements gated by a plan the user doesn't have.
     document.querySelectorAll("[data-paykit-plan]").forEach(function (node) {
@@ -155,6 +171,7 @@
     user: user,
     meter: meter,
     buy: buy,
+    portal: portal,
     refresh: refresh,
     account: function () {
       return account

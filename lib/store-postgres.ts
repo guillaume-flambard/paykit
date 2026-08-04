@@ -52,6 +52,7 @@ export class PostgresStore implements Store {
     await this.pool.query(`create index if not exists paykit_projects_owner on paykit_projects(owner_id)`)
     // Idempotent multi-tenant migration: add project_id to the existing tables.
     await this.pool.query(`alter table paykit_accounts add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
+    await this.pool.query(`alter table paykit_accounts add column if not exists stripe_customer_id text`)
     await this.pool.query(`alter table paykit_events add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
     await this.pool.query(`create index if not exists paykit_accounts_project on paykit_accounts(project_id)`)
     await this.pool.query(`create index if not exists paykit_events_project on paykit_events(project_id)`)
@@ -62,8 +63,8 @@ export class PostgresStore implements Store {
     )
   }
 
-  private map(row: { user_id: string; plan: string; credits: number; entitlements: string[] }): Account {
-    return { userId: row.user_id, plan: row.plan, credits: row.credits, entitlements: row.entitlements }
+  private map(row: { user_id: string; plan: string; credits: number; entitlements: string[]; stripe_customer_id?: string }): Account {
+    return { userId: row.user_id, plan: row.plan, credits: row.credits, entitlements: row.entitlements, stripeCustomerId: row.stripe_customer_id ?? undefined }
   }
 
   private mapProject(row: { id: string; name: string; publishable_key: string; secret_key: string; secure_metering?: boolean }): Project {
@@ -198,5 +199,16 @@ export class PostgresStore implements Store {
   async setSecureMetering(projectId: string, value: boolean) {
     await this.ready
     await this.pool.query(`update paykit_projects set secure_metering=$2 where id=$1`, [projectId, value])
+  }
+
+  async setStripeCustomer(userId: string, customerId: string) {
+    await this.ready
+    const { rows } = await this.pool.query(
+      `insert into paykit_accounts(user_id, project_id, stripe_customer_id) values($1,$2,$3)
+       on conflict(user_id) do update set stripe_customer_id=excluded.stripe_customer_id
+       returning *`,
+      [userId, splitId(userId).projectId, customerId],
+    )
+    return this.map(rows[0])
   }
 }

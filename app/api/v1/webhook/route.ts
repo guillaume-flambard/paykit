@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
-import { grantCredits, setPlan } from "@/lib/paykit-core"
+import { grantCredits, setPlan, setStripeCustomer } from "@/lib/paykit-core"
 
 // POST /api/v1/webhook — Stripe events → grant credits / set plan.
 // Configure the endpoint in Stripe and set STRIPE_WEBHOOK_SECRET.
@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       const s = event.data.object as Stripe.Checkout.Session
       const userId = s.metadata?.userId
       if (userId) {
+        if (typeof s.customer === "string") await setStripeCustomer(userId, s.customer)
         if (s.metadata?.packCredits) await grantCredits(userId, Number(s.metadata.packCredits))
         if (s.metadata?.plan) await setPlan(userId, s.metadata.plan)
       }

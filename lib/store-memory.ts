@@ -131,4 +131,10 @@ export class MemoryStore implements Store {
     const p = this.projects.get(projectId)
     if (p) p.secureMetering = value
   }
+
+  async setStripeCustomer(userId: string, customerId: string) {
+    const a = this.ensure(userId)
+    a.stripeCustomerId = customerId
+    return a
+  }
 }

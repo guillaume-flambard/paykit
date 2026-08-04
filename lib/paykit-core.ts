@@ -40,6 +40,10 @@ export async function setPlan(userId: string, plan: string): Promise<Account> {
   return a
 }
 
+export async function setStripeCustomer(userId: string, customerId: string): Promise<Account> {
+  return store.setStripeCustomer(userId, customerId)
+}
+
 export async function analytics(projectId = DEFAULT_PROJECT_ID): Promise<Analytics> {
   return store.analytics(projectId)
 }

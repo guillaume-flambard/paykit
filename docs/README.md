@@ -154,6 +154,8 @@ const {
   Always re-reads the account after.
 - **`checkout("credits" | "pro")`** — opens Stripe Checkout and redirects. `"credits"` = a
   100-credit pack ($9), `"pro"` = the $19/mo subscription. Throws if Stripe isn't configured.
+- **`portal()`** — opens the Stripe Customer Portal (subscription, payment methods, invoices)
+  and redirects. Creates a Stripe Customer on first use. Throws if Stripe isn't configured.
 - **`buyCredits` / `upgrade`** — local stand-ins that change the ledger directly with no
   payment. Great for dev, demos, and "simulate purchase" buttons; don't use them in prod.
 
@@ -193,6 +195,7 @@ One script tag. Configure it with attributes:
 ```js
 PayKit.meter("image_gen")   // → Promise<{ ok, remaining, blocked? }>, repaints the meter
 PayKit.buy()                // → start Stripe Checkout for a credit pack
+PayKit.portal()             // → open the Stripe Customer Portal (pro users)
 PayKit.refresh()            // → re-fetch the account
 PayKit.account()            // → the cached account object
 PayKit.user                 // → the resolved user id
@@ -283,6 +286,27 @@ curl -X POST …/checkout -H "Content-Type: application/json" \
 | `kind` | `"credits"` \| `"pro"` | `credits` = 100-credit pack ($9) · `pro` = $19/mo subscription. |
 
 Redirect the user to `url`. No `STRIPE_SECRET_KEY` → `501`.
+
+### `POST /portal`
+
+Open the Stripe **Customer Portal** for the user — manage their subscription, update
+payment methods, view invoices. Same key scoping as `/checkout`.
+
+```bash
+curl -X POST …/portal -H "Content-Type: application/json" \
+  -d '{ "userId": "user_123", "key": "pk_live_…" }'
+```
+```json
+{ "url": "https://billing.stripe.com/p/session/…" }
+```
+
+| Field | Type | Notes |
+|---|---|---|
+| `userId` | string | **Required.** |
+| `key` | string | Publishable or secret key. Invalid → `401`. |
+
+If the user has no Stripe Customer yet, PayKit creates one (tagged with the `userId`
+metadata) and opens the portal from there. No `STRIPE_SECRET_KEY` → `501`.
 
 ### `POST /webhook`
 

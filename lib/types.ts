@@ -5,6 +5,7 @@ export interface Account {
   plan: string
   credits: number
   entitlements: string[]
+  stripeCustomerId?: string
 }
 
 /** A merchant project — the multi-tenant boundary. Each has its own keys & data. */
@@ -62,6 +63,8 @@ export interface Store {
   getProject(id: string): Promise<Project | null>
   /** Toggle whether /meter requires the secret key for this project. */
   setSecureMetering(projectId: string, value: boolean): Promise<void>
+  /** Persist the Stripe Customer id for a user (for the billing portal). */
+  setStripeCustomer(userId: string, customerId: string): Promise<Account>
 }
 
 // Internal account ids are namespaced "<projectId>:<userId>" so the same userId

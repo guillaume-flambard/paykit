@@ -6,7 +6,7 @@ import { PayKitProvider, usePayKit, Paywall } from "@/lib/paykit-react"
 
 // A mock "AI app" that uses PayKit for credits + paywall — the live demo of the value prop.
 function Demo() {
-  const { account, loading, meter, buyCredits, upgrade, checkout } = usePayKit()
+  const { account, loading, meter, buyCredits, upgrade, checkout, portal } = usePayKit()
   const [log, setLog] = useState<string[]>([])
   const [note, setNote] = useState("")
 
@@ -21,6 +21,15 @@ function Demo() {
       await checkout(kind)
     } catch (e) {
       setNote(e instanceof Error ? e.message : "Checkout unavailable") // e.g. Stripe not configured
+    }
+  }
+
+  async function openPortal() {
+    setNote("")
+    try {
+      await portal()
+    } catch (e) {
+      setNote(e instanceof Error ? e.message : "Billing portal unavailable")
     }
   }
 
@@ -66,6 +75,9 @@ function Demo() {
           </button>
           <button onClick={() => stripe("pro")} className="flex-1 rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-4 py-2.5 text-sm text-indigo-300 hover:bg-indigo-500/20">
             Subscribe Pro — $19/mo
+          </button>
+          <button onClick={openPortal} className="flex-1 rounded-xl border border-neutral-700 px-4 py-2.5 text-sm hover:border-neutral-500">
+            Manage billing
           </button>
         </div>
         {note && <p className="text-sm text-amber-400">⚠ {note}</p>}

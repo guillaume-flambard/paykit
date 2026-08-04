@@ -14,6 +14,8 @@ interface PayKitContextValue {
   upgrade: (plan: string) => Promise<void>
   /** Real Stripe Checkout — redirects. Throws if Stripe isn't configured. */
   checkout: (kind: "credits" | "pro") => Promise<void>
+  /** Open the Stripe Customer Portal (subscription / payment methods). Redirects. */
+  portal: () => Promise<void>
   hasAccess: (plan: string) => boolean
 }
 
@@ -88,6 +90,20 @@ export function PayKitProvider({ userId, children }: { userId: string; children:
     [userId],
   )
 
+  const portal = useCallback(async () => {
+    const res = await fetch(`/api/v1/portal`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.error || "Billing portal unavailable")
+    }
+    const { url } = await res.json()
+    if (url) window.location.href = url
+  }, [userId])
+
   const hasAccess = useCallback(
     (plan: string) => plan === "free" || Boolean(account?.entitlements.includes(plan)),
     [account],
@@ -95,7 +111,7 @@ export function PayKitProvider({ userId, children }: { userId: string; children:
 
   return (
     <PayKitContext.Provider
-      value={{ account, loading, refresh, meter, buyCredits, upgrade, checkout, hasAccess }}
+      value={{ account, loading, refresh, meter, buyCredits, upgrade, checkout, portal, hasAccess }}
     >
       {children}
     </PayKitContext.Provider>
