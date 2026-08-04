@@ -87,3 +87,17 @@ export const PLAN_ENTITLEMENTS: Record<string, string[]> = {
 }
 
 export const STARTING_FREE_CREDITS = 5
+
+/** Monthly price of the pro plan, in USD. Stripe charges it in cents (× 100). */
+export const PRO_PRICE_USD = 19
+
+/** Stats derived from a project's accounts, shared by the /accounts and /analytics endpoints. */
+export function accountStats(accounts: Account[]) {
+  const pro = accounts.filter((a) => a.plan === "pro").length
+  return {
+    total: accounts.length,
+    pro,
+    mrr: pro * PRO_PRICE_USD,
+    creditsOutstanding: accounts.reduce((sum, a) => sum + a.credits, 0),
+  }
+}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 import { scope } from "@/lib/api"
+import { PRO_PRICE_USD } from "@/lib/types"
 
 // POST /api/v1/checkout  { userId, kind: "credits" | "pro", key? }
 // Creates a Stripe Checkout Session (inline prices — no dashboard setup needed).
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
                 price_data: {
                   currency: "usd",
                   product_data: { name: "PayKit Pro" },
-                  unit_amount: 1900,
+                  unit_amount: PRO_PRICE_USD * 100,
                   recurring: { interval: "month" },
                 },
                 quantity: 1,
