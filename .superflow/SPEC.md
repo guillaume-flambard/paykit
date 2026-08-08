@@ -1,26 +1,18 @@
-# SPEC — core-audit: core-audit
+# SPEC — paykit: cost guardrail sur `/api/v1/meter`
 
-> 10-30 lines max. Over 50 = over-specifying. The spec is a **candidate**, not a king:
-> if evidence (tests green + runtime + design-fidelity) contradicts it, it gets updated
-> with a rationale entry below. See `Evidence wins - contract arbitration`.
-
-- **Status**: draft | active | done
-- **Bet**: PayKit-core — **Appetite**: 2026-08-08 (circuit breaker: pivot, don't extend)
-- **Baseline**: what users do today without this feature (evidence).
-
-## Problem
-One line, with evidence (user signal, metric, request).
-
-## Scope
-Who it's for, what it does, what it deliberately does NOT do.
+- **Status**: done · **Bet**: PayKit-core · **Appetite**: 2026-08-08
+- **Problem**: `cost` n'est pas validé → meter à coût **0** (free-ride), **négatif** (= crédits CRÉDITÉS, bug sérieux), fractionnaire ou démesuré ; `event` vide passe. C'est la promesse « never lose money on model costs » non garantie à la frontière API.
 
 ## Acceptance criteria (Given-When-Then)
-- [ ] **Given** {{context}} **When** {{action}} **Then** {{observable result}}
-- [ ] **Given** ... (cover error, empty, loading states too)
+- [ ] **Given** un `POST /api/v1/meter` **When** `cost` est 0, négatif, non-entier, ou > 1_000_000 **Then** `400 { error: "cost must be a positive integer ≤ 1000000" }` et **aucune déduction**.
+- [ ] **Given** un appel **When** `cost` est omis **Then** coût par défaut = 1 (rétro-compatible).
+- [ ] **Given** un appel **When** `event` est vide ou > 64 caractères **Then** `400`.
+- [ ] **Given** un coût valide **When** déduction **Then** résultat inchangé (`ok`/`remaining`/`blocked`).
+- [ ] **Given** un `meter()` direct au core **When** `cost` est non valide **Then** il refuse (défense en profondeur — jamais de crédit négatif).
 
 ## Goals / constraints
-- Performance budget (e.g. LCP < 2.5s), a11y (WCAG 2.1 AA), security requirements.
-- Hard constraints (no new deps, do not change public API, etc.).
+- Rétro-compat : `cost` omis = 1. Validation à la **route** (message 400 clair) ET au **core** `meter()` (garde anti-crédit-négatif).
+- Aucune nouvelle dépendance. Tests : `tests/routes/meter.test.ts` + `tests/paykit-core.test.ts`.
 
-## Rationale history (evidence-wins log)
-- 2026-08-08 — {{what changed and why the evidence demanded it}}
+## Rationale history
+- 2026-08-08 — trouvé par le sweep characterization (routes sondées) : `typeof cost === "number" ? cost : 1` sans borne. Un `cost: -5` crédite 5 crédits — bug de perte d'argent.

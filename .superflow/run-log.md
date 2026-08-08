@@ -28,3 +28,18 @@ Fix a11y commité (T1). P1 audit laissé en décision — la migration next 16 d
 - Clerk 7.5.7 compatible next 16 (aucun changement API).
 - Smoke runtime : GET `/` 200 · POST `/api/v1/meter` 200 `{ok:true, remaining:4}`.
 - ✅ P1 fermé. Gate complet vert.
+
+## Run 2026-08-08 (3) — Cycle 4: feature build complet « cost guardrail »
+
+Feature : validation de `cost`/`event` sur `/api/v1/meter` (le gap free-ride — `cost: -5` CRÉDITAIT 5 crédits).
+
+| Étape du loop | Livré |
+|---|---|
+| SPEC | `.superflow/SPEC.md` (Given-When-Then, appetite) |
+| Code | `lib/paykit-core.ts` garde `Number.isInteger && 1..1e6` ; `route.ts` 400 clair avant scope |
+| Tests | +4 (1 core anti-crédit-négatif + 3 route) → **80/80** |
+| Gates | tsc ✓ · npm test 80/80 ✓ · build ✓ |
+| Runtime | smoke : cost -5/0 → 400, omis → 200, event vide → 400 |
+| Connaissance | kb.md (procédure) + note Vault |
+
+Rétro-compat vérifiée (`cost` omis = 1). Aucune nouvelle dépendance.

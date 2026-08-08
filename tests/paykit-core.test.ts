@@ -37,6 +37,15 @@ describe("paykit-core (billing engine, in-memory store)", () => {
     expect(r).toEqual({ ok: true, remaining: 1 })
   })
 
+  it("refuses a non-positive, non-integer or oversized cost (free-ride guard)", async () => {
+    const id = u()
+    await grantCredits(id, 10)
+    for (const bad of [0, -5, 1.5, 1_000_001]) {
+      await expect(meter(id, "chat", bad)).rejects.toThrow(/positive integer/)
+    }
+    expect((await getAccount(id)).credits).toBe(15) // 5 default + 10 granted — nothing minted or lost
+  })
+
   it("grants credits", async () => {
     const a = await grantCredits(u(), 100)
     expect(a.credits).toBe(105)

@@ -23,6 +23,11 @@ function track(userId: string, kind: "meter" | "grant" | "plan", name: string, a
 
 /** Deduct credits for one AI usage event. blocked=true if insufficient. */
 export async function meter(userId: string, event: string, cost = 1): Promise<MeterResult> {
+  // Free-ride guard: a non-positive cost would mint (negative) or give away
+  // (zero) credits — the "never lose money on model costs" boundary.
+  if (!Number.isInteger(cost) || cost < 1 || cost > 1_000_000) {
+    throw new Error("cost must be a positive integer ≤ 1000000")
+  }
   const r = await store.deduct(userId, cost)
   if (r.ok) track(userId, "meter", event, -cost)
   return r.ok ? { ok: true, remaining: r.remaining } : { ok: false, blocked: true, remaining: r.remaining }

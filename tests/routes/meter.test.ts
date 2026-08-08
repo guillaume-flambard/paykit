@@ -25,6 +25,29 @@ describe("POST /api/v1/meter", () => {
     expect((await POST(post({ event: "image_gen" }))).status).toBe(400)
   })
 
+  it("rejects an empty or overlong event", async () => {
+    expect((await POST(post({ userId: "u", event: "" }))).status).toBe(400)
+    expect((await POST(post({ userId: "u", event: "x".repeat(65) }))).status).toBe(400)
+  })
+
+  it("rejects a non-positive, non-integer or oversized cost without calling meter", async () => {
+    api.scope.mockResolvedValue({ uid: "proj_x:u", projectId: DEFAULT_PROJECT_ID, secret: true })
+    for (const cost of [0, -5, 1.5, 1_000_001, "3"]) {
+      const res = await POST(post({ userId: "u", event: "image_gen", cost }))
+      expect(res.status).toBe(400)
+      expect((await res.json()).error).toMatch(/positive integer/)
+    }
+    expect(core.meter).not.toHaveBeenCalled()
+  })
+
+  it("accepts an omitted cost (defaults to 1)", async () => {
+    api.scope.mockResolvedValue({ uid: "proj_x:u", projectId: DEFAULT_PROJECT_ID, secret: true })
+    core.meter.mockResolvedValue({ ok: true, remaining: 9 })
+    const res = await POST(post({ userId: "u", event: "image_gen" }))
+    expect(res.status).toBe(200)
+    expect(core.meter).toHaveBeenCalledWith("proj_x:u", "image_gen", 1)
+  })
+
   it("rejects an invalid API key", async () => {
     api.scope.mockResolvedValue({ uid: null })
     expect((await POST(post({ userId: "u", event: "image_gen" }))).status).toBe(401)

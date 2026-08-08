@@ -9,8 +9,12 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const { userId, event, cost } = body
-    if (typeof userId !== "string" || typeof event !== "string") {
+    if (typeof userId !== "string" || typeof event !== "string" || event.trim() === "" || event.length > 64) {
       return NextResponse.json({ error: "userId and event are required" }, { status: 400 })
+    }
+    const costNum = cost === undefined ? 1 : cost
+    if (typeof costNum !== "number" || !Number.isInteger(costNum) || costNum < 1 || costNum > 1_000_000) {
+      return NextResponse.json({ error: "cost must be a positive integer ≤ 1000000" }, { status: 400 })
     }
     const { uid, projectId, secret } = await scope(req, userId, body)
     if (!uid) return NextResponse.json({ error: "Invalid API key" }, { status: 401 })
@@ -21,7 +25,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "This project requires the secret key to meter (server-side)" }, { status: 403 })
       }
     }
-    const result = await meter(uid, event, typeof cost === "number" ? cost : 1)
+    const result = await meter(uid, event, costNum)
     if (result.blocked) {
       return NextResponse.json({ ...result, error: "Insufficient credits" }, { status: 402 })
     }
