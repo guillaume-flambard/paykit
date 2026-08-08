@@ -50,5 +50,5 @@ await fetch("/api/v1/meter", { method: "POST", body: JSON.stringify({ userId, ev
 
 ## Roadmap (next)
 1. **Multi-tenant:** ~~projects + API keys (publishable + secret) + a dashboard to define plans/prices~~ ✅ projects, keys, dashboard, secure metering + **Stripe Customer Portal** (POST /api/v1/portal).
-2. **Publish** `@paykit/react` + `@paykit/node` to npm.
+2. ~~**Publish** the SDK to npm~~ ✅ **`paykit-react` + `paykit-node` 0.1.0 live** (2026-08-08) — `npm install paykit-react` / `paykit-node`.
 3. Usage analytics + cost-vs-revenue guardrails.

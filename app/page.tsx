@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { PayKitProvider, usePayKit } from "@/lib/paykit-react"
+import { PayKitProvider, usePayKit } from "paykit-react"
 import { CREDIT_PACK_SIZE, CREDIT_PACK_USD, PRO_PRICE_USD, type Account, type Analytics } from "@/lib/types"
 
 /* ------------------------------------------------------------------ *
