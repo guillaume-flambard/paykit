@@ -46,3 +46,6 @@ skills-lock.json
 clerk-signin-live.png
 dashboard-apikeys.png
 embed-live.png
+
+# superflow runtime log (vivant, non commité)
+.superflow/runtime-errors.md

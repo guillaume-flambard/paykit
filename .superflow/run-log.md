@@ -58,3 +58,12 @@ Rétro-compat vérifiée (`cost` omis = 1). Aucune nouvelle dépendance.
 - `/api/v1/projects` : `name` non borné → ≤ 100 caractères (400).
 - `webhook` : vérifié — signé Stripe, zéro input client. ✓ `access`/`accounts`/`portal` : inputs validés/read-only. ✓
 - Tests +2 → **86/86** · tsc ✓.
+
+## Run 2026-08-08 (6) — Cycle 4: Phase 5 post-ship — runtime observability
+
+Ferme la lacune « la boucle s'arrête à tests verts » :
+- `POST/GET /api/v1/telemetry` — ring buffer (200) + append `.superflow/runtime-errors.md` (gitignoré, log vivant que le loop relit en feedback).
+- `app/telemetry-client.tsx` — capture `window error` + `unhandledrejection`, throttlée 1/s, sendBeacon best-effort, branchée dans le layout.
+- Tests +3 → **89/89** · tsc ✓ · smoke : POST 200 → GET recent → runtime-errors.md alimenté.
+- `.gitignore` : `runtime-errors.md` (log vivant, pas de commit).
+- **DORA** : la boucle lit maintenant les erreurs runtime (Phase 5 → Phase 4/6) — le feedback post-ship re-entre dans le loop.

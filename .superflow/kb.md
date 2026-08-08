@@ -6,3 +6,4 @@
 | `plan` inconnu sur setPlan | Whitelist `PLAN_ENTITLEMENTS` (free/pro) → 400 "unknown plan" ; ne jamais laisser un plan arbitraire avec 0 entitlements. | 2026-08-08 paykit | 1 |
 | `kind` hors whitelist sur un checkout | Brancher explicitement (`kind === "pro" ? ... : credits`) peut charger SILENCIEUSEMENT par défaut sur une typo → valider `kind ∈ {credits, pro}` → 400 avant Stripe. | 2026-08-08 paykit | 1 |
 | `name` non borné sur création (projects) | Borner (≤ 100) → 400. Même règle que les quantités : toute entrée client a une borne. | 2026-08-08 paykit | 1 |
+| Aucune visibilité runtime (la boucle s'arrête aux tests verts) | Telemetry légère : `sendBeacon` client (window error + unhandledrejection, throttle 1/s) → `POST /api/v1/telemetry` → ring buffer + `.superflow/runtime-errors.md` (gitignoré). Le superflow relit ce log en feedback Phase 5 → 4/6. Sans Sentry : zéro compte, zéro secret, best-effort. | 2026-08-08 paykit | 1 |
