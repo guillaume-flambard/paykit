@@ -67,3 +67,24 @@ Ferme la lacune « la boucle s'arrête à tests verts » :
 - Tests +3 → **89/89** · tsc ✓ · smoke : POST 200 → GET recent → runtime-errors.md alimenté.
 - `.gitignore` : `runtime-errors.md` (log vivant, pas de commit).
 - **DORA** : la boucle lit maintenant les erreurs runtime (Phase 5 → Phase 4/6) — le feedback post-ship re-entre dans le loop.
+
+## Run 2026-08-08 (7) — Cycle autonomie: prép npm publish — BLOCKÉ (nom)
+
+Milestone roadmap #2 (`@paykit/react` + `@paykit/node`). Vérif de nom = **gate d'entrée** :
+
+| check | résultat |
+|---|---|
+| `@paykit/react` | ⛔ **PRIS** — paykit-tech (widget crypto cross-chain, v0.1.3, maj 2025-12) |
+| `@paykit/node` | 404 (mais scope `@paykit` non publiable par nous) |
+| `paykit-react` / `paykit-node` / `paykit-js` | ✓ libres |
+| `npm whoami` | pas de session (publish impossible en l'état) |
+
+→ Aucun build/dry-run tant que le nom n'est pas tranché (construire sous un nom impubliable = travail jeté).
+**ESCLADE** en D-001 (decisions.md). Gates paykit toujours verts (89/89, tsc, build).
+
+## Run 2026-08-08 (7) — SDK npm prêt (D-001 → O1)
+- D-001 tranchée : **O1** — `paykit-react` + `paykit-node` (noms libres vérifiés npm).
+- `packages/node` (paykit-node 0.1.0) : core + types + stores (memory/postgres), build tsc NodeNext ✓, smoke `meter → remaining 102` ✓, pack = 9 fichiers.
+- `packages/react` (paykit-react 0.1.0) : PayKitProvider/usePayKit/Paywall, peer react ≥18, build ✓.
+- `npm pack --dry-run` OK des deux. **Publication bloquée : `npm whoami` → E401 (pas de login npm).**
+- Actions restantes pour publier : `npm login` puis `npm publish` dans chaque package (prepublishOnly build déjà câblé).
