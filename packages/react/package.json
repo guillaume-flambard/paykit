@@ -1,0 +1,29 @@
+{
+  "name": "paykit-react",
+  "version": "0.1.0",
+  "description": "PayKit React SDK — PayKitProvider, usePayKit, Paywall. Credits & usage billing for AI apps.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/paykit-react.js",
+  "types": "./dist/paykit-react.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/paykit-react.d.ts",
+      "import": "./dist/paykit-react.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": ["billing", "credits", "usage-metering", "react", "ai", "paywall"]
+}

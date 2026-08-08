@@ -1,0 +1,27 @@
+{
+  "name": "paykit-node",
+  "version": "0.1.0",
+  "description": "PayKit billing engine for Node — credits, usage metering & subscriptions for AI apps.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/paykit-core.js",
+  "types": "./dist/paykit-core.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/paykit-core.d.ts",
+      "import": "./dist/paykit-core.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "pg": "^8.11.0"
+  },
+  "keywords": ["billing", "usage-metering", "subscriptions", "credits", "ai", "stripe"]
+}
