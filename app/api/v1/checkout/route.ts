@@ -16,6 +16,11 @@ export async function POST(req: Request) {
     if (typeof userId !== "string") {
       return NextResponse.json({ error: "userId is required" }, { status: 400 })
     }
+    // Explicit whitelist: an unknown/typo'd kind must not silently charge the
+    // credits pack.
+    if (kind !== undefined && kind !== "credits" && kind !== "pro") {
+      return NextResponse.json({ error: 'kind must be "credits" or "pro"' }, { status: 400 })
+    }
     // Namespace the id so the webhook credits the right project's account.
     const { uid } = await scope(req, userId, body)
     if (!uid) return NextResponse.json({ error: "Invalid API key" }, { status: 401 })

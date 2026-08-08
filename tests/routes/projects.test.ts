@@ -63,6 +63,12 @@ describe("projects route (multi-tenant)", () => {
     expect(core.createProject).toHaveBeenCalledWith("Untitled project", "user_1")
   })
 
+  it("rejects a name over 100 characters", async () => {
+    clerk.auth.mockResolvedValue({ userId: "user_1" })
+    expect((await POST(post({ name: "x".repeat(101) }))).status).toBe(400)
+    expect(core.createProject).not.toHaveBeenCalled()
+  })
+
   it("requires a secret key to toggle secure metering", async () => {
     api.keyFromRequest.mockReturnValue(null)
     expect((await PATCH(post({ secureMetering: true }))).status).toBe(401)

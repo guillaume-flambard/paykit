@@ -51,3 +51,10 @@ Rétro-compat vérifiée (`cost` omis = 1). Aucune nouvelle dépendance.
 - Route `/api/v1/credits` : 400 clair (amount + plan) avant scope.
 - Tests +4 → **84/84** · tsc ✓ · smoke : -100→400, gold→400, +10→200.
 - KB : entrée « grant/plan guard ».
+
+## Run 2026-08-08 (5) — Cycle 4 suite: checkout kind + projects name
+
+- `/api/v1/checkout` : `kind` hors whitelist (typo « Pros », garbage, null) chargeait SILENCIEUSEMENT les credits → 400 explicite (`kind` ∈ {credits, pro}), aucune session Stripe.
+- `/api/v1/projects` : `name` non borné → ≤ 100 caractères (400).
+- `webhook` : vérifié — signé Stripe, zéro input client. ✓ `access`/`accounts`/`portal` : inputs validés/read-only. ✓
+- Tests +2 → **86/86** · tsc ✓.

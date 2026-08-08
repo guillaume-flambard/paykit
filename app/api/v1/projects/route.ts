@@ -31,6 +31,9 @@ export async function POST(req: Request) {
   } catch {
     /* empty body is fine */
   }
+  if (name.length > 100) {
+    return NextResponse.json({ error: "name must be ≤ 100 characters" }, { status: 400 })
+  }
   const project = await createProject(name, ownerId)
   return NextResponse.json(project)
 }

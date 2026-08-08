@@ -38,6 +38,16 @@ describe("POST /api/v1/checkout", () => {
     expect((await checkout(post({ kind: "credits" }))).status).toBe(400)
   })
 
+  it("rejects an unknown kind without charging anything", async () => {
+    api.scope.mockResolvedValue({ uid: "proj_x:u" })
+    for (const kind of ["garbage", "Pros", "pros", 42, null]) {
+      const res = await checkout(post({ userId: "u", kind }))
+      expect(res.status).toBe(400)
+      expect((await res.json()).error).toMatch(/kind/)
+    }
+    expect(stripe.sessionsCreate).not.toHaveBeenCalled()
+  })
+
   it("rejects an invalid API key", async () => {
     api.scope.mockResolvedValue({ uid: null })
     expect((await checkout(post({ userId: "u", kind: "credits" }))).status).toBe(401)
