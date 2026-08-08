@@ -22,3 +22,9 @@
 
 ## État
 Fix a11y commité (T1). P1 audit laissé en décision — la migration next 16 doit être planifiée (tests de non-régression, embarquement).
+
+## Run 2026-08-08 (2) — P1 audit résolu (next 15→16)
+- **Upgrade `next@15.5.23 → 16.3.0`** (major) : tsc clean · `npm run build` OK (toutes routes + middleware Proxy) · **76/76 tests** · **`npm audit --omit=dev` = 0** (résout GHSA-955p Server Function, postcss XSS, sharp libvips).
+- Clerk 7.5.7 compatible next 16 (aucun changement API).
+- Smoke runtime : GET `/` 200 · POST `/api/v1/meter` 200 `{ok:true, remaining:4}`.
+- ✅ P1 fermé. Gate complet vert.
