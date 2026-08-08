@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto"
-import { type Account, type Analytics, type Project, type Store, type UsageEvent, DEFAULT_PROJECT_ID, STARTING_FREE_CREDITS, splitId } from "./types"
+import { type Account, type Analytics, type Project, type Store, type UsageEvent, DEFAULT_PROJECT_ID, STARTING_FREE_CREDITS, CREDIT_PRICE_USD, splitId } from "./types"
 
 // In-memory store — local dev / no DATABASE_URL. Resets on restart.
 export class MemoryStore implements Store {
@@ -89,9 +89,19 @@ export class MemoryStore implements Store {
       })
     }
 
+    const meterMonth = meter.filter((e) => ts(e) >= monthStart)
+    const creditsSoldThisMonth = grant.filter((e) => ts(e) >= monthStart).reduce((s, e) => s + e.amount, 0)
+    const costUsd = meterMonth.reduce((s, e) => s + (e.costUsd ?? 0), 0)
+    const revenueUsd = creditsSoldThisMonth * CREDIT_PRICE_USD
+    const netUsd = revenueUsd - costUsd
+
     return {
-      meteredThisMonth: meter.filter((e) => ts(e) >= monthStart).length,
-      creditsSoldThisMonth: grant.filter((e) => ts(e) >= monthStart).reduce((s, e) => s + e.amount, 0),
+      meteredThisMonth: meterMonth.length,
+      creditsSoldThisMonth,
+      costUsd,
+      revenueUsd,
+      netUsd,
+      marginPct: revenueUsd > 0 ? Math.round((netUsd / revenueUsd) * 1000) / 10 : 0,
       topEvents,
       series,
       recent: [...scoped].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 6),

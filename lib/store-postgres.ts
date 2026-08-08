@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto"
 import { Pool } from "pg"
-import { type Account, type Analytics, type Project, type Store, type UsageEvent, DEFAULT_PROJECT_ID, STARTING_FREE_CREDITS, splitId } from "./types"
+import { type Account, type Analytics, type Project, type Store, type UsageEvent, DEFAULT_PROJECT_ID, STARTING_FREE_CREDITS, CREDIT_PRICE_USD, splitId } from "./types"
 
 // Postgres store — used when DATABASE_URL is set. Deduct is atomic (race-safe).
 // Accounts & events are scoped per project via a project_id column; account ids
@@ -54,6 +54,7 @@ export class PostgresStore implements Store {
     await this.pool.query(`alter table paykit_accounts add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
     await this.pool.query(`alter table paykit_accounts add column if not exists stripe_customer_id text`)
     await this.pool.query(`alter table paykit_events add column if not exists project_id text not null default '${DEFAULT_PROJECT_ID}'`)
+    await this.pool.query(`alter table paykit_events add column if not exists cost_usd numeric`)
     await this.pool.query(`create index if not exists paykit_accounts_project on paykit_accounts(project_id)`)
     await this.pool.query(`create index if not exists paykit_events_project on paykit_events(project_id)`)
     // Seed the fallback project so the demo key (and key-less calls) resolve.
@@ -127,15 +128,15 @@ export class PostgresStore implements Store {
   async recordEvent(e: UsageEvent) {
     await this.ready
     await this.pool.query(
-      `insert into paykit_events(user_id, project_id, kind, name, amount, created_at) values($1,$2,$3,$4,$5,$6)`,
-      [e.userId, splitId(e.userId).projectId, e.kind, e.name, e.amount, e.at],
+      `insert into paykit_events(user_id, project_id, kind, name, amount, cost_usd, created_at) values($1,$2,$3,$4,$5,$6,$7)`,
+      [e.userId, splitId(e.userId).projectId, e.kind, e.name, e.amount, e.costUsd ?? null, e.at],
     )
   }
 
   async analytics(projectId: string): Promise<Analytics> {
     await this.ready
     const p = [projectId]
-    const [metered, sold, top, series, recent] = await Promise.all([
+    const [metered, sold, top, series, recent, cost] = await Promise.all([
       this.pool.query(`select count(*)::int c from paykit_events where project_id=$1 and kind='meter' and created_at >= date_trunc('month', now())`, p),
       this.pool.query(`select coalesce(sum(amount),0)::int c from paykit_events where project_id=$1 and kind='grant' and created_at >= date_trunc('month', now())`, p),
       this.pool.query(`select name, count(*)::int count from paykit_events where project_id=$1 and kind='meter' group by name order by count desc limit 5`, p),
@@ -149,11 +150,19 @@ export class PostgresStore implements Store {
          order by gs desc`,
         p,
       ),
-      this.pool.query(`select user_id, kind, name, amount, created_at from paykit_events where project_id=$1 order by created_at desc limit 6`, p),
+      this.pool.query(`select user_id, kind, name, amount, cost_usd, created_at from paykit_events where project_id=$1 order by created_at desc limit 6`, p),
+      this.pool.query(`select coalesce(sum(cost_usd),0)::numeric c from paykit_events where project_id=$1 and kind='meter' and created_at >= date_trunc('month', now())`, p),
     ])
+    const costUsd = Number(cost.rows[0].c)
+    const revenueUsd = sold.rows[0].c * CREDIT_PRICE_USD
+    const netUsd = revenueUsd - costUsd
     return {
       meteredThisMonth: metered.rows[0].c,
       creditsSoldThisMonth: sold.rows[0].c,
+      costUsd,
+      revenueUsd,
+      netUsd,
+      marginPct: revenueUsd > 0 ? Math.round((netUsd / revenueUsd) * 1000) / 10 : 0,
       topEvents: top.rows,
       series: series.rows,
       recent: recent.rows.map((r) => ({
@@ -161,6 +170,7 @@ export class PostgresStore implements Store {
         kind: r.kind,
         name: r.name,
         amount: r.amount,
+        costUsd: r.cost_usd == null ? undefined : Number(r.cost_usd),
         at: new Date(r.created_at).toISOString(),
       })),
     }

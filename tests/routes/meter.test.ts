@@ -45,7 +45,17 @@ describe("POST /api/v1/meter", () => {
     core.meter.mockResolvedValue({ ok: true, remaining: 9 })
     const res = await POST(post({ userId: "u", event: "image_gen" }))
     expect(res.status).toBe(200)
-    expect(core.meter).toHaveBeenCalledWith("proj_x:u", "image_gen", 1)
+    expect(core.meter).toHaveBeenCalledWith("proj_x:u", "image_gen", 1, undefined)
+  })
+
+  it("rejects an invalid costUsd without calling meter", async () => {
+    api.scope.mockResolvedValue({ uid: "proj_x:u", projectId: DEFAULT_PROJECT_ID, secret: true })
+    for (const costUsd of [-0.01, 1_000_001, "x"]) {
+      const res = await POST(post({ userId: "u", event: "image_gen", costUsd }))
+      expect(res.status).toBe(400)
+      expect((await res.json()).error).toMatch(/costUsd/)
+    }
+    expect(core.meter).not.toHaveBeenCalled()
   })
 
   it("rejects an invalid API key", async () => {
@@ -76,6 +86,6 @@ describe("POST /api/v1/meter", () => {
     const res = await POST(post({ userId: "u", event: "hd_upscale", cost: 4 }))
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({ ok: true, remaining: 4 })
-    expect(core.meter).toHaveBeenCalledWith("proj_x:u", "hd_upscale", 4)
+    expect(core.meter).toHaveBeenCalledWith("proj_x:u", "hd_upscale", 4, undefined)
   })
 })

@@ -8,6 +8,7 @@ import {
   createProject,
   projectFromKey,
   hasAccess,
+  analytics,
 } from "@/lib/paykit-core"
 import { DEFAULT_PROJECT_ID } from "@/lib/types"
 
@@ -59,6 +60,23 @@ describe("paykit-core (billing engine, in-memory store)", () => {
     }
     expect((await getAccount(id)).credits).toBe(15) // nothing granted or stolen
     await expect(setPlan(u(), "gold")).rejects.toThrow(/unknown plan/)
+  })
+
+  it("tracks model cost vs revenue (cost-vs-revenue guardrail)", async () => {
+    const id = u()
+    await grantCredits(id, 100)
+    await meter(id, "image_gen", 3, 0.05) // $0.05 model cost for this event
+    const a = await analytics()
+    expect(a.costUsd).toBeCloseTo(0.05, 5) // only this test records a costUsd
+    expect(a.netUsd).toBeCloseTo(a.revenueUsd - 0.05, 5) // invariant: net = revenue - cost
+    expect(a.marginPct).toBeGreaterThanOrEqual(0) // revenue > 0 → margin computable
+  })
+
+  it("refuses an invalid costUsd", async () => {
+    const id = u()
+    for (const bad of [-0.01, Number.NaN, 1_000_001, "x" as unknown as number]) {
+      await expect(meter(id, "chat", 1, bad)).rejects.toThrow(/costUsd/)
+    }
   })
 
   it("sets plan entitlements", async () => {

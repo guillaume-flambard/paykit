@@ -1,18 +1,18 @@
-# SPEC — paykit: cost guardrail sur `/api/v1/meter`
+# SPEC — paykit: cost-vs-revenue guardrail
 
 - **Status**: done · **Bet**: PayKit-core · **Appetite**: 2026-08-08
-- **Problem**: `cost` n'est pas validé → meter à coût **0** (free-ride), **négatif** (= crédits CRÉDITÉS, bug sérieux), fractionnaire ou démesuré ; `event` vide passe. C'est la promesse « never lose money on model costs » non garantie à la frontière API.
+- **Problem**: la promesse « never lose money on model costs » n'est pas chiffrée — `meter()` ne tracke pas le coût modèle (USD), donc on ne sait pas si la revenue couvre les coûts d'inférence.
 
 ## Acceptance criteria (Given-When-Then)
-- [ ] **Given** un `POST /api/v1/meter` **When** `cost` est 0, négatif, non-entier, ou > 1_000_000 **Then** `400 { error: "cost must be a positive integer ≤ 1000000" }` et **aucune déduction**.
-- [ ] **Given** un appel **When** `cost` est omis **Then** coût par défaut = 1 (rétro-compatible).
-- [ ] **Given** un appel **When** `event` est vide ou > 64 caractères **Then** `400`.
-- [ ] **Given** un coût valide **When** déduction **Then** résultat inchangé (`ok`/`remaining`/`blocked`).
-- [ ] **Given** un `meter()` direct au core **When** `cost` est non valide **Then** il refuse (défense en profondeur — jamais de crédit négatif).
+- [ ] **Given** un `meter(userId, event, cost, costUsd)` **When** `costUsd` est fourni **Then** l'événement enregistre le coût modèle USD.
+- [ ] **Given** un `meter` **When** `costUsd` est invalide (négatif, non-nombre, > 1e6) **Then** 400 (route) / refus (core).
+- [ ] **Given** des meter events avec `costUsd` **When** `GET /api/v1/analytics` **Then** retourne `costUsd` (Σ coûts), `revenueUsd` (crédits vendus × prix unitaire), `netUsd`, `marginPct`.
+- [ ] **Given** le store postgres **When** migration **Then** colonne `cost_usd` ajoutée idempotente.
+- [ ] **Given** un `meter` sans `costUsd` **Then** comportement inchangé (rétro-compat), coût = 0.
 
 ## Goals / constraints
-- Rétro-compat : `cost` omis = 1. Validation à la **route** (message 400 clair) ET au **core** `meter()` (garde anti-crédit-négatif).
-- Aucune nouvelle dépendance. Tests : `tests/routes/meter.test.ts` + `tests/paykit-core.test.ts`.
+- Aucune nouvelle dépendance. Revenue = `creditsSoldThisMonth × CREDIT_PRICE_USD` (0.09 $/crédit). costUsd borné (≥ 0, ≤ 1e6).
+- Memory + Postgres stores. Tests : core + analytics route.
 
 ## Rationale history
-- 2026-08-08 — trouvé par le sweep characterization (routes sondées) : `typeof cost === "number" ? cost : 1` sans borne. Un `cost: -5` crédite 5 crédits — bug de perte d'argent.
+- 2026-08-08 — roadmap #3, après le jalon npm (#2). La garde free-ride (cycle 4) empêche la perte de crédits ; ici on mesure le coût modèle vs revenue.

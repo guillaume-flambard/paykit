@@ -17,19 +17,22 @@ export async function getAccount(userId: string): Promise<Account> {
 }
 
 // Analytics is best-effort: a failed event write must never break billing.
-function track(userId: string, kind: "meter" | "grant" | "plan", name: string, amount: number) {
-  store.recordEvent({ userId, kind, name, amount, at: new Date().toISOString() }).catch(() => {})
+function track(userId: string, kind: "meter" | "grant" | "plan", name: string, amount: number, costUsd?: number) {
+  store.recordEvent({ userId, kind, name, amount, costUsd, at: new Date().toISOString() }).catch(() => {})
 }
 
 /** Deduct credits for one AI usage event. blocked=true if insufficient. */
-export async function meter(userId: string, event: string, cost = 1): Promise<MeterResult> {
+export async function meter(userId: string, event: string, cost = 1, costUsd?: number): Promise<MeterResult> {
   // Free-ride guard: a non-positive cost would mint (negative) or give away
   // (zero) credits — the "never lose money on model costs" boundary.
   if (!Number.isInteger(cost) || cost < 1 || cost > 1_000_000) {
     throw new Error("cost must be a positive integer ≤ 1000000")
   }
+  if (costUsd !== undefined && (typeof costUsd !== "number" || !Number.isFinite(costUsd) || costUsd < 0 || costUsd > 1_000_000)) {
+    throw new Error("costUsd must be a non-negative number ≤ 1000000")
+  }
   const r = await store.deduct(userId, cost)
-  if (r.ok) track(userId, "meter", event, -cost)
+  if (r.ok) track(userId, "meter", event, -cost, costUsd)
   return r.ok ? { ok: true, remaining: r.remaining } : { ok: false, blocked: true, remaining: r.remaining }
 }
 

@@ -29,12 +29,17 @@ export interface UsageEvent {
   kind: "meter" | "grant" | "plan" // metered call · credits granted · plan change
   name: string // event name (meter), "credits" (grant), or plan id (plan)
   amount: number // credits delta (negative for meter, positive for grant)
+  costUsd?: number // model cost in USD for this event (cost-vs-revenue guardrail)
   at: string // ISO timestamp
 }
 
 export interface Analytics {
   meteredThisMonth: number
   creditsSoldThisMonth: number
+  costUsd: number // Σ meter costs this month (never lose money on model costs)
+  revenueUsd: number // credits sold × CREDIT_PRICE_USD
+  netUsd: number // revenueUsd - costUsd
+  marginPct: number // netUsd / revenueUsd × 100 (or 0 when no revenue)
   topEvents: { name: string; count: number }[]
   series: { label: string; metered: number; granted: number }[] // daily, last 14 days
   recent: UsageEvent[]
@@ -94,6 +99,8 @@ export const PRO_PRICE_USD = 19
 /** The one-time credit pack: how many credits it grants, and its price in USD. */
 export const CREDIT_PACK_SIZE = 100
 export const CREDIT_PACK_USD = 9
+/** Revenue per credit (pack price ÷ credits). Used for the cost-vs-revenue guardrail. */
+export const CREDIT_PRICE_USD = CREDIT_PACK_USD / CREDIT_PACK_SIZE
 
 /** Stats derived from a project's accounts, shared by the /accounts and /analytics endpoints. */
 export function accountStats(accounts: Account[]) {

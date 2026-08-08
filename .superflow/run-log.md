@@ -88,3 +88,10 @@ Milestone roadmap #2 (`@paykit/react` + `@paykit/node`). Vérif de nom = **gate 
 - `packages/react` (paykit-react 0.1.0) : PayKitProvider/usePayKit/Paywall, peer react ≥18, build ✓.
 - `npm pack --dry-run` OK des deux. **Publication bloquée : `npm whoami` → E401 (pas de login npm).**
 - Actions restantes pour publier : `npm login` puis `npm publish` dans chaque package (prepublishOnly build déjà câblé).
+
+## Run 2026-08-08 (8) — cost-vs-revenue guardrail (roadmap #3)
+- `meter(userId, event, cost, costUsd?)` : tracke le coût modèle USD (validé ≥0, ≤1e6) → `UsageEvent.costUsd`.
+- `Analytics` + `costUsd`/`revenueUsd` (crédits vendus × CREDIT_PRICE_USD 0.09)/`netUsd`/`marginPct`. Memory + Postgres (`cost_usd` migration idempotente).
+- Route meter accepte + valide `costUsd` (400 si invalide).
+- Tests +3 → **92/92** · tsc ✓ · smoke : meter costUsd 0.05 → analytics costUsd 0.05, revenue 9.9, net 9.85, margin 99.5%.
+- SPEC : done.
