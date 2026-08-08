@@ -65,18 +65,18 @@ const HERO_CODE_HTML = `<span style="color:#c084fc">import</span> { PayKitProvid
 
 <span style="color:#c084fc">export default function</span> <span style="color:#7dd3fc">App</span>({ user }) {
   <span style="color:#c084fc">return</span> (
-    <span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">PayKitProvider</span> <span style="color:#cfcfd6">userId</span>={user.id}<span style="color:#6b7280">&gt;</span>
-      <span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">ImageStudio</span> <span style="color:#6b7280">/&gt;</span>
-      <span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">Paywall</span> plan=<span style="color:#fbbf24">"pro"</span> fallback={<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">UpgradeCard</span> <span style="color:#6b7280">/&gt;</span>}<span style="color:#6b7280">&gt;</span>
-        <span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">HDUpscale</span> <span style="color:#6b7280">/&gt;</span>   <span style="color:#565a66">// gated — Pro only</span>
-      <span style="color:#6b7280">&lt;/</span><span style="color:#7dd3fc">Paywall</span><span style="color:#6b7280">&gt;</span>
-    <span style="color:#6b7280">&lt;/</span><span style="color:#7dd3fc">PayKitProvider</span><span style="color:#6b7280">&gt;</span>
+    <span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">PayKitProvider</span> <span style="color:#cfcfd6">userId</span>={user.id}<span style="color:#9a9aa2">&gt;</span>
+      <span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">ImageStudio</span> <span style="color:#9a9aa2">/&gt;</span>
+      <span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">Paywall</span> plan=<span style="color:#fbbf24">"pro"</span> fallback={<span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">UpgradeCard</span> <span style="color:#9a9aa2">/&gt;</span>}<span style="color:#9a9aa2">&gt;</span>
+        <span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">HDUpscale</span> <span style="color:#9a9aa2">/&gt;</span>   <span style="color:#9a9aa2">// gated — Pro only</span>
+      <span style="color:#9a9aa2">&lt;/</span><span style="color:#7dd3fc">Paywall</span><span style="color:#9a9aa2">&gt;</span>
+    <span style="color:#9a9aa2">&lt;/</span><span style="color:#7dd3fc">PayKitProvider</span><span style="color:#9a9aa2">&gt;</span>
   )
 }
 <span style="color:#c084fc">function</span> <span style="color:#7dd3fc">ImageStudio</span>() {
   <span style="color:#c084fc">const</span> { meter, credits } = <span style="color:#7dd3fc">usePayKit</span>()
   <span style="color:#c084fc">async function</span> <span style="color:#7dd3fc">generate</span>() {
-    <span style="color:#c084fc">const</span> { blocked } = <span style="color:#c084fc">await</span> <span style="color:#7dd3fc">meter</span>(<span style="color:#fbbf24">"image_gen"</span>)  <span style="color:#565a66">// −1 credit</span>
+    <span style="color:#c084fc">const</span> { blocked } = <span style="color:#c084fc">await</span> <span style="color:#7dd3fc">meter</span>(<span style="color:#fbbf24">"image_gen"</span>)  <span style="color:#9a9aa2">// −1 credit</span>
     <span style="color:#c084fc">if</span> (blocked) <span style="color:#c084fc">return</span> <span style="color:#7dd3fc">openBuyCredits</span>()
     <span style="color:#7dd3fc">runModel</span>()
   }
@@ -167,7 +167,7 @@ export default function Home() {
         <div style={css("display:flex;align-items:center;gap:9px;")}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="PayKit" style={{height:28,width:"auto",display:"block"} as React.CSSProperties} />
-          <span style={css("font-size:9.5px;font-weight:600;color:#7c7c85;border:1px solid #2a2a2e;border-radius:5px;padding:1.5px 5px;letter-spacing:0.05em;")}>PREVIEW</span>
+          <span style={css("font-size:9.5px;font-weight:600;color:#a5a5ad;border:1px solid #2a2a2e;border-radius:5px;padding:1.5px 5px;letter-spacing:0.05em;")}>PREVIEW</span>
         </div>
         <div style={css("display:flex;align-items:center;gap:3px;margin-left:6px;padding:3px;background:#121214;border:1px solid #1f1f22;border-radius:10px;")}>
           <button className="pk-tab" onClick={() => go("landing")} style={tab("landing")}>Landing</button>
@@ -177,7 +177,7 @@ export default function Home() {
         </div>
         <div style={{ flex: 1 }} />
         <div style={css("display:flex;align-items:center;gap:14px;")}>
-          <Link href="/demo" className="pk-link" style={css("font-size:12px;color:#7c7c85;font-weight:500;text-decoration:none;")}>Live demo →</Link>
+          <Link href="/demo" className="pk-link" style={css("font-size:12px;color:#a5a5ad;font-weight:500;text-decoration:none;")}>Live demo →</Link>
           <button
             onClick={() => setAccent(accent === "emerald" ? "indigo" : "emerald")}
             title={`Switch theme (${accent === "emerald" ? "indigo" : "emerald"})`}
@@ -266,13 +266,13 @@ function Landing({
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>,
       title: "Subscriptions & paywall",
       body: "Wrap any Pro feature in a component. Plans and entitlements gate access automatically.",
-      code: `<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">Paywall</span> plan=<span style="color:#fbbf24">"pro"</span><span style="color:#6b7280">&gt;</span>`,
+      code: `<span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">Paywall</span> plan=<span style="color:#fbbf24">"pro"</span><span style="color:#9a9aa2">&gt;</span>`,
     },
     {
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z" /><path d="m4 7.5 8 4.5 8-4.5" /><path d="M12 12v9" /></svg>,
       title: "Drop-in, no backend",
       body: "One provider on the client, our API runs the ledger. No tables, no webhooks, no infra to babysit.",
-      code: `<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">PayKitProvider</span> <span style="color:#6b7280">/&gt;</span>`,
+      code: `<span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">PayKitProvider</span> <span style="color:#9a9aa2">/&gt;</span>`,
     },
   ]
 
@@ -302,7 +302,7 @@ function Landing({
               </button>
               <button className="pk-ghost" onClick={() => go("dashboard")} style={css("display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:10px;background:#131315;color:#e4e4e7;font-size:15px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;letter-spacing:-0.01em;font-family:inherit;")}>See the dashboard</button>
             </div>
-            <div style={css("display:flex;align-items:center;gap:9px;font-size:13px;color:#6f6f77;letter-spacing:-0.005em;")}>
+            <div style={css("display:flex;align-items:center;gap:9px;font-size:13px;color:#9a9aa2;letter-spacing:-0.005em;")}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
               No credit card · Works with Next.js, Lovable, Bolt, v0 &amp; Cursor
             </div>
@@ -315,14 +315,14 @@ function Landing({
                 <span style={css("width:11px;height:11px;border-radius:50%;background:#2b2b30;")} />
                 <span style={css("width:11px;height:11px;border-radius:50%;background:#2b2b30;")} />
                 <span style={css("width:11px;height:11px;border-radius:50%;background:#2b2b30;")} />
-                <span style={css("margin-left:7px;font-family:'Geist Mono',monospace;font-size:12px;color:#6b6b73;")}>app/page.tsx</span>
+                <span style={css("margin-left:7px;font-family:'Geist Mono',monospace;font-size:12px;color:#9a9aa2;")}>app/page.tsx</span>
                 <div style={{ flex: 1 }} />
                 <button className="pk-copybtn" onClick={() => copy("hero", HERO_CODE)} style={css("display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:#161619;border:1px solid #26262b;color:#9a9aa2;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;")}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>
                   {copied === "hero" ? "Copied" : "Copy"}
                 </button>
               </div>
-              <pre style={css("margin:0;padding:18px 18px 20px;overflow-x:auto;font-family:'Geist Mono','SF Mono',monospace;font-size:12px;line-height:1.65;color:#cfcfd6;")} dangerouslySetInnerHTML={{ __html: HERO_CODE_HTML }} />
+              <pre tabIndex={0} style={css("margin:0;padding:18px 18px 20px;overflow-x:auto;font-family:'Geist Mono','SF Mono',monospace;font-size:12px;line-height:1.65;color:#cfcfd6;")} dangerouslySetInnerHTML={{ __html: HERO_CODE_HTML }} />
             </div>
           </div>
         </div>
@@ -373,11 +373,11 @@ function Landing({
           <div style={css("border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:28px 26px;")}>
             <div style={css("font-size:14px;font-weight:600;color:#cfcfd6;letter-spacing:-0.01em;")}>Free</div>
             <div style={css("display:flex;align-items:baseline;gap:4px;margin:14px 0 4px;")}><span style={css("font-size:40px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;")}>$0</span></div>
-            <div style={css("font-size:13px;color:#6f6f77;margin-bottom:22px;")}>For prototyping &amp; your first users.</div>
+            <div style={css("font-size:13px;color:#9a9aa2;margin-bottom:22px;")}>For prototyping &amp; your first users.</div>
             <button className="pk-ghost" onClick={() => go("quickstart")} style={css("width:100%;padding:10px;border-radius:9px;background:#131315;color:#e4e4e7;font-size:14px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}>Start free</button>
             <div style={css("display:flex;flex-direction:column;gap:11px;margin-top:24px;")}>
               {["Up to 100 metered calls / mo", "Credits, paywall & React SDK", "Test-mode keys"].map((t) => (
-                <div key={t} style={css("display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#a5a5ad;")}>{check("#52525b")}{t}</div>
+                <div key={t} style={css("display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#a5a5ad;")}>{check("#9a9aa2")}{t}</div>
               ))}
             </div>
           </div>
@@ -386,7 +386,7 @@ function Landing({
             <div style={css("position:absolute;top:18px;right:18px;font-size:10.5px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 13%,transparent);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);border-radius:999px;padding:3px 9px;letter-spacing:0.03em;")}>POPULAR</div>
             <div style={css("font-size:14px;font-weight:600;color:var(--ac);letter-spacing:-0.01em;")}>Launch</div>
             <div style={css("display:flex;align-items:baseline;gap:5px;margin:14px 0 4px;")}><span style={css("font-size:40px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;")}>{`$${PRO_PRICE_USD}`}</span><span style={css("font-size:14px;color:#8f8f97;")}>/mo</span></div>
-            <div style={css("font-size:13px;color:#6f6f77;margin-bottom:22px;")}>Everything you need to charge for real.</div>
+            <div style={css("font-size:13px;color:#9a9aa2;margin-bottom:22px;")}>Everything you need to charge for real.</div>
             <button className="pk-primary" onClick={() => go("quickstart")} style={css("width:100%;padding:10px;border-radius:9px;background:var(--ac);color:#06120c;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 28%,transparent);")}>Get started</button>
             <div style={css("display:flex;flex-direction:column;gap:11px;margin-top:24px;")}>
               {["Unlimited metered calls", "Credit packs & subscriptions", "Live Stripe payouts & webhooks", "Usage analytics & cost guardrails"].map((t) => (
@@ -425,10 +425,10 @@ function Landing({
           <div style={css("display:flex;align-items:center;gap:9px;")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.png" alt="PayKit" style={{height:22,width:"auto",display:"block"} as React.CSSProperties} />
-            <span style={css("font-size:12.5px;color:#5b5b63;")}>© 2026</span>
+            <span style={css("font-size:12.5px;color:#9a9aa2;")}>© 2026</span>
           </div>
-          <div style={css("display:flex;flex-wrap:wrap;gap:22px;font-size:13px;color:#7c7c85;")}>
-            <Link href="/docs" className="pk-link" style={css("color:#7c7c85;text-decoration:none;")}>Docs</Link>
+          <div style={css("display:flex;flex-wrap:wrap;gap:22px;font-size:13px;color:#a5a5ad;")}>
+            <Link href="/docs" className="pk-link" style={css("color:#a5a5ad;text-decoration:none;")}>Docs</Link>
             {["Pricing", "Changelog", "GitHub", "Privacy"].map((l) => (
               <span key={l} className="pk-link">{l}</span>
             ))}
@@ -586,9 +586,9 @@ function Dashboard({
     }
   })
   const statCard = "border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:17px 18px 15px;"
-  const statLabel = "font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;"
+  const statLabel = "font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.06em;text-transform:uppercase;"
   const statNum = "font-size:26px;font-weight:600;color:#fafafa;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"
-  const labelInput ="display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;"
+  const labelInput ="display:block;font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;"
   const fieldInput = "width:100%;padding:8px 11px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:#fafafa;font-size:13.5px;font-family:inherit;outline:none;"
   const fieldMono = fieldInput.replace("font-family:inherit", "font-family:'Geist Mono',monospace")
   const copyBtnSm = "display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:8px;background:#131316;border:1px solid #2a2a2e;color:#a5a5ad;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;"
@@ -601,9 +601,9 @@ function Dashboard({
           <div style={css("width:27px;height:27px;border-radius:7px;flex:none;background:color-mix(in srgb,var(--ac) 16%,transparent);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);display:flex;align-items:center;justify-content:center;color:var(--ac);font-weight:700;font-size:13px;font-family:'Geist Mono',monospace;")}>V</div>
           <div style={css("flex:1;min-width:0;")}>
             <div style={css("font-size:13px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;")}>Vellum AI</div>
-            <div style={css("font-size:11px;color:#6b6b73;")}>Pro workspace</div>
+            <div style={css("font-size:11px;color:#9a9aa2;")}>Pro workspace</div>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a9aa2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
         </button>
         <div style={css("display:flex;flex-direction:column;gap:2px;")}>
           <button className="pk-nav" onClick={() => setDashView("overview")} style={nav("overview")}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>Overview</button>
@@ -620,7 +620,7 @@ function Dashboard({
           <div style={css("width:28px;height:28px;border-radius:50%;flex:none;background:#1c1c20;border:1px solid #2a2a2e;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#cfcfd6;")}>MC</div>
           <div style={css("flex:1;min-width:0;")}>
             <div style={css("font-size:12.5px;font-weight:550;color:#e4e4e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>maya@vellum.ai</div>
-            <div style={css("font-size:11px;color:#6b6b73;")}>Owner</div>
+            <div style={css("font-size:11px;color:#9a9aa2;")}>Owner</div>
           </div>
         </div>
       </aside>
@@ -631,7 +631,7 @@ function Dashboard({
           <h1 style={css("font-size:18px;font-weight:600;color:#fafafa;letter-spacing:-0.02em;margin:0;")}>{DASH_TITLE[dashView]}</h1>
           <span style={css("font-size:11px;font-weight:600;color:#fcd34d;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.22);border-radius:999px;padding:3px 9px;letter-spacing:0.02em;")}>Test mode</span>
           <div style={{ flex: 1 }} />
-          <div style={css("display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;background:#0e0e10;border:1px solid #1f1f23;color:#76767e;font-size:13px;min-width:180px;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>Search…</div>
+          <div style={css("display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;background:#0e0e10;border:1px solid #1f1f23;color:#9a9aa2;font-size:13px;min-width:180px;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>Search…</div>
           <button className="pk-primary" style={css("display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>Create</button>
         </header>
 
@@ -641,15 +641,15 @@ function Dashboard({
             <>
               <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:14px;margin-bottom:18px;")}>
                 {[
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5" /></svg>, label: "MRR", num: an ? `$${(an.stats?.mrr ?? 0).toLocaleString()}` : "—", sub: an ? `${an.stats?.pro ?? 0} Pro × $${PRO_PRICE_USD}/mo` : "" },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3.5" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /></svg>, label: "Active subs", num: an ? `${an.stats?.pro ?? 0}` : "—", sub: an ? `of ${an.stats?.total ?? 0} accounts` : "" },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" /></svg>, label: "Credits sold", num: an ? (an.creditsSoldThisMonth ?? 0).toLocaleString() : "—", sub: "this month" },
-                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b73" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>, label: "Metered calls", num: an ? (an.meteredThisMonth ?? 0).toLocaleString() : "—", sub: "this month" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a9aa2" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 14.2c0 1 1.1 1.7 2.5 1.7s2.5-.6 2.5-1.7-1-1.5-2.5-1.9-2.5-.8-2.5-1.8S10.6 8 12 8s2.5.6 2.5 1.5" /></svg>, label: "MRR", num: an ? `$${(an.stats?.mrr ?? 0).toLocaleString()}` : "—", sub: an ? `${an.stats?.pro ?? 0} Pro × $${PRO_PRICE_USD}/mo` : "" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a9aa2" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3.5" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /></svg>, label: "Active subs", num: an ? `${an.stats?.pro ?? 0}` : "—", sub: an ? `of ${an.stats?.total ?? 0} accounts` : "" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a9aa2" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" /></svg>, label: "Credits sold", num: an ? (an.creditsSoldThisMonth ?? 0).toLocaleString() : "—", sub: "this month" },
+                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a9aa2" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4" /></svg>, label: "Metered calls", num: an ? (an.meteredThisMonth ?? 0).toLocaleString() : "—", sub: "this month" },
                 ].map((s) => (
                   <div key={s.label} style={css(statCard)}>
                     <div style={css("display:flex;align-items:center;gap:7px;margin-bottom:13px;")}>{s.icon}<span style={css(statLabel)}>{s.label}</span></div>
                     <div style={css(statNum)}>{s.num}</div>
-                    <div style={css("margin-top:7px;font-size:12.5px;color:#5b5b63;font-weight:450;")}>{s.sub}</div>
+                    <div style={css("margin-top:7px;font-size:12.5px;color:#9a9aa2;font-weight:450;")}>{s.sub}</div>
                   </div>
                 ))}
               </div>
@@ -663,7 +663,7 @@ function Dashboard({
                   return (
                     <div style={css("grid-column:span 2;min-width:0;border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;")}>
                       <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;")}>
-                        <div><div style={css("font-size:14.5px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;")}>Credits — sold vs consumed</div><div style={css("font-size:12px;color:#6b6b73;margin-top:2px;")}>Last 14 days · live</div></div>
+                        <div><div style={css("font-size:14.5px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;")}>Credits — sold vs consumed</div><div style={css("font-size:12px;color:#9a9aa2;margin-top:2px;")}>Last 14 days · live</div></div>
                         <div style={css("display:flex;gap:16px;")}>
                           <div style={css("display:flex;align-items:center;gap:6px;font-size:12px;color:#a5a5ad;")}><span style={css("width:9px;height:9px;border-radius:2px;background:var(--ac);")} />Sold</div>
                           <div style={css("display:flex;align-items:center;gap:6px;font-size:12px;color:#a5a5ad;")}><span style={css("width:9px;height:9px;border-radius:2px;background:#3f3f46;")} />Consumed</div>
@@ -674,7 +674,7 @@ function Dashboard({
                         <polyline points={pts(gVals, max)} fill="none" stroke="var(--ac)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
                         <polyline points={pts(mVals, max)} fill="none" stroke="#3f3f46" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
                       </svg>
-                      <div style={css("display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#5b5b63;font-variant-numeric:tabular-nums;")}>{series.filter((_, i) => i % 2 === 0).map((s, i) => <span key={i}>{s.label}</span>)}</div>
+                      <div style={css("display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#9a9aa2;font-variant-numeric:tabular-nums;")}>{series.filter((_, i) => i % 2 === 0).map((s, i) => <span key={i}>{s.label}</span>)}</div>
                     </div>
                   )
                 })()}
@@ -683,7 +683,7 @@ function Dashboard({
                   <div style={css("font-size:14.5px;font-weight:600;color:#fafafa;letter-spacing:-0.01em;margin-bottom:16px;")}>Recent activity</div>
                   <div style={css("display:flex;flex-direction:column;gap:14px;")}>
                     {an && an.recent.length === 0 && (
-                      <div style={css("font-size:12.5px;color:#6b6b73;")}>No activity yet — meter a call or buy credits in the Widget.</div>
+                      <div style={css("font-size:12.5px;color:#9a9aa2;")}>No activity yet — meter a call or buy credits in the Widget.</div>
                     )}
                     {(an?.recent ?? []).map((e, i) => {
                       const dot = e.kind === "grant" ? "#6ee7b7" : e.kind === "plan" ? "var(--ac)" : "#93c5fd"
@@ -701,7 +701,7 @@ function Dashboard({
                           <span style={css(`width:7px;height:7px;border-radius:50%;background:${dot};margin-top:6px;flex:none;`)} />
                           <div style={css("min-width:0;")}>
                             <div style={css("font-size:13px;color:#e4e4e7;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{main}</div>
-                            <div style={css("font-size:11.5px;color:#6b6b73;margin-top:2px;")}>{kindLabel} · {fmtAgo(e.at)}</div>
+                            <div style={css("font-size:11.5px;color:#9a9aa2;margin-top:2px;")}>{kindLabel} · {fmtAgo(e.at)}</div>
                           </div>
                         </div>
                       )
@@ -715,28 +715,28 @@ function Dashboard({
           {/* PLANS */}
           {dashView === "plans" && (
             <div style={css("max-width:880px;")}>
-              <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;")}><div style={css("font-size:13px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;")}>Plans</div></div>
+              <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;")}><div style={css("font-size:13px;font-weight:600;color:#9a9aa2;letter-spacing:0.06em;text-transform:uppercase;")}>Plans</div></div>
               <div style={css("display:flex;flex-direction:column;gap:12px;margin-bottom:34px;")}>
                 <div style={css("display:flex;align-items:center;gap:16px;border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:16px 20px;")}>
-                  <div style={css("flex:1;")}><div style={css("font-size:15px;font-weight:600;color:#fafafa;")}>Free</div><div style={css("font-size:12.5px;color:#6b6b73;margin-top:2px;")}>5 credits included · no entitlements</div></div>
-                  <div style={css("font-size:15px;font-weight:600;color:#cfcfd6;font-variant-numeric:tabular-nums;")}>$0<span style={css("font-size:12px;color:#6b6b73;font-weight:400;")}>/mo</span></div>
+                  <div style={css("flex:1;")}><div style={css("font-size:15px;font-weight:600;color:#fafafa;")}>Free</div><div style={css("font-size:12.5px;color:#9a9aa2;margin-top:2px;")}>5 credits included · no entitlements</div></div>
+                  <div style={css("font-size:15px;font-weight:600;color:#cfcfd6;font-variant-numeric:tabular-nums;")}>$0<span style={css("font-size:12px;color:#9a9aa2;font-weight:400;")}>/mo</span></div>
                   <button className="pk-ghost" style={css("padding:6px 12px;border-radius:8px;background:#131316;border:1px solid #2a2a2e;color:#a5a5ad;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;")}>Edit</button>
                 </div>
                 <div style={css("border:1px solid color-mix(in srgb,var(--ac) 35%,#1f1f23);border-radius:12px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 5%,#0c0c0e),#0c0c0e);padding:20px;")}>
-                  <div style={css("display:flex;align-items:center;gap:10px;margin-bottom:18px;")}><div style={css("font-size:15px;font-weight:600;color:var(--ac);")}>Pro</div><span style={css("font-size:10.5px;font-weight:600;color:#76767e;border:1px solid #2a2a2e;border-radius:5px;padding:1px 6px;")}>EDITING</span></div>
+                  <div style={css("display:flex;align-items:center;gap:10px;margin-bottom:18px;")}><div style={css("font-size:15px;font-weight:600;color:var(--ac);")}>Pro</div><span style={css("font-size:10.5px;font-weight:600;color:#9a9aa2;border:1px solid #2a2a2e;border-radius:5px;padding:1px 6px;")}>EDITING</span></div>
                   <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:14px;")}>
                     <label style={css("display:block;")}><span style={css(labelInput)}>Plan name</span><input className="pk-input" defaultValue="Pro" style={css(fieldInput)} /></label>
                     <label style={css("display:block;")}><span style={css(labelInput)}>Price / mo (USD)</span><input className="pk-input" defaultValue={PRO_PRICE_USD} style={css(fieldMono)} /></label>
                     <label style={css("display:block;")}><span style={css(labelInput)}>Included credits / mo</span><input className="pk-input" defaultValue="500" style={css(fieldMono)} /></label>
                   </div>
-                  <div style={css("margin-top:16px;")}><span style={css("display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:9px;")}>Entitlements</span><div style={css("display:flex;flex-wrap:wrap;gap:8px;")}>{["pro", "hd_upscale"].map((e) => <span key={e} style={css("display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);border-radius:7px;padding:4px 10px;")}>{e}</span>)}<span style={css("display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:#76767e;background:#131316;border:1px dashed #2a2a2e;border-radius:7px;padding:4px 10px;cursor:pointer;")}>+ Add</span></div></div>
+                  <div style={css("margin-top:16px;")}><span style={css("display:block;font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:9px;")}>Entitlements</span><div style={css("display:flex;flex-wrap:wrap;gap:8px;")}>{["pro", "hd_upscale"].map((e) => <span key={e} style={css("display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);border-radius:7px;padding:4px 10px;")}>{e}</span>)}<span style={css("display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:#9a9aa2;background:#131316;border:1px dashed #2a2a2e;border-radius:7px;padding:4px 10px;cursor:pointer;")}>+ Add</span></div></div>
                   <div style={css("display:flex;gap:10px;margin-top:20px;")}><button className="pk-primary" style={css("padding:8px 16px;border-radius:8px;background:var(--ac);color:#06120c;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}>Save plan</button><button className="pk-ghost" style={css("padding:8px 16px;border-radius:8px;background:transparent;color:#a5a5ad;font-size:13px;font-weight:500;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}>Cancel</button></div>
                 </div>
               </div>
-              <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;")}><div style={css("font-size:13px;font-weight:600;color:#76767e;letter-spacing:0.06em;text-transform:uppercase;")}>Credit packs</div><button style={css("display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ac);background:transparent;border:none;cursor:pointer;font-family:inherit;font-weight:550;")}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>New pack</button></div>
+              <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;")}><div style={css("font-size:13px;font-weight:600;color:#9a9aa2;letter-spacing:0.06em;text-transform:uppercase;")}>Credit packs</div><button style={css("display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ac);background:transparent;border:none;cursor:pointer;font-family:inherit;font-weight:550;")}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>New pack</button></div>
               <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:12px;")}>
                 {[["100", "$9"], ["500", "$39"], ["2,000", "$129"]].map(([n, p]) => (
-                  <div key={n} style={css("border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px;")}><div style={css("font-size:22px;font-weight:600;color:#fafafa;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;")}>{n}</div><div style={css("font-size:12px;color:#6b6b73;margin:2px 0 12px;")}>credits</div><div style={css("font-size:15px;font-weight:600;color:var(--ac);font-variant-numeric:tabular-nums;")}>{p}</div></div>
+                  <div key={n} style={css("border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px;")}><div style={css("font-size:22px;font-weight:600;color:#fafafa;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;")}>{n}</div><div style={css("font-size:12px;color:#9a9aa2;margin:2px 0 12px;")}>credits</div><div style={css("font-size:15px;font-weight:600;color:var(--ac);font-variant-numeric:tabular-nums;")}>{p}</div></div>
                 ))}
               </div>
             </div>
@@ -746,7 +746,7 @@ function Dashboard({
           {dashView === "usage" && (
             <div style={css("max-width:880px;")}>
               <div style={css("border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;margin-bottom:14px;")}>
-                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;")}><div style={css("font-size:14.5px;font-weight:600;color:#fafafa;")}>Metered calls</div><div style={css("font-size:13px;color:#6b6b73;")}>{(an?.meteredThisMonth ?? 0).toLocaleString()} this month</div></div>
+                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;")}><div style={css("font-size:14.5px;font-weight:600;color:#fafafa;")}>Metered calls</div><div style={css("font-size:13px;color:#9a9aa2;")}>{(an?.meteredThisMonth ?? 0).toLocaleString()} this month</div></div>
                 {(() => {
                   const m = (an?.series ?? []).map((s) => s.metered)
                   const max = Math.max(1, ...m)
@@ -757,20 +757,20 @@ function Dashboard({
                     </svg>
                   )
                 })()}
-                <div style={css("display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:#5b5b63;font-variant-numeric:tabular-nums;")}>{(an?.series ?? []).filter((_, i) => i % 2 === 0).map((s, i) => <span key={i}>{s.label}</span>)}</div>
+                <div style={css("display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:#9a9aa2;font-variant-numeric:tabular-nums;")}>{(an?.series ?? []).filter((_, i) => i % 2 === 0).map((s, i) => <span key={i}>{s.label}</span>)}</div>
               </div>
               <div style={css("border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:20px 22px;")}>
                 <div style={css("font-size:14.5px;font-weight:600;color:#fafafa;margin-bottom:18px;")}>Top events</div>
                 <div style={css("display:flex;flex-direction:column;gap:16px;")}>
                   {an && an.topEvents.length === 0 && (
-                    <div style={css("font-size:12.5px;color:#6b6b73;")}>No metered events yet.</div>
+                    <div style={css("font-size:12.5px;color:#9a9aa2;")}>No metered events yet.</div>
                   )}
                   {(() => {
                     const top = an?.topEvents ?? []
                     const max = Math.max(1, ...top.map((t) => t.count))
                     return top.map((t, i) => (
                       <div key={t.name}>
-                        <div style={css("display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;")}><span style={css("color:#e4e4e7;font-family:'Geist Mono',monospace;")}>{t.name}</span><span style={css("color:#76767e;font-variant-numeric:tabular-nums;")}>{t.count.toLocaleString()}</span></div>
+                        <div style={css("display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;")}><span style={css("color:#e4e4e7;font-family:'Geist Mono',monospace;")}>{t.name}</span><span style={css("color:#9a9aa2;font-variant-numeric:tabular-nums;")}>{t.count.toLocaleString()}</span></div>
                         <div style={css("height:7px;border-radius:4px;background:#16161a;overflow:hidden;")}><div style={css(`height:100%;width:${Math.round((t.count / max) * 100)}%;background:var(--ac);border-radius:4px;opacity:${Math.max(0.4, 1 - i * 0.15)};`)} /></div>
                       </div>
                     ))
@@ -784,26 +784,26 @@ function Dashboard({
           {dashView === "customers" && (
             <div>
               <div style={css("display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;")}>
-                <div style={css("display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;background:#0e0e10;border:1px solid #1f1f23;color:#76767e;font-size:13px;min-width:200px;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>Search customers…</div>
+                <div style={css("display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;background:#0e0e10;border:1px solid #1f1f23;color:#9a9aa2;font-size:13px;min-width:200px;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>Search customers…</div>
                 <span style={css("display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 28%,transparent);border-radius:999px;padding:3px 9px;letter-spacing:0.02em;")}><span style={css("width:6px;height:6px;border-radius:50%;background:var(--ac);")} />LIVE</span>
                 <div style={{ flex: 1 }} />
-                <span style={css("font-size:12.5px;color:#6b6b73;")}>{accounts === null ? "loading…" : `${stats?.total ?? customers.length} accounts · ${(stats?.creditsOutstanding ?? 0).toLocaleString()} credits outstanding`}</span>
+                <span style={css("font-size:12.5px;color:#9a9aa2;")}>{accounts === null ? "loading…" : `${stats?.total ?? customers.length} accounts · ${(stats?.creditsOutstanding ?? 0).toLocaleString()} credits outstanding`}</span>
               </div>
               <div style={css("border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;overflow:hidden;")}>
-                <div style={css("display:grid;grid-template-columns:2fr 0.9fr 0.9fr 1fr 0.8fr;gap:12px;padding:11px 18px;border-bottom:1px solid #18181b;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;")}>
+                <div style={css("display:grid;grid-template-columns:2fr 0.9fr 0.9fr 1fr 0.8fr;gap:12px;padding:11px 18px;border-bottom:1px solid #18181b;font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.05em;text-transform:uppercase;")}>
                   <span>Customer</span><span>Plan</span><span style={css("text-align:right;")}>Credits</span><span>Status</span><span style={css("text-align:right;")}>Joined</span>
                 </div>
                 {customers.map((c) => (
                   <div key={c.key} className="pk-row" style={css("display:grid;grid-template-columns:2fr 0.9fr 0.9fr 1fr 0.8fr;gap:12px;padding:13px 18px;border-bottom:1px solid #141417;align-items:center;")}>
-                    <div style={css("display:flex;align-items:center;gap:11px;min-width:0;")}><div style={css("width:30px;height:30px;border-radius:50%;flex:none;background:#1a1a1e;border:1px solid #2a2a2e;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#a5a5ad;")}>{c.initials}</div><div style={css("min-width:0;")}><div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{c.label}</div><div style={css("font-size:11.5px;color:#6b6b73;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{c.sub}</div></div></div>
+                    <div style={css("display:flex;align-items:center;gap:11px;min-width:0;")}><div style={css("width:30px;height:30px;border-radius:50%;flex:none;background:#1a1a1e;border:1px solid #2a2a2e;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#a5a5ad;")}>{c.initials}</div><div style={css("min-width:0;")}><div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{c.label}</div><div style={css("font-size:11.5px;color:#9a9aa2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")}>{c.sub}</div></div></div>
                     <div><span style={c.planStyle}>{c.plan}</span></div>
                     <div style={css("text-align:right;font-size:13px;color:#cfcfd6;font-variant-numeric:tabular-nums;font-family:'Geist Mono',monospace;")}>{c.credits}</div>
                     <div><span style={css(`display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:550;letter-spacing:-0.01em;color:${c.statusColor};background:${c.statusBg};`)}><span style={css(`width:5px;height:5px;border-radius:50%;flex:none;background:${c.statusColor};`)} />{c.statusLabel}</span></div>
-                    <div style={css("text-align:right;font-size:12.5px;color:#76767e;")}>—</div>
+                    <div style={css("text-align:right;font-size:12.5px;color:#9a9aa2;")}>—</div>
                   </div>
                 ))}
                 {accounts !== null && customers.length === 0 && (
-                  <div style={css("padding:28px 18px;text-align:center;font-size:13px;color:#6b6b73;")}>No accounts yet — meter a call or run a checkout to create the first one.</div>
+                  <div style={css("padding:28px 18px;text-align:center;font-size:13px;color:#9a9aa2;")}>No accounts yet — meter a call or run a checkout to create the first one.</div>
                 )}
               </div>
             </div>
@@ -823,19 +823,19 @@ function Dashboard({
               ) : (
                 <div style={css("display:flex;align-items:center;gap:10px;margin-bottom:18px;")}>
                   <span style={css("display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 28%,transparent);border-radius:999px;padding:3px 9px;")}><span style={css("width:6px;height:6px;border-radius:50%;background:var(--ac);")} />{project.name}</span>
-                  <span style={css("font-size:12.5px;color:#6b6b73;")}>your project · data is isolated to these keys</span>
+                  <span style={css("font-size:12.5px;color:#9a9aa2;")}>your project · data is isolated to these keys</span>
                 </div>
               )}
               <p style={css("font-size:13.5px;color:#8f8f97;margin:0 0 24px;line-height:1.55;max-width:560px;")}>Use your <span style={css("color:#cfcfd6;")}>publishable</span> key in the embed / browser SDK and your <span style={css("color:#cfcfd6;")}>secret</span> key only on your server.</p>
               <div style={css("border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px 20px;margin-bottom:14px;")}>
-                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;")}><span style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;")}>Publishable key</span><span style={css("font-size:11px;color:#6b6b73;")}>Safe in client code</span></div>
+                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;")}><span style={css("font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.05em;text-transform:uppercase;")}>Publishable key</span><span style={css("font-size:11px;color:#9a9aa2;")}>Safe in client code</span></div>
                 <div style={css("display:flex;align-items:center;gap:10px;")}>
                   <code style={css("flex:1;min-width:0;font-family:'Geist Mono',monospace;font-size:13px;color:#cfcfd6;background:#0e0e10;border:1px solid #1f1f23;border-radius:8px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{pubKey}</code>
                   <button className="pk-copybtn" onClick={() => copy("pub", pubKey)} style={css(copyBtnSm)}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>{copied === "pub" ? "Copied" : "Copy"}</button>
                 </div>
               </div>
               <div style={css("border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:18px 20px;")}>
-                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;")}><span style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;")}>Secret key</span><span style={css("font-size:11px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:5px;padding:1px 7px;")}>Server only</span></div>
+                <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;")}><span style={css("font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.05em;text-transform:uppercase;")}>Secret key</span><span style={css("font-size:11px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:5px;padding:1px 7px;")}>Server only</span></div>
                 <div style={css("display:flex;align-items:center;gap:10px;flex-wrap:wrap;")}>
                   <code style={css("flex:1;min-width:200px;font-family:'Geist Mono',monospace;font-size:13px;color:#cfcfd6;background:#0e0e10;border:1px solid #1f1f23;border-radius:8px;padding:9px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{revealSecret ? realSecret : "sk_live_" + "•".repeat(24)}</code>
                   <div style={css("display:flex;gap:8px;")}>
@@ -848,13 +848,13 @@ function Dashboard({
                 <div style={css("display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:16px 20px;border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;")}>
                   <div style={css("flex:1;min-width:0;")}>
                     <div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;")}>Secure metering</div>
-                    <div style={css("font-size:12px;color:#6b6b73;margin-top:2px;line-height:1.5;")}>Require your <span style={css("color:#cfcfd6;")}>secret</span> key to deduct credits (server-side, authoritative). Off = the no-code embed can meter from the browser.</div>
+                    <div style={css("font-size:12px;color:#9a9aa2;margin-top:2px;line-height:1.5;")}>Require your <span style={css("color:#cfcfd6;")}>secret</span> key to deduct credits (server-side, authoritative). Off = the no-code embed can meter from the browser.</div>
                   </div>
                   <div
                     onClick={toggleSecureMetering}
                     style={css(`width:38px;height:22px;border-radius:999px;position:relative;flex:none;cursor:pointer;transition:background .15s;background:${project.secureMetering ? "var(--ac)" : "#2a2a2e"};`)}
                   >
-                    <div style={css(`position:absolute;top:2px;${project.secureMetering ? "right:2px" : "left:2px"};width:18px;height:18px;border-radius:50%;transition:all .15s;background:${project.secureMetering ? "#06120c" : "#76767e"};`)} />
+                    <div style={css(`position:absolute;top:2px;${project.secureMetering ? "right:2px" : "left:2px"};width:18px;height:18px;border-radius:50%;transition:all .15s;background:${project.secureMetering ? "#06120c" : "#9a9aa2"};`)} />
                   </div>
                 </div>
               )}
@@ -869,9 +869,9 @@ function Dashboard({
                 ["Billing email", "billingEmail", false],
                 ["Webhook URL", "webhookUrl", true],
               ] as const).map(([label, field, mono]) => (
-                <label key={label} style={css("display:block;")}><span style={css("display:block;font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:7px;")}>{label}</span><input className="pk-input" value={settings[field]} onChange={(e) => updateSetting(field, e.target.value)} style={css(`width:100%;padding:9px 12px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:${mono ? "#cfcfd6" : "#fafafa"};font-size:${mono ? "13.5px" : "14px"};font-family:${mono ? "'Geist Mono',monospace" : "inherit"};outline:none;`)} /></label>
+                <label key={label} style={css("display:block;")}><span style={css("display:block;font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:7px;")}>{label}</span><input className="pk-input" value={settings[field]} onChange={(e) => updateSetting(field, e.target.value)} style={css(`width:100%;padding:9px 12px;border-radius:8px;background:#0e0e10;border:1px solid #2a2a2e;color:${mono ? "#cfcfd6" : "#fafafa"};font-size:${mono ? "13.5px" : "14px"};font-family:${mono ? "'Geist Mono',monospace" : "inherit"};outline:none;`)} /></label>
               ))}
-              <div style={css("display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid #1f1f23;border-radius:10px;background:#0c0c0e;")}><div><div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;")}>Block calls when out of credits</div><div style={css("font-size:12px;color:#6b6b73;margin-top:2px;")}>Return <span style={css("font-family:'Geist Mono',monospace;")}>blocked: true</span> instead of charging overage</div></div><button onClick={() => updateSetting("blockWhenEmpty", !settings.blockWhenEmpty)} aria-pressed={settings.blockWhenEmpty} style={css(`width:38px;height:22px;border-radius:999px;background:${settings.blockWhenEmpty ? "var(--ac)" : "#33333a"};position:relative;flex:none;cursor:pointer;border:none;padding:0;transition:background .2s;`)}><div style={css(`position:absolute;top:2px;${settings.blockWhenEmpty ? "right:2px" : "left:2px"};width:18px;height:18px;border-radius:50%;background:${settings.blockWhenEmpty ? "#06120c" : "#9a9aa2"};transition:all .2s;`)} /></button></div>
+              <div style={css("display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid #1f1f23;border-radius:10px;background:#0c0c0e;")}><div><div style={css("font-size:13.5px;font-weight:550;color:#e4e4e7;")}>Block calls when out of credits</div><div style={css("font-size:12px;color:#9a9aa2;margin-top:2px;")}>Return <span style={css("font-family:'Geist Mono',monospace;")}>blocked: true</span> instead of charging overage</div></div><button onClick={() => updateSetting("blockWhenEmpty", !settings.blockWhenEmpty)} aria-pressed={settings.blockWhenEmpty} style={css(`width:38px;height:22px;border-radius:999px;background:${settings.blockWhenEmpty ? "var(--ac)" : "#33333a"};position:relative;flex:none;cursor:pointer;border:none;padding:0;transition:background .2s;`)}><div style={css(`position:absolute;top:2px;${settings.blockWhenEmpty ? "right:2px" : "left:2px"};width:18px;height:18px;border-radius:50%;background:${settings.blockWhenEmpty ? "#06120c" : "#9a9aa2"};transition:all .2s;`)} /></button></div>
               <div style={css("display:flex;align-items:center;gap:14px;")}><button className="pk-primary" onClick={saveSettings} style={css("padding:9px 18px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}>Save changes</button>{settingsSaved && <span style={css("display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:550;color:var(--ac);")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>Saved</span>}</div>
             </div>
           )}
@@ -904,7 +904,7 @@ function Quickstart({
   const embedOrigin = typeof window !== "undefined" ? window.location.origin : "https://paykit-two.vercel.app"
   const EMBED = `<div id="paykit"></div>\n<script src="${embedOrigin}/embed.js" data-key="pk_live_..."></script>`
   const EMBED_HTML =
-    `<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">div</span> <span style="color:#cfcfd6">id</span>=<span style="color:#fbbf24">"paykit"</span><span style="color:#6b7280">&gt;&lt;/</span><span style="color:#7dd3fc">div</span><span style="color:#6b7280">&gt;</span>\n<span style="color:#6b7280">&lt;</span><span style="color:#7dd3fc">script</span> <span style="color:#cfcfd6">src</span>=<span style="color:#fbbf24">"${embedOrigin}/embed.js"</span> <span style="color:#cfcfd6">data-key</span>=<span style="color:#fbbf24">"pk_live_..."</span><span style="color:#6b7280">&gt;&lt;/</span><span style="color:#7dd3fc">script</span><span style="color:#6b7280">&gt;</span>`
+    `<span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">div</span> <span style="color:#cfcfd6">id</span>=<span style="color:#fbbf24">"paykit"</span><span style="color:#9a9aa2">&gt;&lt;/</span><span style="color:#7dd3fc">div</span><span style="color:#9a9aa2">&gt;</span>\n<span style="color:#9a9aa2">&lt;</span><span style="color:#7dd3fc">script</span> <span style="color:#cfcfd6">src</span>=<span style="color:#fbbf24">"${embedOrigin}/embed.js"</span> <span style="color:#cfcfd6">data-key</span>=<span style="color:#fbbf24">"pk_live_..."</span><span style="color:#9a9aa2">&gt;&lt;/</span><span style="color:#7dd3fc">script</span><span style="color:#9a9aa2">&gt;</span>`
   const [embedCopied, setEmbedCopied] = useState(false)
   function copyEmbed() {
     try {
@@ -930,7 +930,7 @@ function Quickstart({
       n: "1",
       title: "Install the SDK",
       desc: "Add the React client and the Node helper to your project.",
-      codeHtml: `<span style="color:#565a66">$</span> npm install <span style="color:#fbbf24">@paykit/react @paykit/node</span>`,
+      codeHtml: `<span style="color:#9a9aa2">$</span> npm install <span style="color:#fbbf24">@paykit/react @paykit/node</span>`,
       copyText: "npm install @paykit/react @paykit/node",
       done: qsDone.install,
       copiedId: "qs_install",
@@ -976,19 +976,19 @@ function Quickstart({
           <p style={css("font-size:13.5px;color:#9a9aa2;margin:0 0 16px;line-height:1.55;")}>Works on any website — Webflow, Wix, WordPress, or plain HTML. Drop in the credits meter, a “Buy credits” button, and a Pro paywall. No install, no account to wire up.</p>
           <div style={css("position:relative;border:1px solid #1f1f23;border-radius:10px;background:#0e0e10;padding:14px;")}>
             <button className="pk-copybtn" onClick={copyEmbed} style={css("position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:7px;background:#161619;border:1px solid #26262b;color:#9a9aa2;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;")}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg>{embedCopied ? "Copied" : "Copy"}</button>
-            <pre style={css("margin:0;font-family:'Geist Mono',monospace;font-size:12.5px;line-height:1.6;color:#cfcfd6;overflow-x:auto;white-space:pre;padding-right:64px;")} dangerouslySetInnerHTML={{ __html: EMBED_HTML }} />
+            <pre tabIndex={0} style={css("margin:0;font-family:'Geist Mono',monospace;font-size:12.5px;line-height:1.6;color:#cfcfd6;overflow-x:auto;white-space:pre;padding-right:64px;")} dangerouslySetInnerHTML={{ __html: EMBED_HTML }} />
           </div>
           <div style={css("display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:16px;")}>
             <a href="/embed-demo.html" target="_blank" rel="noopener" className="pk-primary" style={css("display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:10px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;text-decoration:none;font-family:inherit;")}>See it live <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg></a>
-            <span style={css("font-size:12.5px;color:#76767e;line-height:1.5;")}>Add <code style={css("font-family:'Geist Mono',monospace;color:#cfcfd6;")}>data-paykit-meter=&quot;...&quot;</code> to any button to charge a credit on click.</span>
+            <span style={css("font-size:12.5px;color:#9a9aa2;line-height:1.5;")}>Add <code style={css("font-family:'Geist Mono',monospace;color:#cfcfd6;")}>data-paykit-meter=&quot;...&quot;</code> to any button to charge a credit on click.</span>
           </div>
         </div>
 
         {/* ===== DEVELOPERS ===== */}
         <div style={css("display:flex;align-items:center;gap:12px;margin:6px 0 16px;")}>
-          <span style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;")}>For developers · React</span>
+          <span style={css("font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;")}>For developers · React</span>
           <div style={{ flex: 1, height: 1, background: "#1a1a1d" }} />
-          <span style={css("font-size:12px;color:#76767e;font-variant-numeric:tabular-nums;white-space:nowrap;")}><span style={css("font-weight:600;color:var(--ac);")}>{qsProgress}</span> / 3</span>
+          <span style={css("font-size:12px;color:#9a9aa2;font-variant-numeric:tabular-nums;white-space:nowrap;")}><span style={css("font-weight:600;color:var(--ac);")}>{qsProgress}</span> / 3</span>
         </div>
 
         <div style={css("display:flex;flex-direction:column;gap:14px;")}>
@@ -1019,7 +1019,7 @@ function Quickstart({
           </div>
         ) : (
           <div style={css("margin-top:22px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;")}>
-            <span style={css("font-size:13.5px;color:#76767e;")}>Done copying? Fire a test event to confirm wiring.</span>
+            <span style={css("font-size:13.5px;color:#9a9aa2;")}>Done copying? Fire a test event to confirm wiring.</span>
             <button className="pk-ghost" onClick={qsRun} style={css("display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;background:#131316;color:#e4e4e7;font-size:13.5px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 3 14 9-14 9V3Z" /></svg>Run a test call</button>
           </div>
         )}
@@ -1114,16 +1114,16 @@ function Widget({
         <div style={css("border:1px solid #232327;border-radius:14px;background:#0c0c0e;overflow:hidden;box-shadow:0 30px 70px -28px rgba(0,0,0,.85);")}>
           <div style={css("display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #1c1c20;background:#0e0e10;")}>
             <span style={css("width:11px;height:11px;border-radius:50%;background:#2b2b30;")} /><span style={css("width:11px;height:11px;border-radius:50%;background:#2b2b30;")} /><span style={css("width:11px;height:11px;border-radius:50%;background:#2b2b30;")} />
-            <div style={css("flex:1;display:flex;justify-content:center;")}><div style={css("font-family:'Geist Mono',monospace;font-size:11.5px;color:#6b6b73;background:#131316;border:1px solid #1f1f23;border-radius:6px;padding:3px 14px;")}>imagestudio.app</div></div>
+            <div style={css("flex:1;display:flex;justify-content:center;")}><div style={css("font-family:'Geist Mono',monospace;font-size:11.5px;color:#9a9aa2;background:#131316;border:1px solid #1f1f23;border-radius:6px;padding:3px 14px;")}>imagestudio.app</div></div>
           </div>
           <div style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));gap:0;")}>
             {/* left: the customer's app UI */}
             <div style={css("padding:24px;border-right:1px solid #18181b;min-width:0;")}>
               <div style={css("display:flex;align-items:center;gap:9px;margin-bottom:20px;")}><div style={css("width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#a78bfa,#7dd3fc);")} /><span style={css("font-size:15px;font-weight:650;color:#fafafa;letter-spacing:-0.02em;")}>ImageStudio</span></div>
-              <div style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px;")}>Prompt</div>
+              <div style={css("font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px;")}>Prompt</div>
               <div style={css("border:1px solid #1f1f23;border-radius:10px;background:#0e0e10;padding:12px 13px;font-size:13.5px;color:#cfcfd6;line-height:1.5;margin-bottom:14px;")}>A neon koi swimming through clouds, cinematic, 35mm</div>
               <button className="pk-primary" onClick={wGenerate} style={css("width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;background:var(--ac);color:#06120c;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 24%,transparent);")}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l2.5 6.5L22 12l-6.5 2.5L13 21l-2.5-6.5L4 12l6.5-2.5L13 3Z" /></svg>Generate image</button>
-              <div style={css("font-size:11.5px;color:#6b6b73;text-align:center;margin-top:9px;")}>Each generation calls <span style={css("font-family:'Geist Mono',monospace;color:#8f8f97;")}>meter(&quot;image_gen&quot;)</span></div>
+              <div style={css("font-size:11.5px;color:#9a9aa2;text-align:center;margin-top:9px;")}>Each generation calls <span style={css("font-family:'Geist Mono',monospace;color:#8f8f97;")}>meter(&quot;image_gen&quot;)</span></div>
               <div style={css("display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px;")}>
                 {wShots.map((h, i) => (
                   <div key={i} style={{ aspectRatio: "1", borderRadius: "8px", border: "1px solid #ffffff10", background: `linear-gradient(135deg, hsl(${h} 68% 56%), hsl(${h} 70% 38%))` }} />
@@ -1135,14 +1135,14 @@ function Widget({
             <div style={css("padding:24px;background:#0a0a0c;min-width:0;display:flex;flex-direction:column;gap:14px;")}>
               <div style={css("border:1px solid #1f1f23;border-radius:14px;background:#0c0c0e;padding:18px;")}>
                 <div style={css("display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;")}>
-                  <span style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;")}>Credits</span>
+                  <span style={css("font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.05em;text-transform:uppercase;")}>Credits</span>
                   {wIsPro ? (
                     <span style={css("font-size:11px;font-weight:600;color:var(--ac);background:color-mix(in srgb,var(--ac) 13%,transparent);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);border-radius:999px;padding:2px 10px;")}>Pro</span>
                   ) : (
                     <span style={css("font-size:11px;font-weight:600;color:#a1a1aa;background:#161619;border:1px solid #26262a;border-radius:999px;padding:2px 10px;")}>Free</span>
                   )}
                 </div>
-                <div style={css("display:flex;align-items:baseline;gap:7px;")}><span style={css("font-size:38px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;font-variant-numeric:tabular-nums;line-height:1;")}>{wCredits}</span><span style={css("font-size:13px;color:#76767e;")}>{wCredits === 1 ? "credit" : "credits"} left</span></div>
+                <div style={css("display:flex;align-items:baseline;gap:7px;")}><span style={css("font-size:38px;font-weight:600;color:#fafafa;letter-spacing:-0.04em;font-variant-numeric:tabular-nums;line-height:1;")}>{wCredits}</span><span style={css("font-size:13px;color:#9a9aa2;")}>{wCredits === 1 ? "credit" : "credits"} left</span></div>
                 <div style={css("height:7px;border-radius:4px;background:#16161a;overflow:hidden;margin:14px 0 16px;")}><div style={{ height: "100%", width: `${wPct}%`, background: "var(--ac)", borderRadius: "4px", transition: "width .35s ease" }} /></div>
                 <button className="pk-ghost" onClick={wBuy} style={css("width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:#131316;color:#e4e4e7;font-size:13.5px;font-weight:550;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>{`Buy ${CREDIT_PACK_SIZE} credits · $${CREDIT_PACK_USD}`}</button>
               </div>
@@ -1152,17 +1152,17 @@ function Widget({
                 <div style={css("border:1px solid color-mix(in srgb,var(--ac) 34%,transparent);border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 8%,#0c0c0e),#0c0c0e);padding:16px 18px;")}>
                   <div style={css("display:flex;align-items:center;gap:9px;margin-bottom:6px;")}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3v4M3 5h4M19 17v4M17 19h4M13 4l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z" /></svg><span style={css("font-size:14px;font-weight:600;color:#fafafa;")}>HD upscale unlocked</span></div>
                   <p style={css("font-size:12.5px;color:#9a9aa2;margin:0 0 12px;line-height:1.5;")}>Pro is active — 4× upscaling is available on every render.</p>
-                  <button className="pk-ghost" onClick={wUpgrade} style={css("width:100%;padding:9px;border-radius:9px;background:transparent;color:#76767e;font-size:12.5px;font-weight:500;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}>Switch back to Free</button>
+                  <button className="pk-ghost" onClick={wUpgrade} style={css("width:100%;padding:9px;border-radius:9px;background:transparent;color:#9a9aa2;font-size:12.5px;font-weight:500;border:1px solid #2a2a2e;cursor:pointer;font-family:inherit;")}>Switch back to Free</button>
                 </div>
               ) : (
                 <div style={css("border:1px dashed #2a2a2e;border-radius:14px;background:#0c0c0e;padding:16px 18px;")}>
-                  <div style={css("display:flex;align-items:center;gap:9px;margin-bottom:6px;")}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#76767e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg><span style={css("font-size:14px;font-weight:600;color:#cfcfd6;")}>HD upscale</span></div>
-                  <p style={css("font-size:12.5px;color:#76767e;margin:0 0 12px;line-height:1.5;")}>4× upscaling is a Pro feature. Upgrade to unlock it for every render.</p>
+                  <div style={css("display:flex;align-items:center;gap:9px;margin-bottom:6px;")}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9a9aa2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg><span style={css("font-size:14px;font-weight:600;color:#cfcfd6;")}>HD upscale</span></div>
+                  <p style={css("font-size:12.5px;color:#9a9aa2;margin:0 0 12px;line-height:1.5;")}>4× upscaling is a Pro feature. Upgrade to unlock it for every render.</p>
                   <button className="pk-primary" onClick={wUpgrade} style={css("width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px;border-radius:9px;background:var(--ac);color:#06120c;font-size:13.5px;font-weight:600;border:none;cursor:pointer;font-family:inherit;")}>{`Upgrade to Pro · $${PRO_PRICE_USD}/mo`}</button>
                 </div>
               )}
 
-              <div style={css("display:flex;align-items:center;justify-content:center;gap:6px;opacity:.6;")}><Logo size={13} /><span style={css("font-size:11px;color:#6b6b73;font-weight:500;")}>Powered by PayKit</span></div>
+              <div style={css("display:flex;align-items:center;justify-content:center;gap:6px;opacity:.6;")}><Logo size={13} /><span style={css("font-size:11px;color:#9a9aa2;font-weight:500;")}>Powered by PayKit</span></div>
             </div>
           </div>
         </div>
@@ -1170,7 +1170,7 @@ function Widget({
         {/* live activity log */}
         {wLog.length > 0 && (
           <div style={css("margin-top:16px;border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;padding:14px 18px;")}>
-            <div style={css("font-size:11px;font-weight:600;color:#76767e;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;")}>Live events</div>
+            <div style={css("font-size:11px;font-weight:600;color:#9a9aa2;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;")}>Live events</div>
             <div style={css("display:flex;flex-direction:column;gap:8px;font-family:'Geist Mono',monospace;font-size:12px;")}>
               {wLog.map((line, i) => (
                 <div key={i} style={css("color:#9a9aa2;display:flex;align-items:center;gap:8px;")}><span style={css("color:var(--ac);")}>→</span>{line}</div>

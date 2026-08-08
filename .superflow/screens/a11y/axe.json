@@ -1,0 +1,17 @@
+[
+  {
+    "viewport": "mobile-375",
+    "violations": [],
+    "consoleErrors": []
+  },
+  {
+    "viewport": "tablet-768",
+    "violations": [],
+    "consoleErrors": []
+  },
+  {
+    "viewport": "desktop-1280",
+    "violations": [],
+    "consoleErrors": []
+  }
+]

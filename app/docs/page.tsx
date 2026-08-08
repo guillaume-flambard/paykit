@@ -85,18 +85,18 @@ function Code({ code, lang }: { code: string; lang?: string }) {
     <div className="docs-code" style={css("margin:18px 0;border:1px solid #1f1f23;border-radius:12px;background:#0c0c0e;overflow:hidden;")}>
       {lang && (
         <div style={css("display:flex;align-items:center;justify-content:space-between;padding:7px 14px;border-bottom:1px solid #161619;background:#0e0e10;")}>
-          <span style={css("font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#5b5b63;font-family:'Geist Mono',monospace;")}>{lang}</span>
+          <span style={css("font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#9a9aa2;font-family:'Geist Mono',monospace;")}>{lang}</span>
         </div>
       )}
       <button className="docs-copy" onClick={copy} style={lang ? css("top:38px;") : undefined}>
         {copied ? "Copied" : "Copy"}
       </button>
-      <pre style={css("margin:0;padding:15px 16px;overflow-x:auto;font-family:'Geist Mono',monospace;font-size:13px;line-height:1.65;color:#cdcdd4;")}>
+      <pre tabIndex={0} style={css("margin:0;padding:15px 16px;overflow-x:auto;font-family:'Geist Mono',monospace;font-size:13px;line-height:1.65;color:#cdcdd4;")}>
         {lines.map((ln, i) => {
           const t = ln.trimStart()
           const isComment = t.startsWith("//") || t.startsWith("#") || t.startsWith("<!--") || t.startsWith("*")
           return (
-            <div key={i} style={isComment ? css("color:#565a66;") : undefined}>
+            <div key={i} style={isComment ? css("color:#9a9aa2;") : undefined}>
               {ln || " "}
             </div>
           )
@@ -153,7 +153,7 @@ function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
         <thead>
           <tr>
             {head.map((h) => (
-              <th key={h} style={css("text-align:left;padding:10px 14px;background:#0e0e10;border-bottom:1px solid #1f1f23;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#6b6b73;")}>{h}</th>
+              <th key={h} style={css("text-align:left;padding:10px 14px;background:#0e0e10;border-bottom:1px solid #1f1f23;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#9a9aa2;")}>{h}</th>
             ))}
           </tr>
         </thead>
@@ -212,7 +212,7 @@ export default function DocsPage() {
           <Link href="/" style={css("display:flex;align-items:center;gap:9px;text-decoration:none;")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.png" alt="PayKit" style={{ height: 22, width: "auto", display: "block" } as React.CSSProperties} />
-            <span style={css("font-size:12px;font-weight:600;color:#6b6b73;letter-spacing:0.02em;border-left:1px solid #2a2a2e;padding-left:9px;")}>Docs</span>
+            <span style={css("font-size:12px;font-weight:600;color:#9a9aa2;letter-spacing:0.02em;border-left:1px solid #2a2a2e;padding-left:9px;")}>Docs</span>
           </Link>
           <div style={css("display:flex;align-items:center;gap:18px;")}>
             <Link href="/demo" className="pk-link" style={css("font-size:13px;color:#8b8b93;text-decoration:none;")}>Live demo</Link>
@@ -586,7 +586,7 @@ npm run dev      # http://localhost:3000`} />
 
         {/* right TOC */}
         <aside className="docs-toc">
-          <div style={css("font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#5b5b63;margin-bottom:12px;")}>On this page</div>
+          <div style={css("font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#9a9aa2;margin-bottom:12px;")}>On this page</div>
           {FLAT.map((it) => (
             <a
               key={it.id}
