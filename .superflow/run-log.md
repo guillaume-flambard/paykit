@@ -43,3 +43,11 @@ Feature : validation de `cost`/`event` sur `/api/v1/meter` (le gap free-ride —
 | Connaissance | kb.md (procédure) + note Vault |
 
 Rétro-compat vérifiée (`cost` omis = 1). Aucune nouvelle dépendance.
+
+## Run 2026-08-08 (4) — Cycle 4 suite: même classe de bugs sur /api/v1/credits
+
+- `grantCredits` : garde `positive integer ≤ 1e6` (un `amount: -100` VOLAIT 100 crédits).
+- `setPlan` : whitelist `PLAN_ENTITLEMENTS` (free/pro) — un plan inconnu partait avec 0 entitlements.
+- Route `/api/v1/credits` : 400 clair (amount + plan) avant scope.
+- Tests +4 → **84/84** · tsc ✓ · smoke : -100→400, gold→400, +10→200.
+- KB : entrée « grant/plan guard ».

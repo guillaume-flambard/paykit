@@ -34,12 +34,19 @@ export async function meter(userId: string, event: string, cost = 1): Promise<Me
 }
 
 export async function grantCredits(userId: string, amount: number): Promise<Account> {
+  // Grant guard: a negative/zero amount would steal credits; oversized mints them.
+  if (!Number.isInteger(amount) || amount < 1 || amount > 1_000_000) {
+    throw new Error("amount must be a positive integer ≤ 1000000")
+  }
   const a = await store.addCredits(userId, amount)
   track(userId, "grant", "credits", amount)
   return a
 }
 
 export async function setPlan(userId: string, plan: string): Promise<Account> {
+  if (!(plan in PLAN_ENTITLEMENTS)) {
+    throw new Error(`unknown plan: ${plan}`)
+  }
   const a = await store.setPlan(userId, plan, PLAN_ENTITLEMENTS[plan] ?? [])
   track(userId, "plan", plan, 0)
   return a

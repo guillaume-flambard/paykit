@@ -51,6 +51,16 @@ describe("paykit-core (billing engine, in-memory store)", () => {
     expect(a.credits).toBe(105)
   })
 
+  it("refuses a non-positive grant amount (steal guard) and an unknown plan", async () => {
+    const id = u()
+    await grantCredits(id, 10)
+    for (const bad of [0, -10, 1.5, 1_000_001]) {
+      await expect(grantCredits(id, bad)).rejects.toThrow(/positive integer/)
+    }
+    expect((await getAccount(id)).credits).toBe(15) // nothing granted or stolen
+    await expect(setPlan(u(), "gold")).rejects.toThrow(/unknown plan/)
+  })
+
   it("sets plan entitlements", async () => {
     const a = await setPlan(u(), "pro")
     expect(a.plan).toBe("pro")
