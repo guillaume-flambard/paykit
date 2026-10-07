@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 const core = vi.hoisted(() => ({ listAccounts: vi.fn() }))
-const api = vi.hoisted(() => ({ resolveProject: vi.fn() }))
+const api = vi.hoisted(() => ({ resolveAdminProject: vi.fn() }))
 vi.mock("@/lib/paykit-core", () => core)
 vi.mock("@/lib/api", () => api)
 
@@ -16,12 +16,12 @@ describe("GET /api/v1/accounts", () => {
   })
 
   it("rejects an invalid API key", async () => {
-    api.resolveProject.mockResolvedValue(null)
+    api.resolveAdminProject.mockResolvedValue(null)
     expect((await GET(get("bad"))).status).toBe(401)
   })
 
   it("unscopes the userId and sums the stats", async () => {
-    api.resolveProject.mockResolvedValue("proj_x")
+    api.resolveAdminProject.mockResolvedValue("proj_x")
     core.listAccounts.mockResolvedValue([
       { userId: "proj_x:alice", plan: "pro", credits: 10, entitlements: ["pro"] },
       { userId: "proj_x:bob", plan: "free", credits: 5, entitlements: [] },
@@ -34,7 +34,7 @@ describe("GET /api/v1/accounts", () => {
   })
 
   it("returns zeroed stats for an empty project", async () => {
-    api.resolveProject.mockResolvedValue("proj_x")
+    api.resolveAdminProject.mockResolvedValue("proj_x")
     core.listAccounts.mockResolvedValue([])
     const body = await (await GET(get("pk_x"))).json()
     expect(body.accounts).toEqual([])

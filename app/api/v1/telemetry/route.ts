@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     RING.push(entry)
     if (RING.length > MAX) RING.shift()
     try {
+      if (process.env.NODE_ENV === "production") throw new Error("no file writes in production")
       ensureFile()
       appendFileSync(FILE, `| ${entry.at} | ${kind} | ${message.replace(/\|/g, "\\|")} | ${url ?? ""} |\n`)
     } catch {
@@ -41,7 +42,9 @@ export async function POST(req: Request) {
   }
 }
 
+// The ring buffer is operator-only data: not served on the public API in production.
 export async function GET() {
+  if (process.env.NODE_ENV === "production") return NextResponse.json({ error: "Not found" }, { status: 404 })
   return NextResponse.json({ recent: RING })
 }
 

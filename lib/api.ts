@@ -29,3 +29,15 @@ export async function scope(req: Request, clientUserId: string, body?: Record<st
 export async function resolveProject(req: Request): Promise<string | null> {
   return projectFromKey(new URL(req.url).searchParams.get("key"))
 }
+
+/**
+ * Project id for the read-only admin routes (accounts, analytics). These expose every
+ * user id, plan and balance of a project, so a publishable key (shipped to browsers)
+ * must not unlock them: only a secret key, or the public demo project, is accepted.
+ * No key → demo project, anything else (incl. a real project's pk_) → null (401).
+ */
+export async function resolveAdminProject(req: Request): Promise<string | null> {
+  const key = keyFromRequest(req)
+  if (key && !key.startsWith("sk_") && key !== "pk_live_demo") return null
+  return projectFromKey(key)
+}
